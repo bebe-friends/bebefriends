@@ -1,5 +1,6 @@
 package com.bbf.bebefriends.hotdeal.dto;
 
+import com.bbf.bebefriends.hotdeal.entity.HotDealPost;
 import lombok.*;
 
 @Getter
@@ -22,5 +23,18 @@ public class HotDealPostDto {
     private String status;      // 상태
 
     private Integer age;        // 나이
+
+    // Entity -> dto
+    public static HotDealPostDto fromEntity(HotDealPost hotDealPost) {
+        return HotDealPostDto.builder()
+                .hotDealId(hotDealPost.getHotDealId().getId())
+                .title(hotDealPost.getTitle())
+                .content(hotDealPost.getContent())
+                .link(hotDealPost.getLink())
+                .imgPath(hotDealPost.getImgPath())
+                .status(hotDealPost.getStatus())
+                .age(hotDealPost.getAge())
+                .build();
+    }
 
 }

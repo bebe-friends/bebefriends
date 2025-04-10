@@ -7,7 +7,11 @@ import com.bbf.bebefriends.hotdeal.repository.HotDealPostRepository;
 import com.bbf.bebefriends.hotdeal.repository.HotDealRepository;
 import com.bbf.bebefriends.hotdeal.service.HotDealPostService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
+
+import org.springframework.data.domain.Pageable;
+
 
 @Service
 @RequiredArgsConstructor
@@ -16,6 +20,11 @@ public class HotDealPostServiceImpl implements HotDealPostService {
     private final HotDealRepository hotDealRepository;
     private final HotDealPostRepository hotDealPostRepository;
 
+
+    @Override
+    public Page<HotDealPostDto> searchAllHotDealPost(Pageable pageable) {
+        return hotDealPostRepository.findAll(pageable).map(HotDealPostDto::fromEntity);
+    }
 
     public HotDealPostDto createHotDealPost(HotDealPostDto hotDealPostDto) {
         // 핫딜 초기화
