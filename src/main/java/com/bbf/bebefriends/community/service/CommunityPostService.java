@@ -1,10 +1,10 @@
 package com.bbf.bebefriends.community.service;
 
 import com.bbf.bebefriends.community.dto.CommunityPostDTO;
-import com.bbf.bebefriends.member.entity.Member;
+import com.bbf.bebefriends.member.entity.User;
 
 public interface CommunityPostService {
-    CommunityPostDTO.CreatePostResponse createPost(CommunityPostDTO.CreatePostRequest request, Member member);
-    CommunityPostDTO.UpdatePostResponse updatePost(CommunityPostDTO.UpdatePostRequest request, Member member);
-    String deletePost(CommunityPostDTO.DeletePostRequest request, Member member);
+    CommunityPostDTO.CreatePostResponse createPost(CommunityPostDTO.CreatePostRequest request, User user);
+    CommunityPostDTO.UpdatePostResponse updatePost(CommunityPostDTO.UpdatePostRequest request, User user);
+    String deletePost(CommunityPostDTO.DeletePostRequest request, User user);
 }

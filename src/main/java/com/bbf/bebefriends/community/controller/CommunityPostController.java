@@ -7,7 +7,6 @@ import com.bbf.bebefriends.global.entity.UserDetailsImpl;
 import com.bbf.bebefriends.global.exception.ResponseCode;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,20 +20,20 @@ public class CommunityPostController {
     public BaseResponse<CommunityPostDTO.CreatePostResponse> createCommunityPost(@Valid @RequestBody CommunityPostDTO.CreatePostRequest request,
                                                                                  @AuthenticationPrincipal UserDetailsImpl user) {
 
-        return BaseResponse.onSuccess(communityPostService.createPost(request, user.getMember()), ResponseCode.OK);
+        return BaseResponse.onSuccess(communityPostService.createPost(request, user.getUser()), ResponseCode.OK);
     }
 
     // 게시글 수정
     @PatchMapping("/post")
     public BaseResponse<CommunityPostDTO.UpdatePostResponse> updatePost(@Valid @RequestBody CommunityPostDTO.UpdatePostRequest request,
                                                                           @AuthenticationPrincipal UserDetailsImpl user) {
-        return BaseResponse.onSuccess(communityPostService.updatePost(request, user.getMember()), ResponseCode.OK);
+        return BaseResponse.onSuccess(communityPostService.updatePost(request, user.getUser()), ResponseCode.OK);
     }
 
     // 게시글 삭제
     @DeleteMapping("/post")
     public BaseResponse<String> deletePost(@Valid @RequestBody CommunityPostDTO.DeletePostRequest request,
                                              @AuthenticationPrincipal UserDetailsImpl user) {
-        return BaseResponse.onSuccess(communityPostService.deletePost(request, user.getMember()), ResponseCode.OK);
+        return BaseResponse.onSuccess(communityPostService.deletePost(request, user.getUser()), ResponseCode.OK);
     }
 }

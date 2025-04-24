@@ -7,7 +7,6 @@ import com.bbf.bebefriends.global.entity.BaseResponse;
 import com.bbf.bebefriends.global.entity.UserDetailsImpl;
 import com.bbf.bebefriends.global.exception.ResponseCode;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -31,13 +30,13 @@ public class CommunityCategoryController {
     @PostMapping("/community-category")
     public BaseResponse<CommunityCategoryDTO.CreateCategoryResponse> createCategory(CommunityCategoryDTO.CreateCategoryRequest request,
                                                                                       @AuthenticationPrincipal UserDetailsImpl user) {
-        return BaseResponse.onSuccess(communityCategoryService.saveCategory(request, user.getMember()), ResponseCode.OK);
+        return BaseResponse.onSuccess(communityCategoryService.saveCategory(request, user.getUser()), ResponseCode.OK);
     }
 
     // 카테고리 수정
     @PatchMapping("/community-category")
     public BaseResponse<CommunityCategoryDTO.UpdateCategoryResponse> updateCategory(CommunityCategoryDTO.UpdateCategoryRequest request,
                                                                                     @AuthenticationPrincipal UserDetailsImpl user) {
-        return BaseResponse.onSuccess(communityCategoryService.updateCategory(request, user.getMember()), ResponseCode.OK);
+        return BaseResponse.onSuccess(communityCategoryService.updateCategory(request, user.getUser()), ResponseCode.OK);
     }
 }

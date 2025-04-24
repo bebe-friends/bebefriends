@@ -2,7 +2,7 @@ package com.bbf.bebefriends.community.entity;
 
 import com.bbf.bebefriends.community.dto.CommunityCommentDTO;
 import com.bbf.bebefriends.global.entity.BaseEntity;
-import com.bbf.bebefriends.member.entity.Member;
+import com.bbf.bebefriends.member.entity.User;
 import jakarta.persistence.*;
 import lombok.Getter;
 
@@ -29,29 +29,29 @@ public class CommunityComment extends BaseEntity {
     private CommunityPost post;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id")
-    private Member member;
+    @JoinColumn(name = "user_id")
+    private User user;
 
     @Column(nullable = false)
     private String content;
     private LocalDateTime deletedAt;
 
-    public static CommunityComment createComment(CommunityPost post, Member member, CommunityCommentDTO.CreateCommentRequest createCommentRequest) {
+    public static CommunityComment createComment(CommunityPost post, User user, CommunityCommentDTO.CreateCommentRequest createCommentRequest) {
         CommunityComment comment = new CommunityComment();
 
         comment.post = post;
-        comment.member = member;
+        comment.user = user;
         comment.parent = null;
         comment.content = createCommentRequest.getContent();
 
         return comment;
     }
 
-    public static CommunityComment createReply(CommunityPost post, Member member, CommunityComment parent, CommunityCommentDTO.CreateCommentRequest createCommentRequest) {
+    public static CommunityComment createReply(CommunityPost post, User user, CommunityComment parent, CommunityCommentDTO.CreateCommentRequest createCommentRequest) {
         CommunityComment comment = new CommunityComment();
 
         comment.post = post;
-        comment.member = member;
+        comment.user = user;
         comment.parent = parent;
         comment.content = createCommentRequest.getContent();
 

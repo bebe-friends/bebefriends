@@ -2,7 +2,7 @@ package com.bbf.bebefriends.community.entity;
 
 import com.bbf.bebefriends.community.dto.CommunityPostDTO;
 import com.bbf.bebefriends.global.entity.BaseEntity;
-import com.bbf.bebefriends.member.entity.Member;
+import com.bbf.bebefriends.member.entity.User;
 import jakarta.persistence.*;
 import lombok.Getter;
 
@@ -19,8 +19,8 @@ public class CommunityPost extends BaseEntity {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id")
-    private Member member;
+    @JoinColumn(name = "user_id")
+    private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
@@ -41,6 +41,7 @@ public class CommunityPost extends BaseEntity {
     private List<CommunityLink> links = new ArrayList<>();
 
     private Boolean isCertificated;
+    private Boolean isReported;
     private LocalDateTime deletedAt;
 
     public void addImage(CommunityImage image) {
@@ -52,16 +53,17 @@ public class CommunityPost extends BaseEntity {
     }
 
     // 게시글 생성
-    public static CommunityPost createPost(Member member, CommunityCategory category, CommunityPostDTO.CreatePostRequest postCreateRequest) {
+    public static CommunityPost createPost(User user, CommunityCategory category, CommunityPostDTO.CreatePostRequest postCreateRequest) {
         CommunityPost post = new CommunityPost();
 
-        post.member = member;
+        post.user = user;
         post.category = category;
         post.title = postCreateRequest.getTitle();
         post.content = postCreateRequest.getContent();
         post.viewCount = 0;
         post.deletedAt = null;
         post.isCertificated = false;
+        post.isReported = false;
 
         return post;
     }

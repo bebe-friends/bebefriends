@@ -1,10 +1,10 @@
 package com.bbf.bebefriends.community.dto;
 
 import com.bbf.bebefriends.community.entity.CommunityPost;
-import lombok.Data;
-import lombok.NonNull;
+import lombok.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class CommunityPostDTO {
@@ -65,25 +65,34 @@ public class CommunityPostDTO {
         private Long postId;
     }
 
-    // 게시물 조회
+    // 게시물 목록
     @Data
-    public static class PostListRequest {
-
-    }
-
-    @Data
+    @Builder
     public static class PostListResponse {
-
+        private Long postId;
+        private String title;
+        private String author;
+        private String content;
+        private String firstImageUrl;
+        private LocalDateTime createdAt;
+        private int viewCount;
+        private int likeCount;
+        private int commentCount;
     }
 
     // 게시물 상세 페이지
     @Data
-    public static class PostDetailsRequest {
-
-    }
-
-    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class PostDetailsResponse {
-
+        private String title;
+        private String author;
+        private LocalDateTime createdAt;
+        private int viewCount;
+        private String content;
+        private List<String> ImageUrl;
+        private List<String> Link;
+        private int likeCount;
+        private int commentCount;
     }
 }

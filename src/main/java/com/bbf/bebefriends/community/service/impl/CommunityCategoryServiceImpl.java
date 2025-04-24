@@ -6,14 +6,14 @@ import com.bbf.bebefriends.community.exception.CommunityControllerAdvice;
 import com.bbf.bebefriends.community.repository.CommunityCategoryRepository;
 import com.bbf.bebefriends.community.service.CommunityCategoryService;
 import com.bbf.bebefriends.global.exception.ResponseCode;
-import com.bbf.bebefriends.member.entity.Member;
+import com.bbf.bebefriends.member.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-import static com.bbf.bebefriends.member.entity.MemberRole.ADMIN;
+import static com.bbf.bebefriends.member.entity.UserRole.ADMIN;
 
 @Service
 @RequiredArgsConstructor
@@ -30,8 +30,8 @@ public class CommunityCategoryServiceImpl implements CommunityCategoryService {
     // 새 카테고리 만들기(운영자만 가능)
     @Override
     @Transactional
-    public CommunityCategoryDTO.CreateCategoryResponse saveCategory(CommunityCategoryDTO.CreateCategoryRequest request, Member member) {
-        if (member.getRole() != ADMIN) {
+    public CommunityCategoryDTO.CreateCategoryResponse saveCategory(CommunityCategoryDTO.CreateCategoryRequest request, User user) {
+        if (user.getRole() != ADMIN) {
             throw new CommunityControllerAdvice(ResponseCode._UNAUTHORIZED);
         }
 
@@ -43,8 +43,8 @@ public class CommunityCategoryServiceImpl implements CommunityCategoryService {
     // 카테고리 이름 수정(운영진만 가능)
     @Override
     @Transactional
-    public CommunityCategoryDTO.UpdateCategoryResponse updateCategory(CommunityCategoryDTO.UpdateCategoryRequest request, Member member) {
-        if (member.getRole() != ADMIN) {
+    public CommunityCategoryDTO.UpdateCategoryResponse updateCategory(CommunityCategoryDTO.UpdateCategoryRequest request, User user) {
+        if (user.getRole() != ADMIN) {
             throw new CommunityControllerAdvice(ResponseCode._UNAUTHORIZED);
         }
 

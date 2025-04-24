@@ -8,7 +8,7 @@ import com.bbf.bebefriends.community.repository.CommunityPostLikeRepository;
 import com.bbf.bebefriends.community.repository.CommunityPostRepository;
 import com.bbf.bebefriends.community.service.CommunityPostLikeService;
 import com.bbf.bebefriends.global.exception.ResponseCode;
-import com.bbf.bebefriends.member.repository.MemberRepository;
+import com.bbf.bebefriends.member.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -17,7 +17,7 @@ import org.springframework.stereotype.Service;
 public class CommunityPostLikeServiceImpl implements CommunityPostLikeService {
     private final CommunityPostLikeRepository communityPostLikeRepository;
     private final CommunityPostRepository communityPostRepository;
-    private final MemberRepository memberRepository;
+    private final UserRepository userRepository;
 
     // 게시물 좋아요
     @Override
@@ -25,7 +25,7 @@ public class CommunityPostLikeServiceImpl implements CommunityPostLikeService {
         CommunityPost communityPost = communityPostRepository.findById(postId)
                 .orElseThrow(() -> new CommunityControllerAdvice(ResponseCode.COMMUNITY_POST_NOT_FOUND));
         // FIXME: 멤버 예외처리 수정 필요
-        CommunityPostLike communityPostLike = CommunityPostLike.createPostLike(memberRepository.findById(request.getMemberId()).orElseThrow(), communityPost);
+        CommunityPostLike communityPostLike = CommunityPostLike.createPostLike(userRepository.findById(request.getUserUid()).orElseThrow(), communityPost);
 
         communityPostLikeRepository.save(communityPostLike);
         communityPost.increaseLikeCount();
@@ -39,8 +39,8 @@ public class CommunityPostLikeServiceImpl implements CommunityPostLikeService {
         CommunityPost communityPost = communityPostRepository.findById(postId)
                 .orElseThrow(() -> new CommunityControllerAdvice(ResponseCode.COMMUNITY_POST_NOT_FOUND));
         // FIXME: 멤버 예외처리 수정 필요
-        CommunityPostLike communityPostLike = communityPostLikeRepository.findByPostAndMember(communityPost,
-                memberRepository.findById(request.getMemberId()).orElseThrow())
+        CommunityPostLike communityPostLike = communityPostLikeRepository.findByPostAndUser(communityPost,
+                userRepository.findById(request.getUserUid()).orElseThrow())
                 .orElseThrow(() -> new CommunityControllerAdvice(ResponseCode.COMMUNITY_POST_LIKE_NOT_FOUND));
 
         communityPostLikeRepository.delete(communityPostLike);

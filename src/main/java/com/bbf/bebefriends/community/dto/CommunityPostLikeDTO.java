@@ -7,6 +7,6 @@ public class CommunityPostLikeDTO {
     @Data
     public static class PostLikeRequest {
         @NonNull
-        private Long memberId;
+        private String userUid;
     }
 }

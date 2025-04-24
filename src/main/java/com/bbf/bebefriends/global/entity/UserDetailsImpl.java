@@ -1,6 +1,6 @@
 package com.bbf.bebefriends.global.entity;
 
-import com.bbf.bebefriends.member.entity.Member;
+import com.bbf.bebefriends.member.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -10,7 +10,7 @@ import java.util.Collection;
 
 @RequiredArgsConstructor
 public class UserDetailsImpl implements UserDetails {
-    private final Member member;
+    private final User user;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -18,7 +18,7 @@ public class UserDetailsImpl implements UserDetails {
         collection.add(new GrantedAuthority() {
             @Override
             public String getAuthority() {
-                return member.getRole().toString();
+                return user.getRole().toString();
             }
         });
         return collection;
@@ -31,19 +31,19 @@ public class UserDetailsImpl implements UserDetails {
 
     @Override
     public String getUsername() {
-        return member.getEmail();
+        return user.getEmail();
     }
 
-    public Long getUserId() {
-        return member.getId();
+    public String getUserId() {
+        return user.getUid();
     }
 
-    public Member getMember() {
-        return member;
+    public User getUser() {
+        return user;
     }
 
     public String getRole() {
-        return member.getRole().toString();
+        return user.getRole().toString();
     }
 
     @Override

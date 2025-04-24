@@ -13,7 +13,7 @@ import com.bbf.bebefriends.community.service.CommunityCategoryService;
 import com.bbf.bebefriends.community.service.CommunityPostService;
 import com.bbf.bebefriends.global.exception.ResponseCode;
 import com.bbf.bebefriends.global.utils.file.FireBaseService;
-import com.bbf.bebefriends.member.entity.Member;
+import com.bbf.bebefriends.member.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,10 +32,10 @@ public class CommunityPostServiceImpl implements CommunityPostService {
     // 게시물 생성 (게시물, 이미지, 링크)
     @Override
     @Transactional
-    public CommunityPostDTO.CreatePostResponse createPost(CommunityPostDTO.CreatePostRequest request, Member member) {
+    public CommunityPostDTO.CreatePostResponse createPost(CommunityPostDTO.CreatePostRequest request, User user) {
         CommunityCategory category = communityCategoryService.getCategoryByName(request.getCategory());
 
-        CommunityPost communityPost = CommunityPost.createPost(member, category, request);
+        CommunityPost communityPost = CommunityPost.createPost(user, category, request);
         communityPostRepository.save(communityPost);
 
         if (request.getImg() != null) {
@@ -59,10 +59,10 @@ public class CommunityPostServiceImpl implements CommunityPostService {
     // 게시물 수정
     @Override
     @Transactional
-    public CommunityPostDTO.UpdatePostResponse updatePost(CommunityPostDTO.UpdatePostRequest request, Member member) {
+    public CommunityPostDTO.UpdatePostResponse updatePost(CommunityPostDTO.UpdatePostRequest request, User user) {
         CommunityPost post = communityPostRepository.findById(request.getPostId())
                 .orElseThrow(() -> new CommunityControllerAdvice(ResponseCode.COMMUNITY_POST_NOT_FOUND));
-        if (!(post.getMember().equals(member))) {
+        if (!(post.getUser().equals(user))) {
             throw new CommunityControllerAdvice(ResponseCode._UNAUTHORIZED);
         }
 
@@ -101,10 +101,10 @@ public class CommunityPostServiceImpl implements CommunityPostService {
     // 게시물 삭제
     @Override
     @Transactional
-    public String deletePost(CommunityPostDTO.DeletePostRequest request, Member member) {
+    public String deletePost(CommunityPostDTO.DeletePostRequest request, User user) {
         CommunityPost post = communityPostRepository.findById(request.getPostId())
                 .orElseThrow(() -> new CommunityControllerAdvice(ResponseCode.COMMUNITY_POST_NOT_FOUND));
-        if (!(post.getMember().equals(member))) {
+        if (!(post.getUser().equals(user))) {
             throw new CommunityControllerAdvice(ResponseCode._UNAUTHORIZED);
         }
 
