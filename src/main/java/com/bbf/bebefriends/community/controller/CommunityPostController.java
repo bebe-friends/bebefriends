@@ -36,4 +36,11 @@ public class CommunityPostController {
                                              @AuthenticationPrincipal UserDetailsImpl user) {
         return BaseResponse.onSuccess(communityPostService.deletePost(request, user.getUser()), ResponseCode.OK);
     }
+
+    // 게시글 상세 페이지
+    @GetMapping("/post-detail")
+    public BaseResponse<CommunityPostDTO.PostDetailsResponse>  getPostDetails(@AuthenticationPrincipal UserDetailsImpl user,
+                                                                              @RequestParam Long postId) {
+        return BaseResponse.onSuccess(communityPostService.getPostDetail(postId), ResponseCode.OK);
+    }
 }

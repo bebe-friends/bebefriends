@@ -82,17 +82,19 @@ public class CommunityPostDTO {
 
     // 게시물 상세 페이지
     @Data
-    @NoArgsConstructor
     @AllArgsConstructor
+    @Builder
     public static class PostDetailsResponse {
+        private Long postId;
         private String title;
         private String author;
         private LocalDateTime createdAt;
         private int viewCount;
-        private String content;
-        private List<String> ImageUrl;
-        private List<String> Link;
         private int likeCount;
         private int commentCount;
+        private String content;
+        private List<String> imageUrls;
+        private List<String> links;
+        private List<CommunityCommentDTO.CommentDetails> comments; // 댓글(대댓글 포함)
     }
 }

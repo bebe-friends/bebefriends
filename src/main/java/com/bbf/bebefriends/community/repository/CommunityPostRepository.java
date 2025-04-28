@@ -13,6 +13,7 @@ import org.springframework.stereotype.Repository;
 import java.time.LocalDateTime;
 import java.util.List;
 
+// FIXME: 페이지네이션 필요
 @Repository
 public interface CommunityPostRepository extends JpaRepository<CommunityPost, Long> {
     // 전체 게시글 조회(deletedAt과 isReported가 null인 전체 항목)
@@ -106,6 +107,7 @@ public interface CommunityPostRepository extends JpaRepository<CommunityPost, Lo
     """)
     List<CommunityPost> findLikedByUserActive(@Param("user") User user);
 
+    // 댓글을 따로 만들어서 비동기처리해야하나?
     // 게시물 상세 페이지
-
+    
 }

@@ -1,5 +1,6 @@
 package com.bbf.bebefriends.community.service.impl;
 
+import com.bbf.bebefriends.community.dto.CommunityCommentDTO;
 import com.bbf.bebefriends.community.dto.CommunityPostDTO;
 import com.bbf.bebefriends.community.entity.CommunityCategory;
 import com.bbf.bebefriends.community.entity.CommunityImage;
@@ -28,6 +29,7 @@ public class CommunityPostServiceImpl implements CommunityPostService {
     private final CommunityPostRepository communityPostRepository;
     private final CommunityCategoryService communityCategoryService;
     private final FireBaseService fireBaseService;
+    private final CommunityCommentServiceImpl communityCommentServiceImpl;
 
     // 게시물 생성 (게시물, 이미지, 링크)
     @Override
@@ -111,5 +113,29 @@ public class CommunityPostServiceImpl implements CommunityPostService {
         post.setDeletedAt();
 
         return "게시물이 삭제되었습니다.";
+    }
+
+    // 게시물 상세 페이지
+    @Override
+    public CommunityPostDTO.PostDetailsResponse getPostDetail(Long postId) {
+        CommunityPost post = communityPostRepository.findById(postId)
+                .orElseThrow(() -> new CommunityControllerAdvice(ResponseCode.COMMUNITY_POST_NOT_FOUND));
+
+        List<CommunityCommentDTO.CommentDetails> comments =
+                communityCommentServiceImpl.getCommentsByPost(post);
+
+        return CommunityPostDTO.PostDetailsResponse.builder()
+                .postId(post.getId())
+                .title(post.getTitle())
+                .author(post.getUser().getNickname())
+                .createdAt(post.getCreatedDate())
+                .viewCount(post.getViewCount())
+                .likeCount(post.getLikeCount())
+                .commentCount(comments.size())
+                .content(post.getContent())
+                .imageUrls(post.getImages().stream().map(CommunityImage::getImgUrl).toList())
+                .links(post.getLinks().stream().map(CommunityLink::getLink).toList())
+                .comments(comments)
+                .build();
     }
 }

@@ -1,7 +1,11 @@
 package com.bbf.bebefriends.community.dto;
 
+import lombok.Builder;
 import lombok.Data;
 import lombok.NonNull;
+
+import java.time.LocalDateTime;
+import java.util.List;
 
 public class CommunityCommentDTO {
     // 생성
@@ -25,7 +29,12 @@ public class CommunityCommentDTO {
 
     // 댓글 상세
     @Data
+    @Builder
     public static class CommentDetails {
-
+        private Long commentId;
+        private String commenter;
+        private String content;
+        private LocalDateTime createdAt;
+        private List<CommentDetails> replies;
     }
 }
