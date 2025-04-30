@@ -120,6 +120,7 @@ public class CommunityPostServiceImpl implements CommunityPostService {
     public CommunityPostDTO.PostDetailsResponse getPostDetail(Long postId) {
         CommunityPost post = communityPostRepository.findById(postId)
                 .orElseThrow(() -> new CommunityControllerAdvice(ResponseCode.COMMUNITY_POST_NOT_FOUND));
+        post.increaseViewCount();
 
         List<CommunityCommentDTO.CommentDetails> comments =
                 communityCommentServiceImpl.getCommentsByPost(post);
