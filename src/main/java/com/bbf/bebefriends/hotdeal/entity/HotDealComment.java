@@ -21,11 +21,11 @@ public class HotDealComment {
 
     @ManyToOne
     @JoinColumn(name = "replied_comment_id")
-    private HotDealComment repliedCommentId;        // 핫딜 대댓글 식별자
+    private HotDealComment repliedComment;          // 핫딜 대댓글 식별자
 
     @ManyToOne
     @JoinColumn(name = "hot_deal_post_id")
-    private HotDealPost hotDealPostId;              // 핫딜 게시글 식별자
+    private HotDealPost hotDealPost;                // 핫딜 게시글 식별자
 
     private String content;                         // 내용
 

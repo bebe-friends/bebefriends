@@ -9,5 +9,7 @@ public interface HotDealPostService {
 
     Page<HotDealPostDto> searchAllHotDealPost(Pageable pageable);
 
+    Page<HotDealPostDto> searchCategoryHotDealPost(Long hotDealCategoryId,Pageable pageable);
+
     HotDealPostDto createHotDealPost(HotDealPostDto hotDealPostDto);
 }

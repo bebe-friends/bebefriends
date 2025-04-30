@@ -20,6 +20,11 @@ public class HotDealPostController {
         return hotDealPostService.searchAllHotDealPost(pageable);
     }
 
+    @GetMapping("/category")
+    public Page<HotDealPostDto> searchCategoryHotDealPost(@RequestParam Long hotDealCategoryId,Pageable pageable) {
+        return hotDealPostService.searchCategoryHotDealPost(hotDealCategoryId,pageable);
+    }
+
     @PostMapping
     public HotDealPostDto createHotDealPost(@RequestBody HotDealPostDto hotDealPostDto) {
         return hotDealPostService.createHotDealPost(hotDealPostDto);
