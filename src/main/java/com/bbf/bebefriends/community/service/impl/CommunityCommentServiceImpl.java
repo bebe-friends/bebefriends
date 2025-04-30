@@ -3,8 +3,12 @@ package com.bbf.bebefriends.community.service.impl;
 import com.bbf.bebefriends.community.dto.CommunityCommentDTO;
 import com.bbf.bebefriends.community.entity.CommunityComment;
 import com.bbf.bebefriends.community.entity.CommunityPost;
+import com.bbf.bebefriends.community.exception.CommunityControllerAdvice;
 import com.bbf.bebefriends.community.repository.CommunityCommentRepository;
+import com.bbf.bebefriends.community.repository.CommunityPostRepository;
 import com.bbf.bebefriends.community.service.CommunityCommentService;
+import com.bbf.bebefriends.global.exception.ResponseCode;
+import com.bbf.bebefriends.member.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +18,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CommunityCommentServiceImpl implements CommunityCommentService {
     private final CommunityCommentRepository communityCommentRepository;
+    private final CommunityPostRepository communityPostRepository;
 
     @Override
     public List<CommunityCommentDTO.CommentDetails> getCommentsByPost(CommunityPost post) {
@@ -23,6 +28,47 @@ public class CommunityCommentServiceImpl implements CommunityCommentService {
         return topComments.stream()
                 .map(this::toDto)
                 .toList();
+    }
+
+    @Override
+    public String createComment(User user, CommunityCommentDTO.CreateCommentRequest request) {
+        CommunityPost post = communityPostRepository.findById(request.getPostId())
+                .orElseThrow(() -> new CommunityControllerAdvice(ResponseCode.COMMUNITY_POST_NOT_FOUND));
+        CommunityComment parent;
+        if (request.getParentId() == null) {
+            parent = null;
+        } else {
+            parent = communityCommentRepository.findById(request.getParentId())
+                    .orElseThrow(() -> new CommunityControllerAdvice(ResponseCode.COMMENT_NOT_FOUND));
+        }
+        CommunityComment comment = CommunityComment.createComment(post, user, parent, request);
+        communityCommentRepository.save(comment);
+
+        return "댓글을 작성하였습니다.";
+    }
+
+    @Override
+    public String updateComment(User user, CommunityCommentDTO.UpdateCommentRequest request) {
+        CommunityComment comment = communityCommentRepository.findById(request.getCommentId())
+                .orElseThrow(() -> new CommunityControllerAdvice(ResponseCode.COMMENT_NOT_FOUND));
+        if (!(comment.getUser().equals(user))) {
+            throw new CommunityControllerAdvice(ResponseCode._UNAUTHORIZED);
+        }
+
+        comment.updateComment(request.getContent());
+        return "댓글을 수정하였습니다.";
+    }
+
+    @Override
+    public String deleteComment(User user, CommunityCommentDTO.DeleteCommentRequest request) {
+        CommunityComment comment = communityCommentRepository.findById(request.getCommentId())
+                .orElseThrow(() -> new CommunityControllerAdvice(ResponseCode.COMMENT_NOT_FOUND));
+        if (!(comment.getUser().equals(user))) {
+            throw new CommunityControllerAdvice(ResponseCode._UNAUTHORIZED);
+        }
+
+        comment.setDeletedAt();
+        return "댓글을 삭제하였습니다.";
     }
 
     private CommunityCommentDTO.CommentDetails toDto(CommunityComment comment) {

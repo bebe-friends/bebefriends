@@ -36,18 +36,7 @@ public class CommunityComment extends BaseEntity {
     private String content;
     private LocalDateTime deletedAt;
 
-    public static CommunityComment createComment(CommunityPost post, User user, CommunityCommentDTO.CreateCommentRequest createCommentRequest) {
-        CommunityComment comment = new CommunityComment();
-
-        comment.post = post;
-        comment.user = user;
-        comment.parent = null;
-        comment.content = createCommentRequest.getContent();
-
-        return comment;
-    }
-
-    public static CommunityComment createReply(CommunityPost post, User user, CommunityComment parent, CommunityCommentDTO.CreateCommentRequest createCommentRequest) {
+    public static CommunityComment createComment(CommunityPost post, User user, CommunityComment parent, CommunityCommentDTO.CreateCommentRequest createCommentRequest) {
         CommunityComment comment = new CommunityComment();
 
         comment.post = post;
@@ -56,6 +45,21 @@ public class CommunityComment extends BaseEntity {
         comment.content = createCommentRequest.getContent();
 
         return comment;
+    }
+
+//    public static CommunityComment createReply(CommunityPost post, User user, CommunityComment parent, CommunityCommentDTO.CreateCommentRequest createCommentRequest) {
+//        CommunityComment comment = new CommunityComment();
+//
+//        comment.post = post;
+//        comment.user = user;
+//        comment.parent = parent;
+//        comment.content = createCommentRequest.getContent();
+//
+//        return comment;
+//    }
+
+    public void updateComment(String content) {
+        this.content = content;
     }
 
     public void setDeletedAt() {

@@ -12,18 +12,43 @@ public class CommunityCommentDTO {
     @Data
     public static class CreateCommentRequest {
         @NonNull
+        private Long postId;
+
+        private Long parentId;
+
+        @NonNull
         private String content;
+    }
+
+    @Data
+    public static class CreateCommentResponse {
+
     }
 
     // 수정
     @Data
     public static class UpdateCommentRequest {
+        @NonNull
+        private Long commentId;
+
+        @NonNull
+        private String content;
+    }
+
+    @Data
+    public static class UpdateCommentResponse {
 
     }
 
     // 삭제
     @Data
     public static class DeleteCommentRequest {
+        @NonNull
+        private Long commentId;
+    }
+
+    @Data
+    public static class DeleteCommentResponse {
 
     }
 
