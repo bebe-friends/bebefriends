@@ -1,7 +1,10 @@
 package com.bbf.bebefriends.member.service;
 
+import com.bbf.bebefriends.global.exception.ResponseCode;
+import com.bbf.bebefriends.member.dto.UserDTO;
 import com.bbf.bebefriends.member.entity.User;
 import com.bbf.bebefriends.member.entity.UserNotificationSettings;
+import com.bbf.bebefriends.member.exception.UserControllerAdvice;
 import com.bbf.bebefriends.member.repository.UserNotificationSettingsRepository;
 import com.bbf.bebefriends.member.repository.UserRepository;
 import jakarta.transaction.Transactional;
@@ -16,34 +19,33 @@ public class UserNotificationSettingsService {
     private final UserRepository userRepository;
 
     @Transactional
-    public void updateNotificationSettings(String uid,
-                                           boolean hotDealNotification,
-                                           boolean commentNotification,
-                                           boolean nightDealNotification,
-                                           boolean marketingNotification
-    ) {
+    public void updateNotificationSettings(UserDTO.UpdateNotificationSettingsRequest request) {
 
-        User user = userRepository.findByUidAndDeletedAtIsNull(uid)
-                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+        User user = userRepository.findByUidAndDeletedAtIsNull(request.uid())
+                .orElseThrow(() -> new UserControllerAdvice(ResponseCode.MEMBER_NOT_FOUND));
 
-        UserNotificationSettings settings = notificationSettingsRepository.findById(uid)
-                .orElseGet(() -> {
-                    UserNotificationSettings s = new UserNotificationSettings();
-                    s.setUid(uid);
-                    s.setUser(user); // 양방향 설정
-                    return s;
-                });
+        UserNotificationSettings settings = notificationSettingsRepository.findUserNotificationSettingsByUser(user)
+                .orElseThrow(() -> new UserControllerAdvice(ResponseCode._INTERNAL_SERVER_ERROR));
 
-        settings.setHotDealNotificationAgreement(hotDealNotification);
-        settings.setCommentNotificationAgreement(commentNotification);
-        settings.setHotDealNightNotificationAgreement(nightDealNotification);
-        settings.setMarketingNotificationAgreement(marketingNotification);
+        settings.setHotDealNotificationAgreement(request.hotDealNotification());
+        settings.setHotDealNightNotificationAgreement(request.hotDealNightNotification());
+        settings.setMarketingNotificationAgreement(request.marketingNotification());
+        settings.setMarketingNightNotificationAgreement(request.marketingNightNotification());
+        settings.setCommentNotificationAgreement(request.commentNotification());
 
         notificationSettingsRepository.save(settings);
     }
 
-    public UserNotificationSettings getNotificationSettings(String uid) {
-        return notificationSettingsRepository.findById(uid)
-                .orElseThrow(() -> new IllegalArgumentException("알림 설정이 존재하지 않습니다."));
+    public UserDTO.UpdateNotificationSettingsResponse getNotificationSettings(String uid) {
+        UserNotificationSettings settings = notificationSettingsRepository.findUserNotificationSettingsByUid(uid)
+                .orElseThrow(() -> new UserControllerAdvice(ResponseCode._INTERNAL_SERVER_ERROR));
+
+        return new UserDTO.UpdateNotificationSettingsResponse(
+                settings.isHotDealNotificationAgreement(),
+                settings.isHotDealNightNotificationAgreement(),
+                settings.isMarketingNotificationAgreement(),
+                settings.isMarketingNightNotificationAgreement(),
+                settings.isCommentNotificationAgreement()
+        );
     }
 }
