@@ -1,7 +1,10 @@
 package com.bbf.bebefriends.member.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 
@@ -50,16 +53,18 @@ public class UserNotificationSettings extends BaseTimeEntity {
     public static UserNotificationSettings of(
             User user,
             boolean hotDeal,
-            boolean comment,
-            boolean nightDeal,
-            boolean marketing
-    ) {
+            boolean hotDealNight,
+            boolean marketing,
+            boolean marketingNight,
+            boolean comment
+            ) {
         UserNotificationSettings settings = new UserNotificationSettings();
         settings.setUser(user);
         settings.setHotDealNotificationAgreement(hotDeal);
-        settings.setCommentNotificationAgreement(comment);
-        settings.setMarketingNightNotificationAgreement(nightDeal);
+        settings.setHotDealNightNotificationAgreement(hotDealNight);
         settings.setMarketingNotificationAgreement(marketing);
+        settings.setMarketingNightNotificationAgreement(marketingNight);
+        settings.setCommentNotificationAgreement(comment);
         return settings;
     }
 }

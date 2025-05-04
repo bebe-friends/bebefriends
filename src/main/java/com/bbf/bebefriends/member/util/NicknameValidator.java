@@ -1,4 +1,4 @@
-package com.bbf.bebefriends.member.dto;
+package com.bbf.bebefriends.member.util;
 
 import java.util.regex.Pattern;
 

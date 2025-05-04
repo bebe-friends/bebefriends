@@ -13,7 +13,9 @@ import java.util.function.Predicate;
 public enum ResponseCode {
 
     // 정상 code
-    OK(HttpStatus.OK,"2000", "Ok"),
+    OK(HttpStatus.OK,"200", "Ok"),
+    CREATED(HttpStatus.CREATED, "201", "Created"),
+    NO_CONTENT(HttpStatus.NO_CONTENT, "204", "No Content"),
 
     // Common Error
     _INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "COMMON000", "서버 에러, 관리자에게 문의 바랍니다."),
@@ -25,6 +27,8 @@ public enum ResponseCode {
     // Member Error
     MEMBER_NOT_FOUND(HttpStatus.BAD_REQUEST, "MEMBER4001", "사용자가 없습니다."),
     NICKNAME_NOT_EXIST(HttpStatus.BAD_REQUEST, "MEMBER4002", "닉네임은 필수 입니다."),
+    NICKNAME_ALREADY_EXIST(HttpStatus.BAD_REQUEST, "MEMBER4003", "이미 등록된 닉네임 입니다."),
+    NICKNAME_INVALID(HttpStatus.BAD_REQUEST, "MEMBER4004", "닉네임이 잘못되었습니다."),
 
     // Community Error
     COMMUNITY_POST_NOT_FOUND(HttpStatus.NOT_FOUND, "COMMUNITY_POST4001", "게시물을 찾을 수 없습니다."),
@@ -42,6 +46,7 @@ public enum ResponseCode {
     TOKEN_EXPIRED_EXCEPTION(HttpStatus.BAD_REQUEST, "TOKEN4002", "토큰의 유효 기간이 만료되었습니다"),
     TOKEN_INVALID_EXCEPTION(HttpStatus.BAD_REQUEST, "TOKEN4003", "유효하지 않은 토큰입니다"),
     JWT_SIGNATURE_INVALID_EXCEPTION(HttpStatus.BAD_REQUEST, "TOKEN4004", "JWT 토큰이 올바르지 않습니다(header.payload.signature)"),
+    FIREBASE_TOKEN_INVALID_EXCEPTION(HttpStatus.BAD_REQUEST, "TOKEN4005", "유효하지 않은 firebase 토큰입니다"),
 
     // AWS S3 Error
     S3_UPLOAD_FAIL(HttpStatus.BAD_REQUEST, "S34001", "파일 업로드에 실패했습니다."),

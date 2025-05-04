@@ -1,4 +1,4 @@
-package com.bbf.bebefriends.member.config;
+package com.bbf.bebefriends.global.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;

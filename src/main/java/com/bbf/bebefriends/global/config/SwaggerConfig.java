@@ -1,4 +1,4 @@
-package com.bbf.bebefriends.member.config;
+package com.bbf.bebefriends.global.config;
 
 
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
