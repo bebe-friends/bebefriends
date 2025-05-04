@@ -26,6 +26,17 @@ public enum ResponseCode {
     MEMBER_NOT_FOUND(HttpStatus.BAD_REQUEST, "MEMBER4001", "사용자가 없습니다."),
     NICKNAME_NOT_EXIST(HttpStatus.BAD_REQUEST, "MEMBER4002", "닉네임은 필수 입니다."),
 
+    // Community Error
+    COMMUNITY_POST_NOT_FOUND(HttpStatus.NOT_FOUND, "COMMUNITY_POST4001", "게시물을 찾을 수 없습니다."),
+    COMMUNITY_CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, "COMMUNITY_CATEGORY4002", "카테고리를 찾을 수 없습니다."),
+    COMMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "COMMUNITY_COMMENT4003", "댓글을 찾을 수 없습니다."),
+
+    // PostLike Error
+    COMMUNITY_POST_LIKE_NOT_FOUND(HttpStatus.BAD_REQUEST, "POST_LIKE4001", "해당 게시물에 좋아요를 누르지 않았습니다."),
+
+    // File Error
+    FILE_UPLOAD_FAIL(HttpStatus.BAD_REQUEST, "FILE4001", "파일 업로드에 실패했습니다."),
+
     // Token Error
     ACCESS_TOKEN_NOT_FOUND(HttpStatus.BAD_REQUEST, "TOKEN4001", "헤더에 토큰 값이 없습니다"),
     TOKEN_EXPIRED_EXCEPTION(HttpStatus.BAD_REQUEST, "TOKEN4002", "토큰의 유효 기간이 만료되었습니다"),
