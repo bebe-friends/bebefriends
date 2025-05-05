@@ -49,7 +49,7 @@ public class CommunityCategoryServiceImpl implements CommunityCategoryService {
         }
 
         CommunityCategory communityCategory = communityCategoryRepository.findById(request.getId())
-                .orElseThrow(() -> new CommunityControllerAdvice(ResponseCode._UNAUTHORIZED));
+                .orElseThrow(() -> new CommunityControllerAdvice(ResponseCode.COMMUNITY_CATEGORY_NOT_FOUND));
         communityCategory.updateCategory(request.getNewName());
 
         return new CommunityCategoryDTO.UpdateCategoryResponse(communityCategory);

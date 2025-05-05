@@ -6,11 +6,14 @@ import com.bbf.bebefriends.community.service.CommunityPostLikeService;
 import com.bbf.bebefriends.community.service.CommunityPostListService;
 import com.bbf.bebefriends.global.entity.BaseResponse;
 import com.bbf.bebefriends.global.exception.ResponseCode;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/api/v1/auth")
+@Tag(name = "게시글 좋아요 api", description = "게시물 좋아요·취소 api")
 public class CommunityPostLikeController {
     private final CommunityPostLikeService communityPostLikeService;
 
