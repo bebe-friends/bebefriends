@@ -1,0 +1,22 @@
+spring:
+  application:
+    name: bebefriends
+
+  datasource:
+    url: jdbc:mysql://localhost:3306/bebe?useSSL=false&characterEncoding=UTF-8&serverTimezone=UTC
+    username: root
+    password: Ghwn302412!
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        show_sql: none
+        format_sql: none
+
+firebase:
+  bucket-name: bebefriends3.appspot.com
+  credentials:
+    path: /path/firebase/firebase-credentials.json
