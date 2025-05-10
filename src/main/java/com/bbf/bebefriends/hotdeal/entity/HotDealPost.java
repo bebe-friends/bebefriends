@@ -19,7 +19,7 @@ public class HotDealPost {
 
     @ManyToOne
     @JoinColumn(name = "hot_deal_id")
-    private HotDeal hotDealId;      // 핫딜 식별자
+    private HotDeal hotDeal;        // 핫딜 식별자
 
     private String title;           // 제목
 

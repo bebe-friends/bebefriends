@@ -19,7 +19,7 @@ public class HotDeal {
 
     @ManyToOne
     @JoinColumn(name = "hot_deal_category_id")
-    private HotDealCategory hotDealCategoryId;      // 핫딜 카테고리 식별자
+    private HotDealCategory hotDealCategory;        // 핫딜 카테고리 식별자
 
     private String name;                            // 이름
 

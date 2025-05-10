@@ -26,7 +26,7 @@ public class HotDealCategoryServiceImpl implements HotDealCategoryService {
 
         // 핫딜 카테고리 생성
         HotDealCategory hotDealCategory = HotDealCategory.builder()
-                .parentCategoryId(parentHotDealCategory)
+                .parentCategory(parentHotDealCategory)
                 .name(hotDealCategoryDto.getName())
                 .depth(hotDealCategoryDto.getDepth())
                 .build();
