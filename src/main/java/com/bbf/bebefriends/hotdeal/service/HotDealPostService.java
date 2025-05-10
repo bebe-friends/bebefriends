@@ -1,5 +1,6 @@
 package com.bbf.bebefriends.hotdeal.service;
 
+import com.bbf.bebefriends.hotdeal.dto.HotDealCommentDto;
 import com.bbf.bebefriends.hotdeal.dto.HotDealPostDto;
 
 import org.springframework.data.domain.Page;
@@ -12,4 +13,8 @@ public interface HotDealPostService {
     Page<HotDealPostDto> searchCategoryHotDealPost(Long hotDealCategoryId,Pageable pageable);
 
     HotDealPostDto createHotDealPost(HotDealPostDto hotDealPostDto);
+
+    HotDealCommentDto createHotDealComment(HotDealCommentDto hotDealCommentDto);
+
+    Page<HotDealCommentDto> searchHotDealComment(Long hotDealPostId,Pageable pageable);
 }

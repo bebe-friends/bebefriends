@@ -1,5 +1,6 @@
 package com.bbf.bebefriends.hotdeal.controller;
 
+import com.bbf.bebefriends.hotdeal.dto.HotDealCommentDto;
 import com.bbf.bebefriends.hotdeal.dto.HotDealPostDto;
 import com.bbf.bebefriends.hotdeal.service.HotDealPostService;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +29,17 @@ public class HotDealPostController {
     @PostMapping
     public HotDealPostDto createHotDealPost(@RequestBody HotDealPostDto hotDealPostDto) {
         return hotDealPostService.createHotDealPost(hotDealPostDto);
+
+    }
+
+    @GetMapping("/comment")
+    public Page<HotDealCommentDto> searchHotDealComment(@RequestParam Long hotDealPostId, Pageable pageable) {
+        return hotDealPostService.searchHotDealComment(hotDealPostId,pageable);
+    }
+
+    @PostMapping("/comment")
+    public HotDealCommentDto createHotDealComment(@RequestBody HotDealCommentDto hotDealCommentDto) {
+        return hotDealPostService.createHotDealComment(hotDealCommentDto);
 
     }
 

@@ -1,10 +1,13 @@
 package com.bbf.bebefriends.hotdeal.service.impl;
 
+import com.bbf.bebefriends.hotdeal.dto.HotDealCommentDto;
 import com.bbf.bebefriends.hotdeal.dto.HotDealPostDto;
 import com.bbf.bebefriends.hotdeal.entity.HotDeal;
 import com.bbf.bebefriends.hotdeal.entity.HotDealCategory;
+import com.bbf.bebefriends.hotdeal.entity.HotDealComment;
 import com.bbf.bebefriends.hotdeal.entity.HotDealPost;
 import com.bbf.bebefriends.hotdeal.repository.HotDealCategoryRepository;
+import com.bbf.bebefriends.hotdeal.repository.HotDealCommentRepository;
 import com.bbf.bebefriends.hotdeal.repository.HotDealPostRepository;
 import com.bbf.bebefriends.hotdeal.repository.HotDealRepository;
 import com.bbf.bebefriends.hotdeal.service.HotDealPostService;
@@ -21,6 +24,7 @@ public class HotDealPostServiceImpl implements HotDealPostService {
     private final HotDealRepository hotDealRepository;
     private final HotDealPostRepository hotDealPostRepository;
     private final HotDealCategoryRepository hotDealCategoryRepository;
+    private final HotDealCommentRepository hotDealCommentRepository;
 
 
     @Override
@@ -61,6 +65,42 @@ public class HotDealPostServiceImpl implements HotDealPostService {
         hotDealPostRepository.save(hotDealPost);
 
         return hotDealPostDto;
+    }
+
+    @Override
+    public HotDealCommentDto createHotDealComment(HotDealCommentDto hotDealCommentDto) {
+        // 핫딜 댓글 초기화
+        HotDealComment repliedComment = null;
+
+        // 핫딜 게시글 조회
+        HotDealPost hotDealPost = hotDealPostRepository.findById(hotDealCommentDto.getHotDealPostId())
+                .orElseThrow();
+
+
+        // 핫딜 댓글 식별자가 있는 경우 핫딜 댓글 조회
+        if (hotDealCommentDto.getRepliedCommentId() != null) {
+            repliedComment = hotDealCommentRepository.findById(hotDealCommentDto.getRepliedCommentId())
+                    .orElseThrow();
+        }
+
+        // 핫딜 댓글 생성
+        HotDealComment hotDealComment = HotDealComment.builder()
+                .repliedComment(repliedComment)
+                .hotDealPost(hotDealPost)
+                .content(hotDealCommentDto.getContent())
+                .build();
+        hotDealCommentRepository.save(hotDealComment);
+
+        return hotDealCommentDto;
+    }
+
+    @Override
+    public Page<HotDealCommentDto> searchHotDealComment(Long hotDealPostId, Pageable pageable) {
+        // 핫딜 게시글 조회
+        HotDealPost hotDealPost = hotDealPostRepository.findById(hotDealPostId)
+                .orElseThrow();
+
+        return hotDealCommentRepository.findByHotDealPost(hotDealPost, pageable).map(HotDealCommentDto::fromEntity);
     }
 
 }
