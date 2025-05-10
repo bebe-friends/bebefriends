@@ -1,7 +1,6 @@
 package com.bbf.bebefriends.hotdeal.dto;
 
 import com.bbf.bebefriends.hotdeal.entity.HotDealComment;
-import com.bbf.bebefriends.hotdeal.entity.HotDealPost;
 import lombok.*;
 
 import java.time.LocalDateTime;
