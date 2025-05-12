@@ -2,6 +2,7 @@ package com.bbf.bebefriends.member.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDateTime;
 
@@ -26,52 +27,52 @@ public class UserDTO {
             @NotBlank String oauthToken,
 
             @Schema(description = "핫딜 푸시 알림 동의 여부", example = "true")
-            @NotBlank boolean hotDealNotification,
+            @NotNull boolean hotDealNotification,
 
             @Schema(description = "야간 핫딜 푸시 알림 동의 여부", example = "false")
-            @NotBlank boolean nightHotDealNotification,
+            @NotNull boolean nightHotDealNotification,
 
             @Schema(description = "댓글 푸시 알림 동의 여부", example = "true")
-            @NotBlank boolean commentNotification,
+            @NotNull boolean commentNotification,
 
             @Schema(description = "마케팅 푸시 알림 동의 여부", example = "true")
-            @NotBlank boolean marketingNotification,
+            @NotNull boolean marketingNotification,
 
             @Schema(description = "마케팅 푸시 알림 동의 여부", example = "true")
-            @NotBlank boolean nightMarketingNotification,
+            @NotNull boolean nightMarketingNotification,
 
             @Schema(description = "FCM 디바이스 토큰", example = "djsd82390sdjqkwej09832k-dsdk")
             @NotBlank String fcmToken,
 
             @Schema(description = "약관 동의 시간", example = "2023-11-01T12:00:00")
-            @NotBlank LocalDateTime agreement,
+            @NotNull LocalDateTime agreement,
 
             @Schema(description = "개인정보 처리방침 동의 시간", example = "2023-11-01T12:00:00")
-            @NotBlank LocalDateTime privatePolicy,
+            @NotNull LocalDateTime privatePolicy,
 
             @Schema(description = "만 나이 동의 여부", example = "true")
-            @NotBlank Boolean age
+            @NotNull Boolean age
     ) {}
 
     @Schema(description = "이용자 알림 설정")
     public record UpdateNotificationSettingsRequest(
-            @NotBlank
+            @NotNull
             @Schema(description = "핫딜 알림 동의 여부", example = "true")
             boolean hotDealNotification,
 
-            @NotBlank
+            @NotNull
             @Schema(description = "핫딜 야간 알림 동의 여부", example = "false")
             boolean hotDealNightNotification,
 
-            @NotBlank
+            @NotNull
             @Schema(description = "마케팅 알림 동의 여부", example = "true")
             boolean marketingNotification,
 
-            @NotBlank
+            @NotNull
             @Schema(description = "마케팅 야간 알림 동의 여부", example = "true")
             boolean marketingNightNotification,
 
-            @NotBlank
+            @NotNull
             @Schema(description = "댓글 알림 동의 여부", example = "false")
             boolean commentNotification
     ) {
@@ -79,23 +80,23 @@ public class UserDTO {
 
     @Schema(description = "이용자 알림 설정")
     public record UpdateNotificationSettingsResponse(
-            @NotBlank
+            @NotNull
             @Schema(description = "핫딜 알림 동의 여부", example = "true")
             boolean hotDealNotification,
 
-            @NotBlank
+            @NotNull
             @Schema(description = "핫딜 야간 알림 동의 여부", example = "false")
             boolean hotDealNightNotification,
 
-            @NotBlank
+            @NotNull
             @Schema(description = "마케팅 알림 동의 여부", example = "true")
             boolean marketingNotification,
 
-            @NotBlank
+            @NotNull
             @Schema(description = "마케팅 야간 알림 동의 여부", example = "true")
             boolean marketingNightNotification,
 
-            @NotBlank
+            @NotNull
             @Schema(description = "댓글 알림 동의 여부", example = "false")
             boolean commentNotification
     ) {
@@ -103,12 +104,15 @@ public class UserDTO {
 
     @Schema(description = "이용자 동의 요청")
     public record UpdateTermsAgreementsRequest(
+            @NotNull
             @Schema(description = "약관 동의 시간", example = "2023-11-01T12:00:00")
             LocalDateTime agreement,
 
+            @NotNull
             @Schema(description = "개인정보 처리방침 동의 시간", example = "2023-11-01T12:00:00")
             LocalDateTime privatePolicy,
 
+            @NotNull
             @Schema(description = "만 나이 동의 여부", example = "true")
             Boolean age
     ) {
@@ -116,12 +120,15 @@ public class UserDTO {
 
     @Schema(description = "이용자 동의 정보 확인")
     public record UserTermsAgreementsResponse(
+            @NotNull
             @Schema(example = "2025-05-03T15:49:44.319Z", description = "약관 동의 시간")
             LocalDateTime agreement,
 
+            @NotNull
             @Schema(example = "2025-05-03T15:49:44.319Z", description = "개인정보 처리방침 동의 시간")
             LocalDateTime privatePolicy,
 
+            @NotNull
             @Schema(example = "true", description = "만 나이 동의 여부")
             Boolean age
     ) {
