@@ -34,7 +34,7 @@ public class CustomAuthenticationFilter extends OncePerRequestFilter {
         if (accessToken != null && JwtTokenUtil.validateAccessToken(accessToken)) {
             String uid = JwtTokenUtil.getUserIdFromToken(accessToken);
 
-            User user = userService.findByUid(uid);
+            User user = userService.findByUid(Long.valueOf(uid));
 
             UserDetailsImpl userDetails = new UserDetailsImpl(user);
 

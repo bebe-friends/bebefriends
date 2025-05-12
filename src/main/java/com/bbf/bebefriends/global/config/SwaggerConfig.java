@@ -25,15 +25,43 @@ public class SwaggerConfig {
         return new OpenAPI()
                 .info(new Info()
                         .title("Bebe Friends API")
-                        .description("회원가입, 푸시 토큰, 알림 설정 등 API 문서")
+                        .description("베베 프랜즈 백엔드 API 문서")
                         .version("v1.0.0"));
     }
 
+//    @Bean
+//    public GroupedOpenApi publicApi() {
+//        return GroupedOpenApi.builder()
+//                .group("v1")
+//                .pathsToMatch("/api/**")
+//                .build();
+//    }
+
     @Bean
-    public GroupedOpenApi publicApi() {
+    public GroupedOpenApi userApi() {
         return GroupedOpenApi.builder()
-                .group("v1")
-                .pathsToMatch("/api/**")
+                .group("유저 관련 API @조정우")
+                .pathsToMatch("/api/v1/**")
+                .packagesToScan("com.bbf.bebefriends.member.controller")
                 .build();
     }
+
+    @Bean
+    public GroupedOpenApi communityApi() {
+        return GroupedOpenApi.builder()
+                .group("커뮤니티 관련 API @문호주")
+                .pathsToMatch("/api/v1/**")
+                .packagesToScan("com.bbf.bebefriends.community.controller")
+                .build();
+    }
+
+    @Bean
+    public GroupedOpenApi hotdealApi() {
+        return GroupedOpenApi.builder()
+                .group("핫딜 관련 API @유석균")
+                .pathsToMatch("/api/v1/**")
+                .packagesToScan("com.bbf.bebefriends.hotdeal.controller")
+                .build();
+    }
+
 }

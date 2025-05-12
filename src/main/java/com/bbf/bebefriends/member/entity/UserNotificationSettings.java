@@ -1,5 +1,6 @@
 package com.bbf.bebefriends.member.entity;
 
+import com.bbf.bebefriends.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -14,10 +15,10 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "user_notification_settings")
-public class UserNotificationSettings extends BaseTimeEntity {
+public class UserNotificationSettings extends BaseEntity {
 
     @Id
-    private String uid;
+    private Long uid;
 
     @OneToOne(fetch = FetchType.LAZY)
     @MapsId
@@ -57,7 +58,7 @@ public class UserNotificationSettings extends BaseTimeEntity {
             boolean marketing,
             boolean marketingNight,
             boolean comment
-            ) {
+    ) {
         UserNotificationSettings settings = new UserNotificationSettings();
         settings.setUser(user);
         settings.setHotDealNotificationAgreement(hotDeal);

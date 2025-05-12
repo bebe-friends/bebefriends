@@ -1,5 +1,6 @@
 package com.bbf.bebefriends.member.entity;
 
+import com.bbf.bebefriends.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -14,10 +15,10 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "user_terms_agreements")
-public class UserTermsAgreements extends BaseTimeEntity {
+public class UserTermsAgreements extends BaseEntity {
 
     @Id
-    private String uid;
+    private Long uid;
 
     @OneToOne(fetch = FetchType.LAZY)
     @MapsId

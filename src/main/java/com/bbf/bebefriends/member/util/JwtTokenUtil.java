@@ -13,10 +13,7 @@ import java.util.Map;
 
 public class JwtTokenUtil {
 
-    public static final long ACCESS_TOKEN_EXPIRATION = 1000 * 60 * 60; // 1시간
-    public static final long REFRESH_TOKEN_EXPIRATION = 1000L * 60 * 60 * 24 * 7; // 7일
     private static final Key ACCESS_TOKEN_SECRET_KEY = Keys.secretKeyFor(SignatureAlgorithm.HS256); // 상수로 키 생성
-    private static final Key REFRESH_TOKEN_SECRET_KEY = Keys.secretKeyFor(SignatureAlgorithm.HS256);
 
     /**
      * Access Token을 생성합니다.
@@ -36,23 +33,7 @@ public class JwtTokenUtil {
                 .setSubject(userId)
                 .setClaims(claims)
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + ACCESS_TOKEN_EXPIRATION))
                 .signWith(ACCESS_TOKEN_SECRET_KEY)
-                .compact();
-    }
-
-    /**
-     * Refresh Token을 생성합니다.
-     *
-     * @param userId 사용자의 고유 식별자
-     * @return 생성된 Refresh Token (JWT)
-     */
-    public static String createRefreshToken(String userId) {
-        return Jwts.builder()
-                .setSubject(userId)
-                .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + REFRESH_TOKEN_EXPIRATION))
-                .signWith(REFRESH_TOKEN_SECRET_KEY)
                 .compact();
     }
 
@@ -71,20 +52,6 @@ public class JwtTokenUtil {
         }
     }
 
-    /**
-     * Refresh Token의 유효성을 검증합니다.
-     *
-     * @param token 검증할 Refresh Token
-     * @return 유효하면 true, 그렇지 않으면 false
-     */
-    public static boolean validateRefreshToken(String token) {
-        try {
-            Jwts.parserBuilder().setSigningKey(REFRESH_TOKEN_SECRET_KEY).build().parseClaimsJws(token);
-            return true;
-        } catch (JwtException e) {
-            return false;
-        }
-    }
 
     /**
      * 주어진 Access Token에서 사용자 정의 데이터(role, email)를 추출합니다.
