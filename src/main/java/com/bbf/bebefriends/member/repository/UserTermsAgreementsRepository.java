@@ -7,5 +7,5 @@ import java.util.Optional;
 
 public interface UserTermsAgreementsRepository extends JpaRepository<UserTermsAgreements, String> {
 
-    Optional<UserTermsAgreements> findByUser_Uid(String uid);
+    Optional<UserTermsAgreements> findByUser_Uid(Long uid);
 }

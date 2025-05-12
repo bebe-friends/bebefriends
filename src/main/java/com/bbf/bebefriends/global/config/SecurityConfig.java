@@ -18,10 +18,11 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private static final String AUTH_ENDPOINTS = "/api/v1/users/**";
+    private static final String AUTH_ENDPOINTS = "/api/v1/auth/**";
     private static final String ADMIN_ENDPOINTS = "/api/v1/admin/**";
     private static final String ROLE_ADMIN = "ADMIN";
     private final UserService userService;
+
     @Value("${spring.profiles.active:dev}")
     private String activeProfile;
 

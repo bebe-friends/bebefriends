@@ -11,5 +11,5 @@ import java.util.Optional;
 public interface UserNotificationSettingsRepository extends JpaRepository<UserNotificationSettings, String> {
 
     Optional<UserNotificationSettings> findUserNotificationSettingsByUser(User user);
-    Optional<UserNotificationSettings> findUserNotificationSettingsByUid(String uid);
+    Optional<UserNotificationSettings> findUserNotificationSettingsByUid(Long uid);
 }
