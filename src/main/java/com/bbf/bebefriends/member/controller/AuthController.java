@@ -34,6 +34,10 @@ public class AuthController {
     @Operation(summary = "로그인", description = "Kakao oauth 토큰으로 로그인")
     @PostMapping("/login")
     public BaseResponse<UserDTO.UserAccessResponse> login(@Valid @RequestBody UserDTO.UserLoginRequest request) {
-        return BaseResponse.onSuccess(userService.loginUser(request), ResponseCode.OK);
+        try {
+            return BaseResponse.onSuccess(userService.loginUser(request), ResponseCode.OK);
+        } catch (Exception e) {
+            return BaseResponse.onFailure(null, ResponseCode._INTERNAL_SERVER_ERROR);
+        }
     }
 }

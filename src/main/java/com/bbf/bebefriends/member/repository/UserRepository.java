@@ -13,5 +13,7 @@ public interface UserRepository extends JpaRepository<User, String> {
     // soft delete 된 유저 제외
     Optional<User> findByUidAndDeletedAtIsNull(Long uid);
 
+    Optional<User> findUserByEmail(String email);
+
     boolean existsByNicknameAndDeletedAtIsNull(String nickname);
 }

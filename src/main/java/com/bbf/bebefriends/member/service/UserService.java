@@ -59,7 +59,9 @@ public class UserService {
     @Transactional
     public UserDTO.UserAccessResponse loginUser(UserDTO.UserLoginRequest request) {
         KakaoUserInfo userInfo = kakaoOAuthService.getUserInfo(request.oauthToken());
-        User user = findByUid(userInfo.getId());
+        User user = userRepository.findUserByEmail(userInfo.getEmail()).orElseThrow(
+                () -> new UserControllerAdvice(ResponseCode._INTERNAL_SERVER_ERROR)
+        );
 
         return new UserDTO.UserAccessResponse(
                 JwtTokenUtil.createAccessToken(String.valueOf(user.getUid()),
@@ -70,11 +72,15 @@ public class UserService {
     @Transactional
     public UserDTO.UserAccessResponse registerUser(UserDTO.UserSignupRequest request) {
         KakaoUserInfo userInfo = kakaoOAuthService.getUserInfo(request.oauthToken());
+        userRepository.findUserByEmail(userInfo.getEmail()).ifPresent(user -> {
+            throw new UserControllerAdvice(ResponseCode._INTERNAL_SERVER_ERROR);
+        });
 
         User user = new User();
         user.setNickname(createNickname());
-        user.setEmail(userInfo.getEmail()); // optional
+        user.setEmail(userInfo.getEmail());
         user.setRole(UserRole.USER);
+        user.setPhone(userInfo.getPhone());
         user.setFcmToken(request.fcmToken());
 
         UserNotificationSettings settings = UserNotificationSettings.of(
@@ -84,7 +90,7 @@ public class UserService {
                 request.marketingNotification(),
                 request.nightMarketingNotification(),
                 request.commentNotification()
-                );
+        );
         user.setNotificationSettings(settings);
 
         UserTermsAgreements termsAgreements = UserTermsAgreements.of(
