@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/v1/notification-settings")
 @RequiredArgsConstructor
-@Tag(name = "유저 알림 설정", description = "사용자 알림 설정 API @조정우")
+@Tag(name = "유저 알림 설정", description = "사용자 알림 설정 API")
 public class UserNotificationSettingsController {
 
     private final UserNotificationSettingsService notificationSettingsService;

@@ -29,6 +29,9 @@ public class User extends BaseEntity {
     private String email;
 
     @Column
+    private String phone;
+
+    @Column
     private LocalDateTime deletedAt;
 
     @Enumerated(EnumType.STRING)
@@ -39,6 +42,9 @@ public class User extends BaseEntity {
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private UserTermsAgreements termsAgreements;
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    private UserHotdealNotification notification;
 
     private String fcmToken;
 

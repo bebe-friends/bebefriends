@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/v1/terms-agreements")
 @RequiredArgsConstructor
-@Tag(name = "유저 약관 동의", description = "사용자 약관 동의 API @조정우")
+@Tag(name = "유저 약관 동의", description = "사용자 약관 동의 API")
 public class UserTermsAgreementsController {
 
     private final UserTermsAgreementsService termsAgreementsService;

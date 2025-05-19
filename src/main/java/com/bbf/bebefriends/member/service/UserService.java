@@ -5,10 +5,7 @@ import com.bbf.bebefriends.member.dto.JwtPayload;
 import com.bbf.bebefriends.member.dto.KakaoUserInfo;
 import com.bbf.bebefriends.member.dto.TokenDTO;
 import com.bbf.bebefriends.member.dto.UserDTO;
-import com.bbf.bebefriends.member.entity.User;
-import com.bbf.bebefriends.member.entity.UserNotificationSettings;
-import com.bbf.bebefriends.member.entity.UserRole;
-import com.bbf.bebefriends.member.entity.UserTermsAgreements;
+import com.bbf.bebefriends.member.entity.*;
 import com.bbf.bebefriends.member.exception.UserControllerAdvice;
 import com.bbf.bebefriends.member.repository.UserRepository;
 import com.bbf.bebefriends.member.util.JwtTokenUtil;
@@ -59,7 +56,9 @@ public class UserService {
     @Transactional
     public UserDTO.UserAccessResponse loginUser(UserDTO.UserLoginRequest request) {
         KakaoUserInfo userInfo = kakaoOAuthService.getUserInfo(request.oauthToken());
-        User user = findByUid(userInfo.getId());
+        User user = userRepository.findUserByEmail(userInfo.getEmail()).orElseThrow(
+                () -> new UserControllerAdvice(ResponseCode._INTERNAL_SERVER_ERROR)
+        );
 
         return new UserDTO.UserAccessResponse(
                 JwtTokenUtil.createAccessToken(String.valueOf(user.getUid()),
@@ -70,11 +69,15 @@ public class UserService {
     @Transactional
     public UserDTO.UserAccessResponse registerUser(UserDTO.UserSignupRequest request) {
         KakaoUserInfo userInfo = kakaoOAuthService.getUserInfo(request.oauthToken());
+        userRepository.findUserByEmail(userInfo.getEmail()).ifPresent(user -> {
+            throw new UserControllerAdvice(ResponseCode._INTERNAL_SERVER_ERROR);
+        });
 
         User user = new User();
         user.setNickname(createNickname());
-        user.setEmail(userInfo.getEmail()); // optional
+        user.setEmail(userInfo.getEmail());
         user.setRole(UserRole.USER);
+        user.setPhone(userInfo.getPhone());
         user.setFcmToken(request.fcmToken());
 
         UserNotificationSettings settings = UserNotificationSettings.of(
@@ -84,13 +87,16 @@ public class UserService {
                 request.marketingNotification(),
                 request.nightMarketingNotification(),
                 request.commentNotification()
-                );
+        );
         user.setNotificationSettings(settings);
 
         UserTermsAgreements termsAgreements = UserTermsAgreements.of(
                 user, request.agreement(), request.privatePolicy(), request.age()
         );
         user.setTermsAgreements(termsAgreements);
+
+        UserHotdealNotification userHotdealNotification = UserHotdealNotification.of(user);
+        user.setNotification(userHotdealNotification);
 
         User createdUser = userRepository.save(user);
         String accessToken = JwtTokenUtil.createAccessToken(String.valueOf(createdUser.getUid()),

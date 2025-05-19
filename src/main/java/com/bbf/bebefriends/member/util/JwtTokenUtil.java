@@ -23,14 +23,17 @@ public class JwtTokenUtil {
      * @return 생성된 Access Token (JWT)
      */
     public static String createAccessToken(String userId, JwtPayload payload) {
-        // JwtPayload 객체를 Map 형식으로 변환
+        if (userId == null || userId.isBlank()) {
+            throw new IllegalArgumentException("userId is null or blank");
+        }
+
         Map<String, Object> claims = Map.of(
+                "userId", userId,
                 "role", payload.getRole(),
                 "email", payload.getEmail()
         );
 
         return Jwts.builder()
-                .setSubject(userId)
                 .setClaims(claims)
                 .setIssuedAt(new Date())
                 .signWith(ACCESS_TOKEN_SECRET_KEY)
@@ -75,14 +78,22 @@ public class JwtTokenUtil {
     /**
      * Access Token에서 사용자 ID를 추출합니다.
      *
-     * @param token 사용자 ID를 추출할 Refresh Token
-     * @return Refresh Token에 포함된 사용자 ID
+     * @param token 사용자 ID를 추출할 Access Token
+     * @return Access Token에 포함된 사용자 ID
      */
     public static String getUserIdFromToken(String token) {
-        Claims claims = Jwts.parserBuilder()
-                .setSigningKey(ACCESS_TOKEN_SECRET_KEY)
-                .build().parseClaimsJws(token).getBody();
-        return claims.getSubject();
+        try {
+            Claims claims = Jwts.parserBuilder()
+                    .setSigningKey(ACCESS_TOKEN_SECRET_KEY)
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody();
+
+            return claims.get("userId", String.class);
+        } catch (JwtException e) {
+            throw new IllegalArgumentException("유효하지 않은 JWT 토큰입니다.", e);
+        }
+
     }
 
 }

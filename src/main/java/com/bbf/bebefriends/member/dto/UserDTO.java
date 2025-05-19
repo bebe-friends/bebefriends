@@ -133,4 +133,58 @@ public class UserDTO {
             Boolean age
     ) {
     }
+
+    @Schema(description = "이용자 핫딜 알림 설정")
+    public record UserHotdealNotificationRequest(
+            @NotNull
+            boolean age_0,
+
+            @NotNull
+            boolean age_1,
+
+            @NotNull
+            boolean age_2,
+
+            @NotNull
+            boolean age_3,
+
+            @NotNull
+            boolean age_4,
+
+            @NotNull
+            boolean age_5,
+
+            @NotNull
+            boolean age_6
+
+            // todo 핫딜 대 카테고리
+    ) {
+    }
+
+    @Schema(description = "이용자 핫딜 알림 설정")
+    public record UserHotdealNotificationResponse(
+            @NotNull
+            boolean age_0,
+
+            @NotNull
+            boolean age_1,
+
+            @NotNull
+            boolean age_2,
+
+            @NotNull
+            boolean age_3,
+
+            @NotNull
+            boolean age_4,
+
+            @NotNull
+            boolean age_5,
+
+            @NotNull
+            boolean age_6
+
+            // todo 핫딜 대 카테고리
+    ) {
+    }
 }

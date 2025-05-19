@@ -8,10 +8,12 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface UserRepository extends JpaRepository<User, String> {
+public interface UserRepository extends JpaRepository<User, Long> {
 
     // soft delete 된 유저 제외
     Optional<User> findByUidAndDeletedAtIsNull(Long uid);
+
+    Optional<User> findUserByEmail(String email);
 
     boolean existsByNicknameAndDeletedAtIsNull(String nickname);
 }

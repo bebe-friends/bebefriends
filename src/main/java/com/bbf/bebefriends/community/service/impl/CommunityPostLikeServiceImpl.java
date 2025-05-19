@@ -25,7 +25,7 @@ public class CommunityPostLikeServiceImpl implements CommunityPostLikeService {
         CommunityPost communityPost = communityPostRepository.findById(postId)
                 .orElseThrow(() -> new CommunityControllerAdvice(ResponseCode.COMMUNITY_POST_NOT_FOUND));
         // FIXME: 멤버 예외처리 수정 필요
-        CommunityPostLike communityPostLike = CommunityPostLike.createPostLike(userRepository.findById(request.getUserUid()).orElseThrow(), communityPost);
+        CommunityPostLike communityPostLike = CommunityPostLike.createPostLike(userRepository.findById(Long.valueOf(request.getUserUid())).orElseThrow(), communityPost);
 
         communityPostLikeRepository.save(communityPostLike);
         communityPost.increaseLikeCount();
@@ -40,7 +40,7 @@ public class CommunityPostLikeServiceImpl implements CommunityPostLikeService {
                 .orElseThrow(() -> new CommunityControllerAdvice(ResponseCode.COMMUNITY_POST_NOT_FOUND));
         // FIXME: 멤버 예외처리 수정 필요
         CommunityPostLike communityPostLike = communityPostLikeRepository.findByPostAndUser(communityPost,
-                userRepository.findById(request.getUserUid()).orElseThrow())
+                userRepository.findById(Long.valueOf(request.getUserUid())).orElseThrow())
                 .orElseThrow(() -> new CommunityControllerAdvice(ResponseCode.COMMUNITY_POST_LIKE_NOT_FOUND));
 
         communityPostLikeRepository.delete(communityPostLike);

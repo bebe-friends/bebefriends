@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@Tag(name = "인증", description = "회원가입 및 로그인 API @조정우")
+@Tag(name = "인증", description = "회원가입 및 로그인 API")
 @RestController
 @RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
@@ -34,6 +34,10 @@ public class AuthController {
     @Operation(summary = "로그인", description = "Kakao oauth 토큰으로 로그인")
     @PostMapping("/login")
     public BaseResponse<UserDTO.UserAccessResponse> login(@Valid @RequestBody UserDTO.UserLoginRequest request) {
-        return BaseResponse.onSuccess(userService.loginUser(request), ResponseCode.OK);
+        try {
+            return BaseResponse.onSuccess(userService.loginUser(request), ResponseCode.OK);
+        } catch (Exception e) {
+            return BaseResponse.onFailure(null, ResponseCode._INTERNAL_SERVER_ERROR);
+        }
     }
 }

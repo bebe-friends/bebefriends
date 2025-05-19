@@ -14,20 +14,13 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-@Tag(name = "회원", description = "닉네임 수정 및 FCM 토큰 API @조정우")
+@Tag(name = "회원", description = "닉네임 수정 및 FCM 토큰 API")
 @RestController
 @RequestMapping("/api/v1/users")
 @RequiredArgsConstructor
 public class UserController {
 
     private final UserService userService;
-
-    @Operation(summary = "닉네임 중복 확인", description = "닉네임 사용 가능 여부 확인")
-    @GetMapping("/check-nickname")
-    public BaseResponse<String> checkNickname(@RequestParam String nickname) {
-        userService.validateNicknameAvailability(nickname);
-        return BaseResponse.onSuccess("사용가능한 닉네임 입니다.", ResponseCode.OK);
-    }
 
     @Operation(summary = "닉네임 갱신", description = "닉네임 중복 체크 후 갱신")
     @GetMapping("/update-nickname")
