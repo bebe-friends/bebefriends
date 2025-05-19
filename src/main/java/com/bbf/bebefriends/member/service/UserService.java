@@ -5,10 +5,7 @@ import com.bbf.bebefriends.member.dto.JwtPayload;
 import com.bbf.bebefriends.member.dto.KakaoUserInfo;
 import com.bbf.bebefriends.member.dto.TokenDTO;
 import com.bbf.bebefriends.member.dto.UserDTO;
-import com.bbf.bebefriends.member.entity.User;
-import com.bbf.bebefriends.member.entity.UserNotificationSettings;
-import com.bbf.bebefriends.member.entity.UserRole;
-import com.bbf.bebefriends.member.entity.UserTermsAgreements;
+import com.bbf.bebefriends.member.entity.*;
 import com.bbf.bebefriends.member.exception.UserControllerAdvice;
 import com.bbf.bebefriends.member.repository.UserRepository;
 import com.bbf.bebefriends.member.util.JwtTokenUtil;
@@ -97,6 +94,9 @@ public class UserService {
                 user, request.agreement(), request.privatePolicy(), request.age()
         );
         user.setTermsAgreements(termsAgreements);
+
+        UserHotdealNotification userHotdealNotification = UserHotdealNotification.of(user);
+        user.setNotification(userHotdealNotification);
 
         User createdUser = userRepository.save(user);
         String accessToken = JwtTokenUtil.createAccessToken(String.valueOf(createdUser.getUid()),
