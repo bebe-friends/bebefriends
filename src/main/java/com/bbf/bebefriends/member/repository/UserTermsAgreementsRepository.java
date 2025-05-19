@@ -5,7 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
 
-public interface UserTermsAgreementsRepository extends JpaRepository<UserTermsAgreements, String> {
+public interface UserTermsAgreementsRepository extends JpaRepository<UserTermsAgreements, Long> {
 
     Optional<UserTermsAgreements> findByUser_Uid(Long uid);
 }

@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface UserHotdealNotificationRepository extends JpaRepository<UserHotdealNotification, String> {
+public interface UserHotdealNotificationRepository extends JpaRepository<UserHotdealNotification, Long> {
 
     Optional<UserHotdealNotification> findUserHotdealNotificationByUser(User user);
 }
