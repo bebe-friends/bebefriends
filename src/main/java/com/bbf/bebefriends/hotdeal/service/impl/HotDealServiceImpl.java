@@ -1,13 +1,20 @@
 package com.bbf.bebefriends.hotdeal.service.impl;
 
 import com.bbf.bebefriends.hotdeal.dto.HotDealDto;
+import com.bbf.bebefriends.hotdeal.dto.HotDealRecordDto;
 import com.bbf.bebefriends.hotdeal.entity.HotDeal;
 import com.bbf.bebefriends.hotdeal.entity.HotDealCategory;
+import com.bbf.bebefriends.hotdeal.entity.HotDealRecord;
 import com.bbf.bebefriends.hotdeal.repository.HotDealCategoryRepository;
+import com.bbf.bebefriends.hotdeal.repository.HotDealRecordRepository;
 import com.bbf.bebefriends.hotdeal.repository.HotDealRepository;
 import com.bbf.bebefriends.hotdeal.service.HotDealService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -15,6 +22,7 @@ public class HotDealServiceImpl implements HotDealService {
 
     private final HotDealRepository hotDealRepository;
     private final HotDealCategoryRepository hotDealCategoryRepository;
+    private final HotDealRecordRepository hotDealRecordRepository;
 
 
     public HotDealDto createHotDeal(HotDealDto hotDealDto) {
@@ -38,6 +46,29 @@ public class HotDealServiceImpl implements HotDealService {
         hotDealRepository.save(hotDeal);
 
         return hotDealDto;
+    }
+
+    @Override
+    public HotDealRecordDto createHotDealRecord(HotDealRecordDto hotDealRecordDto) {
+        // 핫딜 조회
+        HotDeal hotDeal = hotDealRepository.findById(hotDealRecordDto.getHotDealId())
+                .orElseThrow();
+
+        HotDealRecord hotDealRecord = HotDealRecord.builder()
+                .hotDeal(hotDeal)
+                .date(hotDealRecordDto.getDate())
+                .note(hotDealRecordDto.getNote())
+                .searchPrice(hotDealRecordDto.getSearchPrice())
+                .hotDealPrice(hotDealRecordDto.getHotDealPrice())
+                .build();
+        hotDealRecordRepository.save(hotDealRecord);
+
+        return hotDealRecordDto;
+    }
+
+    @Override
+    public Page<HotDealRecord> searchHotDealRecord(HotDealRecordDto hotDealRecordDto, Pageable pageable) {
+        return hotDealRecordRepository.findByHotDeal_Id(hotDealRecordDto.getHotDealId(), pageable);
     }
 
 }
