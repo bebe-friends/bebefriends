@@ -26,18 +26,16 @@ public class UserTermsAgreementsService {
      * @param uid 사용자 고유 ID
      * @return 약관 동의 정보 (Response DTO)
      */
-    public UserDTO.UserTermsAgreementsResponse getTermsAgreements(String uid) {
-        UserTermsAgreements entity = termsAgreementsRepository.findById(uid)
+    public UserDTO.UserTermsAgreementsResponse getTermsAgreements(Long uid) {
+        UserTermsAgreements entity = termsAgreementsRepository.findByUser_Uid(uid)
                 .orElseThrow(() -> new UserControllerAdvice(ResponseCode.MEMBER_NOT_FOUND));
 
         return new UserDTO.UserTermsAgreementsResponse(
-                entity.getUid(),
                 entity.getAgreement(),
                 entity.getPrivatePolicy(),
                 entity.getAge()
         );
     }
-
 
     /**
      * 약관 동의 정보 업데이트
@@ -47,7 +45,7 @@ public class UserTermsAgreementsService {
      * @param age 만 나이 동의 여부
      */
     @Transactional
-    public void updateTermsAgreements(String uid, LocalDateTime agreement, LocalDateTime privatePolicy, Boolean age) {
+    public void updateTermsAgreements(Long uid, LocalDateTime agreement, LocalDateTime privatePolicy, Boolean age) {
         UserTermsAgreements termsAgreements = termsAgreementsRepository.findByUser_Uid(uid)
                 .orElseGet(() -> {
                     User user = userRepository.findByUidAndDeletedAtIsNull(uid)

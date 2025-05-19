@@ -3,23 +3,17 @@ package com.bbf.bebefriends.member.repository;
 
 import com.bbf.bebefriends.member.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface UserRepository extends JpaRepository<User, String> {
+public interface UserRepository extends JpaRepository<User, Long> {
 
     // soft delete 된 유저 제외
-    Optional<User> findByUidAndDeletedAtIsNull(String uid);
+    Optional<User> findByUidAndDeletedAtIsNull(Long uid);
 
-    List<User> findAllByDeletedAtIsNull();
+    Optional<User> findUserByEmail(String email);
 
     boolean existsByNicknameAndDeletedAtIsNull(String nickname);
-
-    @Query("SELECT u FROM User u WHERE u.deletedAt IS NULL AND u.email = :email")
-    Optional<User> findActiveByEmail(@Param("email") String email);
 }

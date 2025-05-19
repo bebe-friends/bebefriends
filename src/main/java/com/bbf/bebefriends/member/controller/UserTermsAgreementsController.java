@@ -1,18 +1,20 @@
 package com.bbf.bebefriends.member.controller;
 
 import com.bbf.bebefriends.global.entity.BaseResponse;
+import com.bbf.bebefriends.global.entity.UserDetailsImpl;
 import com.bbf.bebefriends.global.exception.ResponseCode;
 import com.bbf.bebefriends.member.dto.UserDTO;
 import com.bbf.bebefriends.member.service.UserTermsAgreementsService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/terms-agreements")
 @RequiredArgsConstructor
-@Tag(name = "User Terms Agreements", description = "사용자 약관 동의 API")
+@Tag(name = "유저 약관 동의", description = "사용자 약관 동의 API")
 public class UserTermsAgreementsController {
 
     private final UserTermsAgreementsService termsAgreementsService;
@@ -20,13 +22,14 @@ public class UserTermsAgreementsController {
     /**
      * 약관 동의 정보 조회
      *
-     * @param uid 사용자 고유 ID
      * @return 약관 동의 정보
      */
-    @GetMapping("/{uid}")
+    @GetMapping
     @Operation(summary = "약관 동의 정보 조회", description = "특정 사용자의 약관 동의 정보를 조회합니다.")
-    public BaseResponse<UserDTO.UserTermsAgreementsResponse> getTermsAgreements(@PathVariable String uid) {
-        return BaseResponse.onSuccess(termsAgreementsService.getTermsAgreements(uid), ResponseCode.OK);
+    public BaseResponse<UserDTO.UserTermsAgreementsResponse> getTermsAgreements(
+            @AuthenticationPrincipal UserDetailsImpl user
+    ) {
+        return BaseResponse.onSuccess(termsAgreementsService.getTermsAgreements(user.getUserId()), ResponseCode.OK);
     }
 
     /**
@@ -36,9 +39,11 @@ public class UserTermsAgreementsController {
      */
     @PutMapping("/update")
     @Operation(summary = "약관 동의 정보 업데이트", description = "특정 사용자의 약관 동의 정보를 업데이트합니다.")
-    public void updateTermsAgreements(@RequestBody UserDTO.UpdateTermsAgreementsRequest request) {
+    public void updateTermsAgreements(@RequestBody UserDTO.UpdateTermsAgreementsRequest request,
+                                      @AuthenticationPrincipal UserDetailsImpl user
+    ) {
         termsAgreementsService.updateTermsAgreements(
-                request.uid(),
+                user.getUserId(),
                 request.agreement(),
                 request.privatePolicy(),
                 request.age()
