@@ -28,15 +28,17 @@ public class HotDealController {
 
     }
 
+    @Operation(summary = "핫딜 기록 등록", description = "핫딜 기록을 등록합니다.")
     @PostMapping("/record")
-    public HotDealRecordDto createHotDealRecord(@RequestBody HotDealRecordDto hotDealRecordDto) {
-        return hotDealService.createHotDealRecord(hotDealRecordDto);
+    public BaseResponse<HotDealRecordDto> createHotDealRecord(@RequestBody HotDealRecordDto hotDealRecordDto) {
+        return BaseResponse.onSuccess(hotDealService.createHotDealRecord(hotDealRecordDto), ResponseCode.OK);
 
     }
 
+    @Operation(summary = "핫딜 기록 검색", description = "핫딜 기록을 검색합니다.")
     @GetMapping("/record")
-    public Page<HotDealRecord> searchHotDealRecord(@RequestBody HotDealRecordDto hotDealRecordDto, Pageable pageable) {
-        return hotDealService.searchHotDealRecord(hotDealRecordDto, pageable);
+    public BaseResponse<Page<HotDealRecord>> searchHotDealRecord(@RequestBody HotDealRecordDto hotDealRecordDto, Pageable pageable) {
+        return BaseResponse.onSuccess(hotDealService.searchHotDealRecord(hotDealRecordDto, pageable), ResponseCode.OK);
 
     }
 
