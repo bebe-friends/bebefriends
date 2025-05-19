@@ -80,7 +80,11 @@ public class CommunityPostServiceImpl implements CommunityPostService {
         List<CommunityImage> toRemove = currentImages.stream()
                 .filter(img -> !keepUrls.contains(img.getImgUrl()))
                 .toList();
-        toRemove.forEach(img -> post.getImages().remove(img));
+//        toRemove.forEach(img -> post.getImages().remove(img));
+        toRemove.forEach(img -> {
+            fireBaseService.deleteFirebaseFile(img.getImgUrl()); // 실제 Firebase에서 삭제
+            post.getImages().remove(img); // 엔티티 관계에서도 제거
+        });
 
         if (request.getNewImages() != null) {
             for (MultipartFile uploadedImage : request.getNewImages()) {
