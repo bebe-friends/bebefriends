@@ -2,33 +2,37 @@ package com.bbf.bebefriends.member.service;
 
 import com.bbf.bebefriends.global.exception.ResponseCode;
 import com.bbf.bebefriends.member.dto.JwtPayload;
+import com.bbf.bebefriends.member.dto.KakaoUserInfo;
 import com.bbf.bebefriends.member.dto.TokenDTO;
 import com.bbf.bebefriends.member.dto.UserDTO;
 import com.bbf.bebefriends.member.entity.*;
 import com.bbf.bebefriends.member.exception.UserControllerAdvice;
 import com.bbf.bebefriends.member.repository.UserRepository;
 import com.bbf.bebefriends.member.util.JwtTokenUtil;
+import com.bbf.bebefriends.member.util.NicknameGeneratorUtil;
 import com.bbf.bebefriends.member.util.NicknameValidator;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseAuthException;
-import com.google.firebase.auth.UserRecord;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 
-import static com.bbf.bebefriends.member.util.JwtTokenUtil.REFRESH_TOKEN_EXPIRATION;
-
 @Service
 @RequiredArgsConstructor
 public class UserService {
 
     private final UserRepository userRepository;
+    private final KakaoOAuthService kakaoOAuthService;
 
-    public User findByUid(String uid) {
+    public User findByUid(Long uid) {
         return userRepository.findByUidAndDeletedAtIsNull(uid)
                 .orElseThrow(() -> new UserControllerAdvice(ResponseCode.MEMBER_NOT_FOUND));
+    }
+
+    public void updateNickname(Long uid, String nickname) {
+        User user = findByUid(uid);
+        user.setNickname(nickname);
+        userRepository.save(user);
     }
 
     public void validateNicknameAvailability(String nickname){
@@ -41,22 +45,39 @@ public class UserService {
         }
     }
 
-    @Transactional
-    public UserDTO.UserLoginResponse loginUser(String uid) {
-        User user = findByUid(uid);
-        String accessToken = JwtTokenUtil.createAccessToken(user.getUid(), new JwtPayload(UserRole.USER.toString(), user.getEmail()));
-        return new UserDTO.UserLoginResponse(accessToken);
+    private String createNickname() {
+        String nickname;
+        do {
+            nickname = NicknameGeneratorUtil.generateNickname();
+        } while (userRepository.existsByNicknameAndDeletedAtIsNull(nickname));
+        return nickname;
     }
 
     @Transactional
-    public void registerUser(String uid, UserDTO.UserSignupRequest request) {
-        validateNicknameAvailability(request.nickname());
+    public UserDTO.UserAccessResponse loginUser(UserDTO.UserLoginRequest request) {
+        KakaoUserInfo userInfo = kakaoOAuthService.getUserInfo(request.oauthToken());
+        User user = userRepository.findUserByEmail(userInfo.getEmail()).orElseThrow(
+                () -> new UserControllerAdvice(ResponseCode._INTERNAL_SERVER_ERROR)
+        );
+
+        return new UserDTO.UserAccessResponse(
+                JwtTokenUtil.createAccessToken(String.valueOf(user.getUid()),
+                        new JwtPayload(UserRole.USER.toString(), user.getEmail()))
+        );
+    }
+
+    @Transactional
+    public UserDTO.UserAccessResponse registerUser(UserDTO.UserSignupRequest request) {
+        KakaoUserInfo userInfo = kakaoOAuthService.getUserInfo(request.oauthToken());
+        userRepository.findUserByEmail(userInfo.getEmail()).ifPresent(user -> {
+            throw new UserControllerAdvice(ResponseCode._INTERNAL_SERVER_ERROR);
+        });
 
         User user = new User();
-        user.setUid(uid);
-        user.setNickname(request.nickname());
-        user.setEmail(getEmailFromFirebase(uid)); // optional
+        user.setNickname(createNickname());
+        user.setEmail(userInfo.getEmail());
         user.setRole(UserRole.USER);
+        user.setPhone(userInfo.getPhone());
         user.setFcmToken(request.fcmToken());
 
         UserNotificationSettings settings = UserNotificationSettings.of(
@@ -66,7 +87,7 @@ public class UserService {
                 request.marketingNotification(),
                 request.nightMarketingNotification(),
                 request.commentNotification()
-                );
+        );
         user.setNotificationSettings(settings);
 
         UserTermsAgreements termsAgreements = UserTermsAgreements.of(
@@ -74,34 +95,22 @@ public class UserService {
         );
         user.setTermsAgreements(termsAgreements);
 
-        String refreshToken = JwtTokenUtil.createRefreshToken(uid);
-        RefreshToken refreshTokenEntity = RefreshToken.createToken(
-                user,
-                refreshToken,
-                LocalDateTime.now(),
-                LocalDateTime.now().plusDays(REFRESH_TOKEN_EXPIRATION)
-        );
-        user.setRefreshToken(refreshTokenEntity);
+        UserHotdealNotification userHotdealNotification = UserHotdealNotification.of(user);
+        user.setNotification(userHotdealNotification);
 
-        userRepository.save(user);
+        User createdUser = userRepository.save(user);
+        String accessToken = JwtTokenUtil.createAccessToken(String.valueOf(createdUser.getUid()),
+                            new JwtPayload(UserRole.USER.toString(), user.getEmail()));
+        return new UserDTO.UserAccessResponse(accessToken);
     }
 
-    private String getEmailFromFirebase(String uid) {
-        try {
-            UserRecord record = FirebaseAuth.getInstance().getUser(uid);
-            return record.getEmail();
-        } catch (FirebaseAuthException e) {
-            return null;
-        }
-    }
-
-    public void deleteUser(String uid) {
+    public void deleteUser(Long uid) {
         User user = findByUid(uid);
         user.setDeletedAt(LocalDateTime.now());
         userRepository.save(user);
     }
 
-    public void updateFcmToken(String uid, TokenDTO.FcmTokenUpdateRequest req) {
+    public void updateFcmToken(Long uid, TokenDTO.FcmTokenUpdateRequest req) {
         User user = findByUid(uid);
 
         if (req.newFcmToken() != null && !req.newFcmToken().isBlank()) {

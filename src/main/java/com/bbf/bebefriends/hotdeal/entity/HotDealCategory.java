@@ -19,7 +19,7 @@ public class HotDealCategory {
 
     @ManyToOne
     @JoinColumn(name = "parent_category_id")
-    private HotDealCategory parentCategoryId;       // 상위 카테고리 식별자
+    private HotDealCategory parentCategory;         // 상위 카테고리 식별자
 
     private String name;                            // 이름
 

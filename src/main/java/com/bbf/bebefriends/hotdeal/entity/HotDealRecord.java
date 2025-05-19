@@ -21,7 +21,7 @@ public class HotDealRecord {
 
     @ManyToOne
     @JoinColumn(name = "hot_deal_id")
-    private HotDeal hotDealId;          // 핫딜 식별자
+    private HotDeal hotDeal;            // 핫딜 식별자
 
     private LocalDate date;             // 날짜
 

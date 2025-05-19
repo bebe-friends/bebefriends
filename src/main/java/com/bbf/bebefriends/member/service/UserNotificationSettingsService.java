@@ -19,9 +19,9 @@ public class UserNotificationSettingsService {
     private final UserRepository userRepository;
 
     @Transactional
-    public void updateNotificationSettings(UserDTO.UpdateNotificationSettingsRequest request) {
+    public void updateNotificationSettings(UserDTO.UpdateNotificationSettingsRequest request, Long uid) {
 
-        User user = userRepository.findByUidAndDeletedAtIsNull(request.uid())
+        User user = userRepository.findByUidAndDeletedAtIsNull(uid)
                 .orElseThrow(() -> new UserControllerAdvice(ResponseCode.MEMBER_NOT_FOUND));
 
         UserNotificationSettings settings = notificationSettingsRepository.findUserNotificationSettingsByUser(user)
@@ -36,7 +36,7 @@ public class UserNotificationSettingsService {
         notificationSettingsRepository.save(settings);
     }
 
-    public UserDTO.UpdateNotificationSettingsResponse getNotificationSettings(String uid) {
+    public UserDTO.UpdateNotificationSettingsResponse getNotificationSettings(Long uid) {
         UserNotificationSettings settings = notificationSettingsRepository.findUserNotificationSettingsByUid(uid)
                 .orElseThrow(() -> new UserControllerAdvice(ResponseCode._INTERNAL_SERVER_ERROR));
 

@@ -1,5 +1,6 @@
 package com.bbf.bebefriends.member.entity;
 
+import com.bbf.bebefriends.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -15,16 +16,20 @@ import java.util.List;
 @Table(name = "users")
 @NoArgsConstructor
 @AllArgsConstructor
-public class User extends BaseTimeEntity {
+public class User extends BaseEntity {
 
     @Id
-    private String uid;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long uid;
 
     @Column(nullable = false, unique = true)
     private String nickname;
 
     @Column(nullable = false)
     private String email;
+
+    @Column
+    private String phone;
 
     @Column
     private LocalDateTime deletedAt;
@@ -39,7 +44,7 @@ public class User extends BaseTimeEntity {
     private UserTermsAgreements termsAgreements;
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
-    private RefreshToken refreshToken;
+    private UserHotdealNotification notification;
 
     private String fcmToken;
 

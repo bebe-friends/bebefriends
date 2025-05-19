@@ -29,7 +29,7 @@ public class HotDealServiceImpl implements HotDealService {
 
         // 핫딜 생성
         HotDeal hotDeal = HotDeal.builder()
-                .hotDealCategoryId(hotDealCategory)
+                .hotDealCategory(hotDealCategory)
                 .name(hotDealDto.getName())
                 .imgPath(hotDealDto.getImgPath())
                 .unit(hotDealDto.getUnit())
