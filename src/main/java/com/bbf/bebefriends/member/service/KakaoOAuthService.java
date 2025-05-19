@@ -35,8 +35,9 @@ public class KakaoOAuthService {
                     Map<String, Object> kakaoAccount = (Map<String, Object>) response.get("kakao_account");
 
                     return KakaoUserInfo.builder()
+                            .id((Long) kakaoAccount.get("Id")) // 현재 null 값으로 들어옴
                             .email((String) kakaoAccount.get("email"))
-                            .phone((String) kakaoAccount.get("phone_number"))
+                            .phone((String) kakaoAccount.getOrDefault("phone_number", ""))
                             .build();
                 })
                 .block();
