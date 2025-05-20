@@ -12,12 +12,14 @@ public interface CommunityPostListService {
 
     // 카테고리 별 게시물 목록 조회
     List<CommunityPostDTO.PostListResponse> getPostsByCategory(String category);
+    // 게시물 검색
+    List<CommunityPostDTO.PostListResponse> getPostsBySearch(String query);
 
     // 제목 별 게시물 목록 조회
-    List<CommunityPostDTO.PostListResponse> getPostsByTitle(String keyword);
+//    List<CommunityPostDTO.PostListResponse> getPostsByTitle(String keyword);
 
     // 글쓴이 별 게시물 목록 조회
-    List<CommunityPostDTO.PostListResponse> getPostsByAuthor(String keyword);
+//    List<CommunityPostDTO.PostListResponse> getPostsByAuthor(String keyword);
 
     // 내가 작성한 게시물 목록 조회
     List<CommunityPostDTO.PostListResponse> getMyPosts(User user);
@@ -27,8 +29,4 @@ public interface CommunityPostListService {
 
     // 내가 좋아요한 게시물 목록 조회
     List<CommunityPostDTO.PostListResponse> getLikedPosts(User user);
-
-    // 게시물 상세 페이지
-
-
 }

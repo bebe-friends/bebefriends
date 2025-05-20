@@ -11,6 +11,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
 @Service
@@ -37,10 +39,22 @@ public class FireBaseService {
     }
 
     // 파일 삭제
-    public void deleteFirebaseBucket(String key) {
-        Bucket bucket = StorageClient.getInstance().bucket(firebaseStorageUrl);
+//    public void deleteFirebaseBucket(String key) {
+//        Bucket bucket = StorageClient.getInstance().bucket(firebaseStorageUrl);
+//
+//        bucket.get(key).delete();
+//    }
 
-        bucket.get(key).delete();
+    public void deleteFirebaseFile(String imageUrl) {
+        // imageUrl에서 파일 경로 추출
+//        String fileName = extractFileNameFromUrl(imageUrl);
+        String decodedUrl = URLDecoder.decode(imageUrl, StandardCharsets.UTF_8);
+        int startIndex = decodedUrl.indexOf("/o/") + 3;
+        int endIndex = decodedUrl.indexOf("?alt=");
+        String fileName = decodedUrl.substring(startIndex, endIndex).replace("%2F", "/");
+
+        // Firebase Storage에서 삭제
+        StorageClient.getInstance().bucket().get(fileName).delete();
     }
 
     // 파일 이름 충돌 방지
