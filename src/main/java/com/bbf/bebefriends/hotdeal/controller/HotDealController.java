@@ -3,14 +3,15 @@ package com.bbf.bebefriends.hotdeal.controller;
 import com.bbf.bebefriends.global.entity.BaseResponse;
 import com.bbf.bebefriends.global.exception.ResponseCode;
 import com.bbf.bebefriends.hotdeal.dto.HotDealDto;
+import com.bbf.bebefriends.hotdeal.dto.HotDealRecordDto;
+import com.bbf.bebefriends.hotdeal.entity.HotDealRecord;
 import com.bbf.bebefriends.hotdeal.service.HotDealService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "핫딜", description = "핫딜 관련 API @유석균")
 @RestController
@@ -24,6 +25,20 @@ public class HotDealController {
     @PostMapping
     public BaseResponse<HotDealDto> createHotDeal(@RequestBody HotDealDto hotDealDto) {
         return BaseResponse.onSuccess(hotDealService.createHotDeal(hotDealDto), ResponseCode.OK);
+
+    }
+
+    @Operation(summary = "핫딜 기록 등록", description = "핫딜 기록을 등록합니다.")
+    @PostMapping("/record")
+    public BaseResponse<HotDealRecordDto> createHotDealRecord(@RequestBody HotDealRecordDto hotDealRecordDto) {
+        return BaseResponse.onSuccess(hotDealService.createHotDealRecord(hotDealRecordDto), ResponseCode.OK);
+
+    }
+
+    @Operation(summary = "핫딜 기록 검색", description = "핫딜 기록을 검색합니다.")
+    @GetMapping("/record")
+    public BaseResponse<Page<HotDealRecord>> searchHotDealRecord(@RequestBody HotDealRecordDto hotDealRecordDto, Pageable pageable) {
+        return BaseResponse.onSuccess(hotDealService.searchHotDealRecord(hotDealRecordDto, pageable), ResponseCode.OK);
 
     }
 
