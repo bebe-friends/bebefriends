@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 public class CommunityPostController {
     private final CommunityPostService communityPostService;
 
+    // FIXME: multipartfile 부분 수정 필요
     // 게시글 작성
     @PostMapping("/post")
     @Operation(summary = "커뮤니티 게시글 생성", description = "게시물을 게시합니다.")
