@@ -16,4 +16,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findUserByEmail(String email);
 
     boolean existsByNicknameAndDeletedAtIsNull(String nickname);
+
+    Optional<User> findByOauth2UserInfo_OauthId(Long oauthId);
 }
