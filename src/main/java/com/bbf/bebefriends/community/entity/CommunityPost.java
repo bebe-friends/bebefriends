@@ -61,6 +61,7 @@ public class CommunityPost extends BaseEntity {
         post.title = postCreateRequest.getTitle();
         post.content = postCreateRequest.getContent();
         post.viewCount = 0;
+        post.likeCount = 0;
         post.deletedAt = null;
         post.isCertificated = false;
         post.isReported = false;

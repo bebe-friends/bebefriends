@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,18 +23,24 @@ public class CommunityPostController {
 
     // FIXME: multipartfile 부분 수정 필요
     // 게시글 작성
-    @PostMapping("/post")
+    @PostMapping(
+            value = "/post",
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE
+    )
     @Operation(summary = "커뮤니티 게시글 생성", description = "게시물을 게시합니다.")
-    public BaseResponse<CommunityPostDTO.CreatePostResponse> createCommunityPost(@Valid @RequestBody CommunityPostDTO.CreatePostRequest request,
+    public BaseResponse<CommunityPostDTO.CreatePostResponse> createCommunityPost(@Valid @ModelAttribute CommunityPostDTO.CreatePostRequest request,
                                                                                  @AuthenticationPrincipal UserDetailsImpl user) {
 
         return BaseResponse.onSuccess(communityPostService.createPost(request, user.getUser()), ResponseCode.OK);
     }
 
     // 게시글 수정
-    @PatchMapping("/post")
+    @PatchMapping(
+            value = "/post",
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE
+    )
     @Operation(summary = "커뮤니티 게시글 수정", description = "본인이 작성한 게시물을 수정합니다.")
-    public BaseResponse<CommunityPostDTO.UpdatePostResponse> updatePost(@Valid @RequestBody CommunityPostDTO.UpdatePostRequest request,
+    public BaseResponse<CommunityPostDTO.UpdatePostResponse> updatePost(@Valid @ModelAttribute CommunityPostDTO.UpdatePostRequest request,
                                                                           @AuthenticationPrincipal UserDetailsImpl user) {
         return BaseResponse.onSuccess(communityPostService.updatePost(request, user.getUser()), ResponseCode.OK);
     }
