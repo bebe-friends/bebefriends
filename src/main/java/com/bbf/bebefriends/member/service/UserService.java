@@ -56,9 +56,15 @@ public class UserService {
     @Transactional
     public UserDTO.UserAccessResponse loginUser(UserDTO.UserLoginRequest request) {
         KakaoUserInfo userInfo = kakaoOAuthService.getUserInfo(request.oauthToken());
-        User user = userRepository.findUserByEmail(userInfo.getEmail()).orElseThrow(
-                () -> new UserControllerAdvice(ResponseCode._INTERNAL_SERVER_ERROR)
-        );
+        User user = userRepository.findByOauth2UserInfo_OauthId(userInfo.getId())
+                .orElseGet(() -> {
+                            User findUser = userRepository.findUserByEmail(userInfo.getEmail())
+                                    .orElseThrow(() -> new UserControllerAdvice(ResponseCode._INTERNAL_SERVER_ERROR));
+                            // Oauth2UserInfo 에 kakao oauth id 없을 경우 추가
+                            findUser.getOauth2UserInfo().setOauthId(userInfo.getId());
+                            return findUser;
+                        }
+                );
 
         return new UserDTO.UserAccessResponse(
                 JwtTokenUtil.createAccessToken(String.valueOf(user.getUid()),
@@ -79,6 +85,9 @@ public class UserService {
         user.setRole(UserRole.USER);
         user.setPhone(userInfo.getPhone());
         user.setFcmToken(request.fcmToken());
+
+        Oauth2UserInfo oauth2UserInfo = Oauth2UserInfo.of(user, userInfo.getId());
+        user.setOauth2UserInfo(oauth2UserInfo);
 
         UserNotificationSettings settings = UserNotificationSettings.of(
                 user,

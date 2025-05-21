@@ -23,7 +23,7 @@ public class UserController {
     private final UserService userService;
 
     @Operation(summary = "닉네임 갱신", description = "닉네임 중복 체크 후 갱신")
-    @GetMapping("/update-nickname")
+    @PutMapping("/update-nickname")
     public BaseResponse<String> updateNickname(@RequestParam String nickname,
                                                @AuthenticationPrincipal UserDetailsImpl user
     ) {
@@ -34,7 +34,7 @@ public class UserController {
 
     @SecurityRequirement(name = "firebaseAuth")
     @Operation(summary = "FCM 토큰 갱신", description = "Firebase ID 인증 이후 클라이언트의 새로운 FCM 토큰으로 갱신")
-    @PostMapping("/fcm-token")
+    @PutMapping("/fcm-token")
     public BaseResponse<?> updateFcmToken(
             @Valid @RequestBody TokenDTO.FcmTokenUpdateRequest request,
             Authentication authentication
