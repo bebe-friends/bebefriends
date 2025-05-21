@@ -59,6 +59,14 @@ public class SwaggerConfig {
     }
 
     /**
+     * 푸시 알림 관련 API
+     */
+    @Bean
+    public GroupedOpenApi notificationApi() {
+        return buildGroupedOpenApi("푸시 알림 관련 API @조정우", "com.bbf.bebefriends.notification.controller");
+    }
+
+    /**
      * 커뮤니티 관련 API
      */
     @Bean
