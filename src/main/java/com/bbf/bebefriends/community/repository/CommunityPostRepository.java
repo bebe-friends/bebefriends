@@ -43,36 +43,51 @@ public interface CommunityPostRepository extends JpaRepository<CommunityPost, Lo
     """)
     List<CommunityPost> findByCategoryActive(@Param("category") CommunityCategory category);
 
+    // 제목 혹은 글쓴이로 검색
+    @Query("""
+        SELECT p
+        FROM CommunityPost p
+        JOIN p.user u
+        WHERE (LOWER(p.title)   LIKE LOWER(CONCAT('%', :kw, '%'))
+            OR LOWER(u.nickname) LIKE LOWER(CONCAT('%', :kw, '%')))
+          AND p.deletedAt   IS NULL
+          AND p.isReported  IS NULL
+          AND p.id NOT IN (
+              SELECT b.post.id
+              FROM CommunityPostBlock b
+          )
+    """)
+    List<CommunityPost> searchPostsByKeyword(@Param("kw") String keyword);
 
     // 제목으로 조회(deletedAt과 isReported가 null)
-    @Query("""
-      SELECT p
-      FROM CommunityPost p
-      WHERE LOWER(p.title) LIKE LOWER(CONCAT('%', :kw, '%'))
-        AND p.deletedAt IS NULL
-        AND p.isReported IS NULL
-        AND p.id NOT IN (
-          SELECT b.post.id
-          FROM CommunityPostBlock b
-        )
-    """)
-    List<CommunityPost> findByTitleLikeActive(@Param("kw") String keyword);
+//    @Query("""
+//      SELECT p
+//      FROM CommunityPost p
+//      WHERE LOWER(p.title) LIKE LOWER(CONCAT('%', :kw, '%'))
+//        AND p.deletedAt IS NULL
+//        AND p.isReported IS NULL
+//        AND p.id NOT IN (
+//          SELECT b.post.id
+//          FROM CommunityPostBlock b
+//        )
+//    """)
+//    List<CommunityPost> findByTitleLikeActive(@Param("kw") String keyword);
 
 
     // 닉네임으로 조회(deletedAt과 isReported가 null)
-    @Query("""
-      SELECT p
-      FROM CommunityPost p
-      JOIN p.user u
-      WHERE LOWER(u.nickname) LIKE LOWER(CONCAT('%', :kw, '%'))
-        AND p.deletedAt IS NULL
-        AND p.isReported IS NULL
-        AND p.id NOT IN (
-          SELECT b.post.id
-          FROM CommunityPostBlock b
-        )
-    """)
-    List<CommunityPost> findByAuthorLikeActive(@Param("kw") String keyword);
+//    @Query("""
+//      SELECT p
+//      FROM CommunityPost p
+//      JOIN p.user u
+//      WHERE LOWER(u.nickname) LIKE LOWER(CONCAT('%', :kw, '%'))
+//        AND p.deletedAt IS NULL
+//        AND p.isReported IS NULL
+//        AND p.id NOT IN (
+//          SELECT b.post.id
+//          FROM CommunityPostBlock b
+//        )
+//    """)
+//    List<CommunityPost> findByAuthorLikeActive(@Param("kw") String keyword);
 
 
     // 작성한 게시물 목록(deletedAt가 null) -> 신고당한 게시물 삭제처리해야하나?

@@ -9,4 +9,6 @@ public interface CommunityPostService {
     String deletePost(CommunityPostDTO.DeletePostRequest request, User user);
 
     CommunityPostDTO.PostDetailsResponse getPostDetail(Long postId);
+
+    // TODO: 소프트 삭제된 게시물 삭제처리
 }

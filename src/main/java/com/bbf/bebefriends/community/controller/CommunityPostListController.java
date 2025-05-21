@@ -37,19 +37,26 @@ public class CommunityPostListController {
         return BaseResponse.onSuccess(communityPostListService.getPostsByCategory(category), ResponseCode.OK);
     }
 
-    // 제목 조회
-    @GetMapping("/search/title")
-    @Operation(summary = "제목 검색", description = "제목을 검색하여 게시물 목록을 조회합니다.")
-    public BaseResponse<List<CommunityPostDTO.PostListResponse>> getTitleSearch(@RequestParam String title) {
-        return BaseResponse.onSuccess(communityPostListService.getPostsByTitle(title), ResponseCode.OK);
+    // 게시물 검색(제목, 글쓴이)
+    @GetMapping("/search")
+    @Operation(summary = "커뮤니티 게시물 검색", description = "제목 혹은 글쓴이을 검색하여 게시물 목록을 조회합니다.")
+    public BaseResponse<List<CommunityPostDTO.PostListResponse>> searchPosts(@RequestParam String query) {
+        return BaseResponse.onSuccess(communityPostListService.getPostsBySearch(query), ResponseCode.OK);
     }
 
-    // 작성자 조회
-    @GetMapping("/search/author")
-    @Operation(summary = "작성자 검색", description = "작성자를 검색하여 게시물 목록을 조회합니다.")
-    public BaseResponse<List<CommunityPostDTO.PostListResponse>> getAuthorSearch(@RequestParam String author) {
-        return BaseResponse.onSuccess(communityPostListService.getPostsByAuthor(author), ResponseCode.OK);
-    }
+    // 제목 조회
+//    @GetMapping("/search/title")
+//    @Operation(summary = "제목 검색", description = "제목을 검색하여 게시물 목록을 조회합니다.")
+//    public BaseResponse<List<CommunityPostDTO.PostListResponse>> getTitleSearch(@RequestParam String title) {
+//        return BaseResponse.onSuccess(communityPostListService.getPostsByTitle(title), ResponseCode.OK);
+//    }
+//
+//    // 작성자 조회
+//    @GetMapping("/search/author")
+//    @Operation(summary = "작성자 검색", description = "작성자를 검색하여 게시물 목록을 조회합니다.")
+//    public BaseResponse<List<CommunityPostDTO.PostListResponse>> getAuthorSearch(@RequestParam String author) {
+//        return BaseResponse.onSuccess(communityPostListService.getPostsByAuthor(author), ResponseCode.OK);
+//    }
 
     // 내가 쓴 게시물
     @GetMapping("/my-posts")

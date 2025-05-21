@@ -68,23 +68,32 @@ public class CommunityPostListServiceImpl implements CommunityPostListService {
                 .collect(Collectors.toList());
     }
 
-    // 제목으로 조회
+    // 제목 혹은 글쓴이 검색
     @Override
-    public List<CommunityPostDTO.PostListResponse> getPostsByTitle(String keyword) {
-        return communityPostRepository.findByTitleLikeActive(keyword)
+    public List<CommunityPostDTO.PostListResponse> getPostsBySearch(String query) {
+        return communityPostRepository.searchPostsByKeyword(query)
                 .stream()
                 .map(this::toDto)
                 .collect(Collectors.toList());
     }
 
+    // 제목으로 조회
+//    @Override
+//    public List<CommunityPostDTO.PostListResponse> getPostsByTitle(String keyword) {
+//        return communityPostRepository.findByTitleLikeActive(keyword)
+//                .stream()
+//                .map(this::toDto)
+//                .collect(Collectors.toList());
+//    }
+
     // 작성자로 조회
-    @Override
-    public List<CommunityPostDTO.PostListResponse> getPostsByAuthor(String keyword) {
-        return communityPostRepository.findByAuthorLikeActive(keyword)
-                .stream()
-                .map(this::toDto)
-                .collect(Collectors.toList());
-    }
+//    @Override
+//    public List<CommunityPostDTO.PostListResponse> getPostsByAuthor(String keyword) {
+//        return communityPostRepository.findByAuthorLikeActive(keyword)
+//                .stream()
+//                .map(this::toDto)
+//                .collect(Collectors.toList());
+//    }
 
     // 내가 쓴 게시물
     @Override
