@@ -1,6 +1,6 @@
 package com.bbf.bebefriends.hotdeal.dto;
 
-import com.bbf.bebefriends.hotdeal.entity.HotDealPost;
+import com.bbf.bebefriends.hotdeal.entity.HotDealRecord;
 import lombok.*;
 
 import java.time.LocalDate;
@@ -21,6 +21,17 @@ public class HotDealRecordDto {
     private Integer searchPrice;         // 검색가
 
     private Integer hotDealPrice;        // 핫딜가
+
+    // Entity -> dto
+    public static HotDealRecordDto fromEntity(HotDealRecord hotDealRecord) {
+        return HotDealRecordDto.builder()
+                .hotDealId(hotDealRecord.getId())
+                .date(hotDealRecord.getDate())
+                .note(hotDealRecord.getNote())
+                .searchPrice(hotDealRecord.getSearchPrice())
+                .hotDealPrice(hotDealRecord.getHotDealPrice())
+                .build();
+    }
 
 
 }

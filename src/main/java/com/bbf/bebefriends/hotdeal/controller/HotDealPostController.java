@@ -5,11 +5,13 @@ import com.bbf.bebefriends.global.exception.ResponseCode;
 import com.bbf.bebefriends.hotdeal.dto.HotDealCommentDto;
 import com.bbf.bebefriends.hotdeal.dto.HotDealPostDto;
 import com.bbf.bebefriends.hotdeal.service.HotDealPostService;
+import com.bbf.bebefriends.member.entity.User;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "핫딜 게시글", description = "핫딜 게시글 관련 API @유석균")
@@ -51,5 +53,13 @@ public class HotDealPostController {
         return BaseResponse.onSuccess(hotDealPostService.createHotDealComment(hotDealCommentDto), ResponseCode.OK);
 
     }
+
+    @Operation(summary = "핫딜 좋아요", description = "핫딜 게시글을 좋아요 하거나 좋아요 취소합니다.")
+    @PostMapping("/like")
+    public BaseResponse<Long> likeHotDealPost(@RequestParam Long hotDealPostId, @AuthenticationPrincipal User user) {
+        return BaseResponse.onSuccess(hotDealPostService.likeHotDealPost(hotDealPostId, user), ResponseCode.OK);
+
+    }
+
 
 }

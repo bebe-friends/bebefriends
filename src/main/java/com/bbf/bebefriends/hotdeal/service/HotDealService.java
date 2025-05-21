@@ -12,5 +12,5 @@ public interface HotDealService {
 
     HotDealRecordDto createHotDealRecord(HotDealRecordDto hotDealRecordDto);
 
-    Page<HotDealRecord> searchHotDealRecord(HotDealRecordDto hotDealRecordDto, Pageable pageable);
+    Page<HotDealRecordDto> searchHotDealRecord(Long hotDealId, Pageable pageable);
 }

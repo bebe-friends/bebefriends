@@ -37,8 +37,8 @@ public class HotDealController {
 
     @Operation(summary = "핫딜 기록 검색", description = "핫딜 기록을 검색합니다.")
     @GetMapping("/record")
-    public BaseResponse<Page<HotDealRecord>> searchHotDealRecord(@RequestBody HotDealRecordDto hotDealRecordDto, Pageable pageable) {
-        return BaseResponse.onSuccess(hotDealService.searchHotDealRecord(hotDealRecordDto, pageable), ResponseCode.OK);
+    public BaseResponse<Page<HotDealRecordDto>> searchHotDealRecord(@RequestParam Long hotDealId, Pageable pageable) {
+        return BaseResponse.onSuccess(hotDealService.searchHotDealRecord(hotDealId, pageable), ResponseCode.OK);
 
     }
 

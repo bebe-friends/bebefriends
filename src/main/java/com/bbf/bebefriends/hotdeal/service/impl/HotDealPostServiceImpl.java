@@ -1,20 +1,18 @@
 package com.bbf.bebefriends.hotdeal.service.impl;
 
 import com.bbf.bebefriends.hotdeal.dto.HotDealCommentDto;
+import com.bbf.bebefriends.hotdeal.dto.HotDealLikeDto;
 import com.bbf.bebefriends.hotdeal.dto.HotDealPostDto;
-import com.bbf.bebefriends.hotdeal.entity.HotDeal;
-import com.bbf.bebefriends.hotdeal.entity.HotDealCategory;
-import com.bbf.bebefriends.hotdeal.entity.HotDealComment;
-import com.bbf.bebefriends.hotdeal.entity.HotDealPost;
-import com.bbf.bebefriends.hotdeal.repository.HotDealCategoryRepository;
-import com.bbf.bebefriends.hotdeal.repository.HotDealCommentRepository;
-import com.bbf.bebefriends.hotdeal.repository.HotDealPostRepository;
-import com.bbf.bebefriends.hotdeal.repository.HotDealRepository;
+import com.bbf.bebefriends.hotdeal.entity.*;
+import com.bbf.bebefriends.hotdeal.repository.*;
 import com.bbf.bebefriends.hotdeal.service.HotDealPostService;
+import com.bbf.bebefriends.member.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 
 @Service
@@ -25,6 +23,7 @@ public class HotDealPostServiceImpl implements HotDealPostService {
     private final HotDealPostRepository hotDealPostRepository;
     private final HotDealCategoryRepository hotDealCategoryRepository;
     private final HotDealCommentRepository hotDealCommentRepository;
+    private final HotDealLikeRepository hotDealLikeRepository;
 
 
     @Override
@@ -101,6 +100,32 @@ public class HotDealPostServiceImpl implements HotDealPostService {
                 .orElseThrow();
 
         return hotDealCommentRepository.findByHotDealPost(hotDealPost, pageable).map(HotDealCommentDto::fromEntity);
+    }
+
+    @Override
+    public Long likeHotDealPost(Long hotDealPostId, User user) {
+        // 핫딜 게시글 조회
+        HotDealPost hotDealPost = hotDealPostRepository.findById(hotDealPostId)
+                .orElseThrow();
+
+        // 좋아요가 되어있는지 조회
+        Optional<HotDealLike> hotDealLike = hotDealLikeRepository.findByHotDealPostAndUser(hotDealPost, user);
+
+        // 있으면 좋아요 취소
+        if (hotDealLike.isPresent()) {
+            hotDealLikeRepository.delete(hotDealLike.get());
+            return hotDealPostId;
+
+        }
+
+        // 좋아요 저장
+        HotDealLike newHotDealLike = HotDealLike.builder()
+                .hotDealPost(hotDealPost)
+                .user(user)
+                .build();
+        hotDealLikeRepository.save(newHotDealLike);
+        return hotDealPostId;
+
     }
 
 }
