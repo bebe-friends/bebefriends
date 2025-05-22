@@ -56,30 +56,44 @@ public class UserService {
     @Transactional
     public UserDTO.UserAccessResponse loginUser(UserDTO.UserLoginRequest request) {
         KakaoUserInfo userInfo = kakaoOAuthService.getUserInfo(request.oauthToken());
-        User user = userRepository.findByOauth2UserInfo_OauthId(userInfo.getId())
+        User user = userRepository.findByDeletedAtIsNullAndOauth2UserInfo_OauthId(userInfo.getId())
                 .orElseGet(() -> {
-                            User findUser = userRepository.findUserByEmail(userInfo.getEmail())
-                                    .orElseThrow(() -> new UserControllerAdvice(ResponseCode._INTERNAL_SERVER_ERROR));
+                            User findUser = userRepository.findUserByEmailAndDeletedAtIsNull(userInfo.getEmail())
+                                    .orElseThrow(() -> new UserControllerAdvice(ResponseCode.MEMBER_NOT_FOUND));
                             // Oauth2UserInfo 에 kakao oauth id 없을 경우 추가
                             findUser.getOauth2UserInfo().setOauthId(userInfo.getId());
                             return findUser;
                         }
                 );
-
+        
         return new UserDTO.UserAccessResponse(
                 JwtTokenUtil.createAccessToken(String.valueOf(user.getUid()),
                         new JwtPayload(UserRole.USER.toString(), user.getEmail()))
         );
     }
+    
+    private boolean isUserNotDeleted(Long uid) {
+        return userRepository.findByUidAndDeletedAtIsNull(uid).isPresent();
+    }
 
     @Transactional
     public UserDTO.UserAccessResponse registerUser(UserDTO.UserSignupRequest request) {
         KakaoUserInfo userInfo = kakaoOAuthService.getUserInfo(request.oauthToken());
-        userRepository.findUserByEmail(userInfo.getEmail()).ifPresent(user -> {
-            throw new UserControllerAdvice(ResponseCode._INTERNAL_SERVER_ERROR);
-        });
+        User user = userRepository.findByDeletedAtIsNullAndOauth2UserInfo_OauthId(userInfo.getId())
+                .orElse(null);
 
-        User user = new User();
+        if (user != null) {
+            user.setNickname(createNickname());
+            user.setDeletedAt(null);
+            User createdUser = userRepository.save(user);
+
+            return new UserDTO.UserAccessResponse(
+                    JwtTokenUtil.createAccessToken(String.valueOf(createdUser.getUid()),
+                            new JwtPayload(UserRole.USER.toString(), createdUser.getEmail()))
+            );
+        }
+
+        user = new User();
         user.setNickname(createNickname());
         user.setEmail(userInfo.getEmail());
         user.setRole(UserRole.USER);
