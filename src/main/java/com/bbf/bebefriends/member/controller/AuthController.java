@@ -24,20 +24,12 @@ public class AuthController {
     @Operation(summary = "회원가입", description = "Kakao oauth 토큰 및 알림 설정을 포함한 사용자 가입")
     @PostMapping("/signup")
     public BaseResponse<UserDTO.UserAccessResponse> signup(@Valid @RequestBody UserDTO.UserSignupRequest request) {
-        try {
-            return BaseResponse.onSuccess(userService.registerUser(request), ResponseCode.CREATED);
-        } catch (Exception e) {
-            return BaseResponse.onFailure(null, ResponseCode._INTERNAL_SERVER_ERROR);
-        }
+        return BaseResponse.onSuccess(userService.registerUser(request), ResponseCode.CREATED);
     }
 
     @Operation(summary = "로그인", description = "Kakao oauth 토큰으로 로그인")
     @PostMapping("/login")
     public BaseResponse<UserDTO.UserAccessResponse> login(@Valid @RequestBody UserDTO.UserLoginRequest request) {
-        try {
-            return BaseResponse.onSuccess(userService.loginUser(request), ResponseCode.OK);
-        } catch (Exception e) {
-            return BaseResponse.onFailure(null, ResponseCode._INTERNAL_SERVER_ERROR);
-        }
+        return BaseResponse.onSuccess(userService.loginUser(request), ResponseCode.OK);
     }
 }

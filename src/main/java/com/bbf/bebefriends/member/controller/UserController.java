@@ -32,6 +32,13 @@ public class UserController {
         return BaseResponse.onSuccess("닉네임이 변경되었습니다.", ResponseCode.OK);
     }
 
+    @Operation(summary = "회원 탈퇴", description = "회원 탈퇴 기능")
+    @DeleteMapping("/delete")
+    public BaseResponse<String> deleteUser(@AuthenticationPrincipal UserDetailsImpl user) {
+        userService.deleteUser(user.getUserId());
+        return BaseResponse.onSuccess("탈퇴 성공", ResponseCode.NO_CONTENT);
+    }
+
     @SecurityRequirement(name = "firebaseAuth")
     @Operation(summary = "FCM 토큰 갱신", description = "Firebase ID 인증 이후 클라이언트의 새로운 FCM 토큰으로 갱신")
     @PutMapping("/fcm-token")
