@@ -4,6 +4,7 @@ package com.bbf.bebefriends.global.exception.handler;
 import com.bbf.bebefriends.global.entity.BaseResponse;
 import com.bbf.bebefriends.global.exception.GeneralException;
 import com.bbf.bebefriends.global.exception.ResponseCode;
+import io.swagger.v3.oas.annotations.Hidden;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.http.HttpHeaders;
@@ -21,7 +22,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Slf4j
-@RestControllerAdvice(annotations = {RestController.class})
+@Hidden
+@RestControllerAdvice(annotations = {RestController.class}, basePackages = {"com.bbf.bebefriends"})
 public class MasterExceptionHandler {
 
     @ExceptionHandler(ConstraintViolationException.class)
