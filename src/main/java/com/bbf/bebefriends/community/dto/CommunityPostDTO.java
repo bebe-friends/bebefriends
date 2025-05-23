@@ -18,7 +18,7 @@ public class CommunityPostDTO {
         @NonNull
         private String content;
 
-        private List<MultipartFile> img;
+//        private List<MultipartFile> img;
         private List<String> link;
     }
 
@@ -33,6 +33,8 @@ public class CommunityPostDTO {
 
     // 수정
     @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class UpdatePostRequest {
         @NonNull
         private Long postId;
@@ -43,7 +45,7 @@ public class CommunityPostDTO {
         @NonNull
         private String content;
 
-        private List<MultipartFile> newImages;
+//        private List<MultipartFile> newImages;
         private List<String> existingImageUrls;
 
         private List<String> newLinks;
