@@ -1,9 +1,9 @@
 package com.bbf.bebefriends.member.service;
 
 import com.bbf.bebefriends.global.exception.ResponseCode;
+import com.bbf.bebefriends.member.dto.AuthDTO;
 import com.bbf.bebefriends.member.dto.JwtPayload;
 import com.bbf.bebefriends.member.dto.KakaoUserInfo;
-import com.bbf.bebefriends.member.dto.TokenDTO;
 import com.bbf.bebefriends.member.dto.UserDTO;
 import com.bbf.bebefriends.member.entity.*;
 import com.bbf.bebefriends.member.exception.UserControllerAdvice;
@@ -25,6 +25,7 @@ public class UserService {
     private final KakaoOAuthService kakaoOAuthService;
 
     public User findByUid(Long uid) {
+//        return userRepository.findByUidAndDeletedAtIsNull(uid)
         return userRepository.findByUidAndDeletedAtIsNull(uid)
                 .orElseThrow(() -> new UserControllerAdvice(ResponseCode.MEMBER_NOT_FOUND));
     }
@@ -40,7 +41,7 @@ public class UserService {
             throw new UserControllerAdvice(ResponseCode.NICKNAME_INVALID);
         }
 
-        if (userRepository.existsByNicknameAndDeletedAtIsNull(nickname)) {
+        if (userRepository.existsByNickname(nickname)) {
             throw new UserControllerAdvice(ResponseCode.NICKNAME_ALREADY_EXIST);
         }
     }
@@ -49,7 +50,7 @@ public class UserService {
         String nickname;
         do {
             nickname = NicknameGeneratorUtil.generateNickname();
-        } while (userRepository.existsByNicknameAndDeletedAtIsNull(nickname));
+        } while (userRepository.existsByNickname(nickname));
         return nickname;
     }
 
@@ -58,7 +59,8 @@ public class UserService {
         KakaoUserInfo userInfo = kakaoOAuthService.getUserInfo(request.oauthToken());
         User user = userRepository.findByDeletedAtIsNullAndOauth2UserInfo_OauthId(userInfo.getId())
                 .orElseGet(() -> {
-                            User findUser = userRepository.findUserByEmailAndDeletedAtIsNull(userInfo.getEmail())
+//                            User findUser = userRepository.findUserByEmailAndDeletedAtIsNull(userInfo.getEmail())
+                            User findUser = userRepository.findByEmailAndDeletedAtIsNull(userInfo.getEmail())
                                     .orElseThrow(() -> new UserControllerAdvice(ResponseCode.MEMBER_NOT_FOUND));
                             // Oauth2UserInfo 에 kakao oauth id 없을 경우 추가
                             findUser.getOauth2UserInfo().setOauthId(userInfo.getId());
@@ -71,25 +73,20 @@ public class UserService {
                         new JwtPayload(UserRole.USER.toString(), user.getEmail()))
         );
     }
-    
-    private boolean isUserNotDeleted(Long uid) {
-        return userRepository.findByUidAndDeletedAtIsNull(uid).isPresent();
-    }
 
     @Transactional
     public UserDTO.UserAccessResponse registerUser(UserDTO.UserSignupRequest request) {
         KakaoUserInfo userInfo = kakaoOAuthService.getUserInfo(request.oauthToken());
-        User user = userRepository.findByDeletedAtIsNullAndOauth2UserInfo_OauthId(userInfo.getId())
+        User user = userRepository.findByOauth2UserInfo_OauthId(userInfo.getId())
                 .orElse(null);
 
         if (user != null) {
             user.setNickname(createNickname());
             user.setDeletedAt(null);
-            User createdUser = userRepository.save(user);
-
+//            userRepository.updateNicknameAndDeletedAtByUid(user.getUid(), createNickname(), null);
             return new UserDTO.UserAccessResponse(
-                    JwtTokenUtil.createAccessToken(String.valueOf(createdUser.getUid()),
-                            new JwtPayload(UserRole.USER.toString(), createdUser.getEmail()))
+                    JwtTokenUtil.createAccessToken(String.valueOf(user.getUid()),
+                            new JwtPayload(UserRole.USER.toString(), user.getEmail()))
             );
         }
 
@@ -127,13 +124,16 @@ public class UserService {
         return new UserDTO.UserAccessResponse(accessToken);
     }
 
+    @Transactional
     public void deleteUser(Long uid) {
-        User user = findByUid(uid);
+        User user = userRepository.findById(uid)
+                .orElseThrow(() -> new UserControllerAdvice(ResponseCode.MEMBER_NOT_FOUND));
+
+        user.setNickname(createNickname());
         user.setDeletedAt(LocalDateTime.now());
-        userRepository.save(user);
     }
 
-    public void updateFcmToken(Long uid, TokenDTO.FcmTokenUpdateRequest req) {
+    public void updateFcmToken(Long uid, AuthDTO.FcmTokenUpdateRequest req) {
         User user = findByUid(uid);
 
         if (req.newFcmToken() != null && !req.newFcmToken().isBlank()) {
