@@ -14,6 +14,7 @@ import com.bbf.bebefriends.member.entity.User;
 import com.bbf.bebefriends.member.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -29,6 +30,7 @@ public class CommunityPostLikeServiceImpl implements CommunityPostLikeService {
     }
 
     // 게시물 좋아요 or 취소
+    @Transactional
     @Override
     public String updatePostLike(Long postId, User user) {
         CommunityPost communityPost = communityPostRepository.findById(postId)
