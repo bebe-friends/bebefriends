@@ -3,14 +3,12 @@ package com.bbf.bebefriends.member.controller;
 import com.bbf.bebefriends.global.entity.BaseResponse;
 import com.bbf.bebefriends.global.entity.UserDetailsImpl;
 import com.bbf.bebefriends.global.exception.ResponseCode;
-import com.bbf.bebefriends.member.dto.TokenDTO;
+import com.bbf.bebefriends.member.dto.AuthDTO;
 import com.bbf.bebefriends.member.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,11 +22,11 @@ public class UserController {
 
     @Operation(summary = "닉네임 갱신", description = "닉네임 중복 체크 후 갱신")
     @PutMapping("/update-nickname")
-    public BaseResponse<String> updateNickname(@RequestParam String nickname,
+    public BaseResponse<String> updateNickname(@Valid @RequestBody AuthDTO.NicknameUpdateRequest request,
                                                @AuthenticationPrincipal UserDetailsImpl user
     ) {
-        userService.validateNicknameAvailability(nickname);
-        userService.updateNickname(user.getUserId(), nickname);
+        userService.validateNicknameAvailability(request.nickname());
+        userService.updateNickname(user.getUserId(), request.nickname());
         return BaseResponse.onSuccess("닉네임이 변경되었습니다.", ResponseCode.OK);
     }
 
@@ -39,15 +37,13 @@ public class UserController {
         return BaseResponse.onSuccess("탈퇴 성공", ResponseCode.NO_CONTENT);
     }
 
-    @SecurityRequirement(name = "firebaseAuth")
-    @Operation(summary = "FCM 토큰 갱신", description = "Firebase ID 인증 이후 클라이언트의 새로운 FCM 토큰으로 갱신")
+    @Operation(summary = "FCM 토큰 갱신", description = "클라이언트의 새로운 FCM 토큰으로 갱신")
     @PutMapping("/fcm-token")
-    public BaseResponse<?> updateFcmToken(
-            @Valid @RequestBody TokenDTO.FcmTokenUpdateRequest request,
-            Authentication authentication
+    public BaseResponse<String> updateFcmToken(
+            @Valid @RequestBody AuthDTO.FcmTokenUpdateRequest request,
+            @AuthenticationPrincipal UserDetailsImpl user
     ) {
-        Long uid = (Long) authentication.getPrincipal();
-        userService.updateFcmToken(uid, request);
-        return BaseResponse.onSuccess(uid, ResponseCode.OK);
+        userService.updateFcmToken(user.getUserId(), request);
+        return BaseResponse.onSuccess("토큰 갱신 성공", ResponseCode.OK);
     }
 }
