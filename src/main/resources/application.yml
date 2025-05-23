@@ -21,4 +21,4 @@ springdoc:
 
 firebase:
   config-path: src/main/resources/bebe-friends3-firebase-adminsdk.json
-  bucket-name: bebefriends3.appspot.com
+  bucket-name: bebe-friends3.appspot.com
