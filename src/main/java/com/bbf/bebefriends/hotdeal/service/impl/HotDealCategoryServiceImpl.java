@@ -7,6 +7,8 @@ import com.bbf.bebefriends.hotdeal.service.HotDealCategoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class HotDealCategoryServiceImpl implements HotDealCategoryService {
@@ -33,6 +35,11 @@ public class HotDealCategoryServiceImpl implements HotDealCategoryService {
         hotDealCategoryRepository.save(hotDealCategory);
 
         return hotDealCategoryDto;
+    }
+
+    @Override
+    public List<HotDealCategoryDto> searchAllHotDealCategory() {
+        return hotDealCategoryRepository.findAll().stream().map(HotDealCategoryDto::fromEntity).toList();
     }
 
 }

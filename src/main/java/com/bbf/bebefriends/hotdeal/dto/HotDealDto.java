@@ -9,6 +9,8 @@ import lombok.*;
 @Builder
 public class HotDealDto {
 
+    private Long id;                    // 핫딜 식별자
+
     private Long hotDealCategoryId;     // 카테고리 식별자
 
     private String name;                // 이름
