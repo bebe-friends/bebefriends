@@ -4,7 +4,6 @@ import com.bbf.bebefriends.global.entity.BaseResponse;
 import com.bbf.bebefriends.global.exception.ResponseCode;
 import com.bbf.bebefriends.hotdeal.dto.HotDealDto;
 import com.bbf.bebefriends.hotdeal.dto.HotDealRecordDto;
-import com.bbf.bebefriends.hotdeal.entity.HotDealRecord;
 import com.bbf.bebefriends.hotdeal.service.HotDealService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -13,10 +12,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
-@Tag(name = "핫딜", description = "핫딜 관련 API @유석균")
+@Tag(name = "핫딜", description = "핫딜 관련 API")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/hot-deal")
+@RequestMapping("/api/v1/hot-deal")
 public class HotDealController {
 
     private final HotDealService hotDealService;
@@ -37,8 +36,8 @@ public class HotDealController {
 
     @Operation(summary = "핫딜 기록 검색", description = "핫딜 기록을 검색합니다.")
     @GetMapping("/record")
-    public BaseResponse<Page<HotDealRecord>> searchHotDealRecord(@RequestBody HotDealRecordDto hotDealRecordDto, Pageable pageable) {
-        return BaseResponse.onSuccess(hotDealService.searchHotDealRecord(hotDealRecordDto, pageable), ResponseCode.OK);
+    public BaseResponse<Page<HotDealRecordDto>> searchHotDealRecord(@RequestParam Long hotDealId, Pageable pageable) {
+        return BaseResponse.onSuccess(hotDealService.searchHotDealRecord(hotDealId, pageable), ResponseCode.OK);
 
     }
 

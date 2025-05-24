@@ -3,19 +3,22 @@ package com.bbf.bebefriends.hotdeal.controller;
 import com.bbf.bebefriends.global.entity.BaseResponse;
 import com.bbf.bebefriends.global.exception.ResponseCode;
 import com.bbf.bebefriends.hotdeal.dto.HotDealCommentDto;
+import com.bbf.bebefriends.hotdeal.dto.HotDealLikeDto;
 import com.bbf.bebefriends.hotdeal.dto.HotDealPostDto;
 import com.bbf.bebefriends.hotdeal.service.HotDealPostService;
+import com.bbf.bebefriends.member.entity.User;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-@Tag(name = "핫딜 게시글", description = "핫딜 게시글 관련 API @유석균")
+@Tag(name = "핫딜 게시글", description = "핫딜 게시글 관련 API")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/hot-deal-post")
+@RequestMapping("/api/v1/hot-deal-post")
 public class HotDealPostController {
 
     private final HotDealPostService hotDealPostService;
@@ -39,6 +42,13 @@ public class HotDealPostController {
 
     }
 
+    @Operation(summary = "핫딜 게시글 상세 조회", description = "핫딜 게시글을 상세 조회합니다.")
+    @GetMapping("/detail")
+    public BaseResponse<HotDealPostDto> searchHotDealPostDetail(@RequestParam Long hotDealPostId, @AuthenticationPrincipal User user) {
+        return BaseResponse.onSuccess(hotDealPostService.searchHotDealPostDetail(hotDealPostId, user), ResponseCode.OK);
+
+    }
+
     @Operation(summary = "핫딜 댓글 조회", description = "핫딜 게시글의 댓글을 조회합니다.")
     @GetMapping("/comment")
     public BaseResponse<Page<HotDealCommentDto>> searchHotDealComment(@RequestParam Long hotDealPostId, Pageable pageable) {
@@ -51,5 +61,20 @@ public class HotDealPostController {
         return BaseResponse.onSuccess(hotDealPostService.createHotDealComment(hotDealCommentDto), ResponseCode.OK);
 
     }
+
+    @Operation(summary = "핫딜 좋아요", description = "핫딜 게시글을 좋아요 하거나 좋아요 취소합니다.")
+    @PostMapping("/like")
+    public BaseResponse<HotDealLikeDto> likeHotDealPost(@RequestParam Long hotDealPostId, @AuthenticationPrincipal User user) {
+        return BaseResponse.onSuccess(hotDealPostService.likeHotDealPost(hotDealPostId, user), ResponseCode.OK);
+
+    }
+
+    @Operation(summary = "핫딜 좋아요 여부 조회", description = "핫딜 게시글을 좋아요가 되어있는지 여부를 조회합니다.")
+    @GetMapping("/like")
+    public BaseResponse<HotDealLikeDto> likeHotDealPostChk(@RequestParam Long hotDealPostId, @AuthenticationPrincipal User user) {
+        return BaseResponse.onSuccess(hotDealPostService.likeHotDealPostChk(hotDealPostId, user), ResponseCode.OK);
+
+    }
+
 
 }

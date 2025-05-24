@@ -24,6 +24,10 @@ public class HotDealPostDto {
 
     private Integer age;                // 나이
 
+    private int viewCount;              // 조회수
+
+    private int likeCount;              // 좋아요 수
+
     // Entity -> dto
     public static HotDealPostDto fromEntity(HotDealPost hotDealPost) {
         return HotDealPostDto.builder()
@@ -34,6 +38,8 @@ public class HotDealPostDto {
                 .imgPath(hotDealPost.getImgPath())
                 .status(hotDealPost.getStatus())
                 .age(hotDealPost.getAge())
+                .viewCount(hotDealPost.getViewCount())
+                .likeCount(hotDealPost.getLikeCount())
                 .build();
     }
 

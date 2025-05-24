@@ -34,4 +34,23 @@ public class HotDealPost extends BaseEntity {
 
     private Integer age;            // 나이
 
+    private int viewCount;          // 조회수
+
+    private int likeCount;          // 좋아요 수
+
+    // 게시글 조회수 증가
+    public void increaseViewCount() {
+        this.viewCount++;
+    }
+
+    // 게시물 좋아요
+    public void increaseLikeCount() {
+        this.likeCount++;
+    }
+
+    // 게시물 좋아요 취소
+    public void decreaseLikeCount() {
+        this.likeCount--;
+    }
+
 }

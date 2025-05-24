@@ -20,7 +20,7 @@ public class HotDealRecord extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;                    // 핫딜 기록 식별자
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "hot_deal_id")
     private HotDeal hotDeal;            // 핫딜 식별자
 
