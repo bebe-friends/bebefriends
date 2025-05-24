@@ -11,9 +11,8 @@ import java.time.LocalDate;
 @Builder
 public class HotDealLikeDto {
 
-    private Long hotDealId;             // 핫딜 식별자
+    private Long hotDealPostId;     // 핫딜 게시글 식별자
 
-
-
+    private Boolean likeChk;        // 핫딜 좋아요 여부
 
 }

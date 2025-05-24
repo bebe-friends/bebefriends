@@ -3,9 +3,7 @@ package com.bbf.bebefriends.hotdeal.controller;
 import com.bbf.bebefriends.global.entity.BaseResponse;
 import com.bbf.bebefriends.global.exception.ResponseCode;
 import com.bbf.bebefriends.hotdeal.dto.HotDealCategoryDto;
-import com.bbf.bebefriends.hotdeal.dto.HotDealDto;
 import com.bbf.bebefriends.hotdeal.service.HotDealCategoryService;
-import com.bbf.bebefriends.hotdeal.service.HotDealService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -14,10 +12,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@Tag(name = "핫딜 카테고리", description = "핫딜 카테고리 관련 API @유석균")
+@Tag(name = "핫딜 카테고리", description = "핫딜 카테고리 관련 API")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/hot-deal-category")
+@RequestMapping("/api/v1/hot-deal-category")
 public class HotDealCategoryController {
 
     private final HotDealCategoryService hotDealCategoryService;

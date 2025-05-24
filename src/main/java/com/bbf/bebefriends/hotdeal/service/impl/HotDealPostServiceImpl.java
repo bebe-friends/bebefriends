@@ -24,6 +24,7 @@ public class HotDealPostServiceImpl implements HotDealPostService {
     private final HotDealCategoryRepository hotDealCategoryRepository;
     private final HotDealCommentRepository hotDealCommentRepository;
     private final HotDealLikeRepository hotDealLikeRepository;
+    private final HotDealPostViewRepository hotDealPostViewRepository;
 
 
     @Override
@@ -67,6 +68,29 @@ public class HotDealPostServiceImpl implements HotDealPostService {
     }
 
     @Override
+    public HotDealPostDto searchHotDealPostDetail(Long hotDealPostId, User user) {
+        HotDealPost hotDealPost = hotDealPostRepository.findById(hotDealPostId)
+                .orElseThrow();
+
+        Optional<HotDealPostView> hotDealPostView = hotDealPostViewRepository.findByUserAndHotDealPost(user, hotDealPost);
+
+        // 조회한 게시글이 아닌 경우
+        if (hotDealPostView.isEmpty()) {
+            // 핫딜 게시글 조회 저장
+            HotDealPostView newhotDealPostView = HotDealPostView.builder()
+                    .user(user)
+                    .hotDealPost(hotDealPost)
+                    .build();
+            hotDealPostViewRepository.save(newhotDealPostView);
+
+            // 조회수 증가
+            hotDealPost.increaseViewCount();
+        }
+
+        return HotDealPostDto.fromEntity(hotDealPost);
+    }
+
+    @Override
     public HotDealCommentDto createHotDealComment(HotDealCommentDto hotDealCommentDto) {
         // 핫딜 댓글 초기화
         HotDealComment repliedComment = null;
@@ -103,7 +127,7 @@ public class HotDealPostServiceImpl implements HotDealPostService {
     }
 
     @Override
-    public Long likeHotDealPost(Long hotDealPostId, User user) {
+    public HotDealLikeDto likeHotDealPost(Long hotDealPostId, User user) {
         // 핫딜 게시글 조회
         HotDealPost hotDealPost = hotDealPostRepository.findById(hotDealPostId)
                 .orElseThrow();
@@ -111,10 +135,23 @@ public class HotDealPostServiceImpl implements HotDealPostService {
         // 좋아요가 되어있는지 조회
         Optional<HotDealLike> hotDealLike = hotDealLikeRepository.findByHotDealPostAndUser(hotDealPost, user);
 
+        // 좋아요 여부 포함된 리턴용 dto 생성
+        HotDealLikeDto hotDealLikeDto = HotDealLikeDto.builder()
+                .hotDealPostId(hotDealPostId)
+                .likeChk(true)
+                .build();
+
         // 있으면 좋아요 취소
         if (hotDealLike.isPresent()) {
             hotDealLikeRepository.delete(hotDealLike.get());
-            return hotDealPostId;
+
+            // 좋아요 수 감소
+            hotDealPost.decreaseLikeCount();
+
+            // 좋아요 여부 설정
+            hotDealLikeDto.setLikeChk(false);
+
+            return hotDealLikeDto;
 
         }
 
@@ -124,8 +161,35 @@ public class HotDealPostServiceImpl implements HotDealPostService {
                 .user(user)
                 .build();
         hotDealLikeRepository.save(newHotDealLike);
-        return hotDealPostId;
 
+        // 좋아요 수 증가
+        hotDealPost.increaseLikeCount();
+
+        return hotDealLikeDto;
+
+    }
+
+    @Override
+    public HotDealLikeDto likeHotDealPostChk(Long hotDealPostId, User user) {
+        // 핫딜 게시글 조회
+        HotDealPost hotDealPost = hotDealPostRepository.findById(hotDealPostId)
+                .orElseThrow();
+
+        // 좋아요가 되어있는지 조회
+        Optional<HotDealLike> hotDealLike = hotDealLikeRepository.findByHotDealPostAndUser(hotDealPost, user);
+
+        // 좋아요 여부 포함된 리턴용 dto 생성
+        HotDealLikeDto hotDealLikeDto = HotDealLikeDto.builder()
+                .hotDealPostId(hotDealPostId)
+                .likeChk(true)
+                .build();
+
+        // 좋아요가 안되어있는 경우
+        if (hotDealLike.isEmpty()) {
+            hotDealLikeDto.setLikeChk(false);
+        }
+
+        return hotDealLikeDto;
     }
 
 }
