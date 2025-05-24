@@ -37,8 +37,8 @@ public class HotDealPostController {
 
     @Operation(summary = "핫딜 게시글 등록", description = "핫딜 게시글을 등록합니다.")
     @PostMapping
-    public BaseResponse<HotDealPostDto> createHotDealPost(@RequestBody HotDealPostDto hotDealPostDto) {
-        return BaseResponse.onSuccess(hotDealPostService.createHotDealPost(hotDealPostDto), ResponseCode.OK);
+    public BaseResponse<HotDealPostDto> createHotDealPost(@RequestBody HotDealPostDto hotDealPostDto, @AuthenticationPrincipal User user) {
+        return BaseResponse.onSuccess(hotDealPostService.createHotDealPost(hotDealPostDto, user), ResponseCode.OK);
 
     }
 
@@ -57,8 +57,8 @@ public class HotDealPostController {
 
     @Operation(summary = "핫딜 댓글 등록", description = "핫딜 게시글의 댓글을 등록합니다.")
     @PostMapping("/comment")
-    public BaseResponse<HotDealCommentDto> createHotDealComment(@RequestBody HotDealCommentDto hotDealCommentDto) {
-        return BaseResponse.onSuccess(hotDealPostService.createHotDealComment(hotDealCommentDto), ResponseCode.OK);
+    public BaseResponse<HotDealCommentDto> createHotDealComment(@RequestBody HotDealCommentDto hotDealCommentDto, @AuthenticationPrincipal User user) {
+        return BaseResponse.onSuccess(hotDealPostService.createHotDealComment(hotDealCommentDto, user), ResponseCode.OK);
 
     }
 

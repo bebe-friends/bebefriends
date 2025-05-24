@@ -42,7 +42,7 @@ public class HotDealPostServiceImpl implements HotDealPostService {
         return hotDealPostRepository.findByHotDeal_HotDealCategory(hotDealCategory,pageable).map(HotDealPostDto::fromEntity);
     }
 
-    public HotDealPostDto createHotDealPost(HotDealPostDto hotDealPostDto) {
+    public HotDealPostDto createHotDealPost(HotDealPostDto hotDealPostDto, User user) {
         // 핫딜 초기화
         HotDeal hotDeal = null;
 
@@ -54,6 +54,7 @@ public class HotDealPostServiceImpl implements HotDealPostService {
 
         // 핫딜 게시글 생성
         HotDealPost hotDealPost = HotDealPost.builder()
+                .user(user)
                 .hotDeal(hotDeal)
                 .title(hotDealPostDto.getTitle())
                 .content(hotDealPostDto.getContent())
@@ -91,7 +92,7 @@ public class HotDealPostServiceImpl implements HotDealPostService {
     }
 
     @Override
-    public HotDealCommentDto createHotDealComment(HotDealCommentDto hotDealCommentDto) {
+    public HotDealCommentDto createHotDealComment(HotDealCommentDto hotDealCommentDto, User user) {
         // 핫딜 댓글 초기화
         HotDealComment repliedComment = null;
 
@@ -108,6 +109,7 @@ public class HotDealPostServiceImpl implements HotDealPostService {
 
         // 핫딜 댓글 생성
         HotDealComment hotDealComment = HotDealComment.builder()
+                .user(user)
                 .repliedComment(repliedComment)
                 .hotDealPost(hotDealPost)
                 .content(hotDealCommentDto.getContent())

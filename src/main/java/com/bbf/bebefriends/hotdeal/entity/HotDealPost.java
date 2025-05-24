@@ -1,6 +1,7 @@
 package com.bbf.bebefriends.hotdeal.entity;
 
 import com.bbf.bebefriends.global.entity.BaseEntity;
+import com.bbf.bebefriends.member.entity.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,6 +18,10 @@ public class HotDealPost extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;                // 핫딜 게시글 식별자
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;              // 회원 식별자
 
     @ManyToOne
     @JoinColumn(name = "hot_deal_id")

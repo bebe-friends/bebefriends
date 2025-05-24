@@ -12,6 +12,8 @@ public class HotDealPostDto {
 
     private Long id;                    // 핫딜 게시글 식별자
 
+    private Long userId;                // 회원 식별자
+
     private Long hotDealId;             // 핫딜 식별자
 
     private String title;               // 핫딜 게시글 제목
@@ -34,6 +36,7 @@ public class HotDealPostDto {
     public static HotDealPostDto fromEntity(HotDealPost hotDealPost) {
         return HotDealPostDto.builder()
                 .id(hotDealPost.getId())
+                .userId(hotDealPost.getUser().getUid())
                 .hotDealId(hotDealPost.getHotDeal().getId())
                 .title(hotDealPost.getTitle())
                 .content(hotDealPost.getContent())

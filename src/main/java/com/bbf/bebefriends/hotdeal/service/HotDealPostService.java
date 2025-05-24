@@ -14,11 +14,11 @@ public interface HotDealPostService {
 
     Page<HotDealPostDto> searchCategoryHotDealPost(Long hotDealCategoryId,Pageable pageable);
 
-    HotDealPostDto createHotDealPost(HotDealPostDto hotDealPostDto);
+    HotDealPostDto createHotDealPost(HotDealPostDto hotDealPostDto, User user);
 
     HotDealPostDto searchHotDealPostDetail(Long hotDealPostId, User user);
 
-    HotDealCommentDto createHotDealComment(HotDealCommentDto hotDealCommentDto);
+    HotDealCommentDto createHotDealComment(HotDealCommentDto hotDealCommentDto, User user);
 
     Page<HotDealCommentDto> searchHotDealComment(Long hotDealPostId,Pageable pageable);
 

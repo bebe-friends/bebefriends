@@ -14,6 +14,8 @@ public class HotDealCommentDto {
 
     private Long id;                        // 핫딜 댓글 식별자
 
+    private Long userId;                    // 회원 식별자
+
     private Long repliedCommentId;          // 핫딜 대댓글 식별자
 
     private Long hotDealPostId;             // 핫딜 게시글 식별자
@@ -26,6 +28,7 @@ public class HotDealCommentDto {
     public static HotDealCommentDto fromEntity(HotDealComment hotDealComment) {
         HotDealCommentDto commentDto = HotDealCommentDto.builder()
                 .id(hotDealComment.getId())
+                .userId(hotDealComment.getUser().getUid())
                 .hotDealPostId(hotDealComment.getHotDealPost().getId())
                 .content(hotDealComment.getContent())
                 .deleted_at(hotDealComment.getDeleted_at())
