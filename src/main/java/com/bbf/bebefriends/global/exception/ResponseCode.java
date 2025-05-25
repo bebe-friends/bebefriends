@@ -29,6 +29,7 @@ public enum ResponseCode {
     NICKNAME_NOT_EXIST(HttpStatus.BAD_REQUEST, "MEMBER4002", "닉네임은 필수 입니다."),
     NICKNAME_ALREADY_EXIST(HttpStatus.BAD_REQUEST, "MEMBER4003", "이미 등록된 닉네임 입니다."),
     NICKNAME_INVALID(HttpStatus.BAD_REQUEST, "MEMBER4004", "닉네임이 잘못되었습니다."),
+    MEMBER_ALREADY_EXIST(HttpStatus.BAD_REQUEST, "MEMBER4005", "이미 가입된 회원입니다."),
 
     // Community Error
     COMMUNITY_POST_NOT_FOUND(HttpStatus.NOT_FOUND, "COMMUNITY_POST4001", "게시물을 찾을 수 없습니다."),
