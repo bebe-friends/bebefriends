@@ -1,6 +1,7 @@
 package com.bbf.bebefriends.hotdeal.entity;
 
 import com.bbf.bebefriends.global.entity.BaseEntity;
+import com.bbf.bebefriends.hotdeal.dto.HotDealCommentDto;
 import com.bbf.bebefriends.member.entity.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -36,5 +37,15 @@ public class HotDealComment extends BaseEntity {
     private String content;                         // 내용
 
     private LocalDateTime deleted_at;               // 삭제 여부
+
+    public void update(HotDealCommentDto hotDealCommentDto) {
+        this.content = hotDealCommentDto.getContent();
+
+    }
+
+    public void delete() {
+        this.deleted_at = LocalDateTime.now();
+
+    }
 
 }

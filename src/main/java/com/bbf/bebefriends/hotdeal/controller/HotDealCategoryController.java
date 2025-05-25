@@ -26,6 +26,20 @@ public class HotDealCategoryController {
 
     }
 
+    @Operation(summary = "핫딜 카테고리 수정", description = "핫딜 카테고리를 수정합니다.")
+    @PutMapping
+    public BaseResponse<HotDealCategoryDto> updateHotDealCategory(@RequestBody HotDealCategoryDto hotDealCategoryDto) {
+        return BaseResponse.onSuccess(hotDealCategoryService.updateHotDealCategory(hotDealCategoryDto), ResponseCode.OK);
+
+    }
+
+    @Operation(summary = "핫딜 카테고리 삭제", description = "핫딜 카테고리를 삭제합니다.")
+    @DeleteMapping
+    public BaseResponse<Long> deleteHotDealCategory(@RequestParam Long hotDealCategoryId) {
+        return BaseResponse.onSuccess(hotDealCategoryService.deleteHotDealCategory(hotDealCategoryId), ResponseCode.OK);
+
+    }
+
     @Operation(summary = "핫딜 카테고리 전체 조회", description = "핫딜 카테고리를 전체 조회합니다.")
     @GetMapping
     public BaseResponse<List<HotDealCategoryDto>> searchAllHotDealCategory() {

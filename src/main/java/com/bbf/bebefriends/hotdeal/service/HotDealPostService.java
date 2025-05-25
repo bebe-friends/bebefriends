@@ -16,9 +16,17 @@ public interface HotDealPostService {
 
     HotDealPostDto createHotDealPost(HotDealPostDto hotDealPostDto, User user);
 
+    HotDealPostDto updateHotDealPost(HotDealPostDto hotDealPostDto, User user);
+
+    Long deleteHotDealPost(Long hotDealPostId, User user);
+
     HotDealPostDto searchHotDealPostDetail(Long hotDealPostId, User user);
 
     HotDealCommentDto createHotDealComment(HotDealCommentDto hotDealCommentDto, User user);
+
+    HotDealCommentDto updateHotDealComment(HotDealCommentDto hotDealCommentDto, User user);
+
+    Long deleteHotDealComment(Long hotDealCommentId, User user);
 
     Page<HotDealCommentDto> searchHotDealComment(Long hotDealPostId,Pageable pageable);
 

@@ -1,6 +1,7 @@
 package com.bbf.bebefriends.hotdeal.entity;
 
 import com.bbf.bebefriends.global.entity.BaseEntity;
+import com.bbf.bebefriends.hotdeal.dto.HotDealDto;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -29,5 +30,16 @@ public class HotDeal extends BaseEntity {
     private String unit;                            // 단위
 
     private String status;                          // 핫딜 상태
+
+    public void update(HotDealDto hotDealDto) {
+        this.name = hotDealDto.getName();
+        this.imgPath = hotDealDto.getImgPath();
+        this.unit = hotDealDto.getUnit();
+        this.status = hotDealDto.getStatus();
+    }
+
+    public void updateHotDealCategory(HotDealCategory hotDealCategory) {
+        this.hotDealCategory = hotDealCategory;
+    }
 
 }

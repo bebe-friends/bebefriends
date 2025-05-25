@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -49,6 +50,37 @@ public class HotDealServiceImpl implements HotDealService {
     }
 
     @Override
+    @Transactional
+    public HotDealDto updateHotDeal(HotDealDto hotDealDto) {
+        // 수정할 핫딜 조회
+        HotDeal hotDeal = hotDealRepository.findById(hotDealDto.getId())
+                .orElseThrow();
+
+        // 기존과 다른 핫딜 카테고리인 경우
+        if (!hotDeal.getHotDealCategory().getId().equals(hotDealDto.getHotDealCategoryId())) {
+            // 수정된 핫딜 카테고리로 세팅
+            HotDealCategory hotDealCategory = hotDealCategoryRepository.findById(hotDealDto.getHotDealCategoryId())
+                    .orElseThrow();
+            hotDeal.updateHotDealCategory(hotDealCategory);
+        }
+
+        // 핫딜 업데이트
+        hotDeal.update(hotDealDto);
+
+        return hotDealDto;
+    }
+
+    @Override
+    public Long deleteHotDeal(Long hotDealId) {
+        // 삭제할 핫딜 조회
+        HotDeal hotDeal = hotDealRepository.findById(hotDealId)
+                .orElseThrow();
+        hotDealRepository.delete(hotDeal);
+
+        return hotDealId;
+    }
+
+    @Override
     public HotDealRecordDto createHotDealRecord(HotDealRecordDto hotDealRecordDto) {
         // 핫딜 조회
         HotDeal hotDeal = hotDealRepository.findById(hotDealRecordDto.getHotDealId())
@@ -64,6 +96,36 @@ public class HotDealServiceImpl implements HotDealService {
         hotDealRecordRepository.save(hotDealRecord);
 
         return hotDealRecordDto;
+    }
+
+    @Override
+    public HotDealRecordDto updateHotDealRecord(HotDealRecordDto hotDealRecordDto) {
+        // 수정할 핫딜 기록 조회
+        HotDealRecord hotDealRecord = hotDealRecordRepository.findById(hotDealRecordDto.getId())
+                .orElseThrow();
+
+        // 기존과 다른 핫딜인 경우
+        if (!hotDealRecord.getHotDeal().getId().equals(hotDealRecordDto.getHotDealId())) {
+            // 수정된 핫딜로 세팅
+            HotDeal hotDeal = hotDealRepository.findById(hotDealRecordDto.getHotDealId())
+                    .orElseThrow();
+            hotDealRecord.updateHotDeal(hotDeal);
+        }
+
+        // 핫딜 기록 업데이트
+        hotDealRecord.update(hotDealRecordDto);
+
+        return hotDealRecordDto;
+    }
+
+    @Override
+    public Long deleteHotDealRecord(Long hotDealRecordId) {
+        // 삭제할 핫딜 기록 조회
+        HotDealRecord hotDealRecord = hotDealRecordRepository.findById(hotDealRecordId)
+                .orElseThrow();
+        hotDealRecordRepository.delete(hotDealRecord);
+
+        return hotDealRecordId;
     }
 
     @Override

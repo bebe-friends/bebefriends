@@ -27,10 +27,38 @@ public class HotDealController {
 
     }
 
+    @Operation(summary = "핫딜 수정", description = "핫딜을 수정합니다.")
+    @PutMapping
+    public BaseResponse<HotDealDto> updateHotDeal(@RequestBody HotDealDto hotDealDto) {
+        return BaseResponse.onSuccess(hotDealService.updateHotDeal(hotDealDto), ResponseCode.OK);
+
+    }
+
+    @Operation(summary = "핫딜 삭제", description = "핫딜을 삭제합니다.")
+    @DeleteMapping
+    public BaseResponse<Long> deleteHotDeal(@RequestParam Long hotDealId) {
+        return BaseResponse.onSuccess(hotDealService.deleteHotDeal(hotDealId), ResponseCode.OK);
+
+    }
+
     @Operation(summary = "핫딜 기록 등록", description = "핫딜 기록을 등록합니다.")
     @PostMapping("/record")
     public BaseResponse<HotDealRecordDto> createHotDealRecord(@RequestBody HotDealRecordDto hotDealRecordDto) {
         return BaseResponse.onSuccess(hotDealService.createHotDealRecord(hotDealRecordDto), ResponseCode.OK);
+
+    }
+
+    @Operation(summary = "핫딜 기록 수정", description = "핫딜 기록을 수정합니다.")
+    @PutMapping("/record")
+    public BaseResponse<HotDealRecordDto> updateHotDealRecord(@RequestBody HotDealRecordDto hotDealRecordDto) {
+        return BaseResponse.onSuccess(hotDealService.updateHotDealRecord(hotDealRecordDto), ResponseCode.OK);
+
+    }
+
+    @Operation(summary = "핫딜 기록 삭제", description = "핫딜 기록을 삭제합니다.")
+    @DeleteMapping("/record")
+    public BaseResponse<Long> deleteHotDealRecord(@RequestParam Long hotDealRecordId) {
+        return BaseResponse.onSuccess(hotDealService.deleteHotDealRecord(hotDealRecordId), ResponseCode.OK);
 
     }
 

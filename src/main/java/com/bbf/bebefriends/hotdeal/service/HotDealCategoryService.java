@@ -8,5 +8,9 @@ public interface HotDealCategoryService {
 
     HotDealCategoryDto createHotDealCategory(HotDealCategoryDto hotDealCategoryDto);
 
+    HotDealCategoryDto updateHotDealCategory(HotDealCategoryDto hotDealCategoryDto);
+
+    Long deleteHotDealCategory(Long hotDealCategoryId);
+
     List<HotDealCategoryDto> searchAllHotDealCategory();
 }
