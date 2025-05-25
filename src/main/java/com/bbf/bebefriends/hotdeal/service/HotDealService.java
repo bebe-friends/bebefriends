@@ -14,6 +14,10 @@ public interface HotDealService {
 
     Long deleteHotDeal(Long hotDealId);
 
+    Page<HotDealDto> searchAllHotDeal(Pageable pageable);
+
+    Page<HotDealDto> searchCategoryHotDeal(Long hotDealCategoryId, Pageable pageable);
+
     HotDealRecordDto createHotDealRecord(HotDealRecordDto hotDealRecordDto);
 
     HotDealRecordDto updateHotDealRecord(HotDealRecordDto hotDealRecordDto);

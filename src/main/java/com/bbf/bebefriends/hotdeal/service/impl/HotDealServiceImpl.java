@@ -81,6 +81,19 @@ public class HotDealServiceImpl implements HotDealService {
     }
 
     @Override
+    public Page<HotDealDto> searchAllHotDeal(Pageable pageable) {
+        return hotDealRepository.findAll(pageable).map(HotDealDto::fromEntity);
+    }
+
+    @Override
+    public Page<HotDealDto> searchCategoryHotDeal(Long hotDealCategoryId, Pageable pageable) {
+        // 핫딜 카테고리 조회
+        HotDealCategory hotDealCategory = hotDealCategoryRepository.findById(hotDealCategoryId)
+                .orElseThrow();
+        return hotDealRepository.findByHotDealCategory(hotDealCategory, pageable).map(HotDealDto::fromEntity);
+    }
+
+    @Override
     public HotDealRecordDto createHotDealRecord(HotDealRecordDto hotDealRecordDto) {
         // 핫딜 조회
         HotDeal hotDeal = hotDealRepository.findById(hotDealRecordDto.getHotDealId())
