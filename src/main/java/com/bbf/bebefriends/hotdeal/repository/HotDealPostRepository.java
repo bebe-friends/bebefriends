@@ -10,6 +10,8 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface HotDealPostRepository extends JpaRepository<HotDealPost, Long> {
 
-    Page<HotDealPost> findByHotDeal_HotDealCategory(HotDealCategory hotDealCategory, Pageable pageable);
+    Page<HotDealPost> findAllByDeletedAtIsNull(Pageable pageable);
+
+    Page<HotDealPost> findByHotDeal_HotDealCategoryAndDeletedAtIsNull(HotDealCategory hotDealCategory, Pageable pageable);
 
 }

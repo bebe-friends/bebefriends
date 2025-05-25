@@ -36,7 +36,7 @@ public class HotDealComment extends BaseEntity {
 
     private String content;                         // 내용
 
-    private LocalDateTime deleted_at;               // 삭제 여부
+    private LocalDateTime deletedAt;                // 삭제일자
 
     public void update(HotDealCommentDto hotDealCommentDto) {
         this.content = hotDealCommentDto.getContent();
@@ -44,7 +44,7 @@ public class HotDealComment extends BaseEntity {
     }
 
     public void delete() {
-        this.deleted_at = LocalDateTime.now();
+        this.deletedAt = LocalDateTime.now();
 
     }
 

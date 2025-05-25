@@ -46,7 +46,7 @@ public class HotDealPost extends BaseEntity {
 
     private int likeCount;                  // 좋아요 수
 
-    private LocalDateTime deleted_at;       // 삭제 여부
+    private LocalDateTime deletedAt;        // 삭제일자
 
     // 게시글 조회수 증가
     public void increaseViewCount() {
@@ -76,7 +76,7 @@ public class HotDealPost extends BaseEntity {
     }
 
     public void delete() {
-        this.deleted_at = LocalDateTime.now();
+        this.deletedAt = LocalDateTime.now();
     }
 
 }

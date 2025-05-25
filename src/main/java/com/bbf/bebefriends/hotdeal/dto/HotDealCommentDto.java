@@ -22,7 +22,7 @@ public class HotDealCommentDto {
 
     private String content;                 // 내용
 
-    private LocalDateTime deleted_at;       // 삭제 여부
+    private LocalDateTime deletedAt;        // 삭제일자
 
     // Entity -> dto
     public static HotDealCommentDto fromEntity(HotDealComment hotDealComment) {
@@ -31,7 +31,7 @@ public class HotDealCommentDto {
                 .userId(hotDealComment.getUser().getUid())
                 .hotDealPostId(hotDealComment.getHotDealPost().getId())
                 .content(hotDealComment.getContent())
-                .deleted_at(hotDealComment.getDeleted_at())
+                .deletedAt(hotDealComment.getDeletedAt())
                 .build();
 
         // 대댓글이 있는 경우

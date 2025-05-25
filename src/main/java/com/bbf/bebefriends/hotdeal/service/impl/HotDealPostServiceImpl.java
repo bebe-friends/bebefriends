@@ -31,7 +31,7 @@ public class HotDealPostServiceImpl implements HotDealPostService {
 
     @Override
     public Page<HotDealPostDto> searchAllHotDealPost(Pageable pageable) {
-        return hotDealPostRepository.findAll(pageable).map(HotDealPostDto::fromEntity);
+        return hotDealPostRepository.findAllByDeletedAtIsNull(pageable).map(HotDealPostDto::fromEntity);
     }
 
     @Override
@@ -41,7 +41,7 @@ public class HotDealPostServiceImpl implements HotDealPostService {
                 .orElseThrow();
 
         // 조회한 카테고리를 통해 핫딜 게시글 조회
-        return hotDealPostRepository.findByHotDeal_HotDealCategory(hotDealCategory,pageable).map(HotDealPostDto::fromEntity);
+        return hotDealPostRepository.findByHotDeal_HotDealCategoryAndDeletedAtIsNull(hotDealCategory,pageable).map(HotDealPostDto::fromEntity);
     }
 
     public HotDealPostDto createHotDealPost(HotDealPostDto hotDealPostDto, User user) {
@@ -203,7 +203,7 @@ public class HotDealPostServiceImpl implements HotDealPostService {
         HotDealPost hotDealPost = hotDealPostRepository.findById(hotDealPostId)
                 .orElseThrow();
 
-        return hotDealCommentRepository.findByHotDealPost(hotDealPost, pageable).map(HotDealCommentDto::fromEntity);
+        return hotDealCommentRepository.findByHotDealPostAndDeletedAtIsNull(hotDealPost, pageable).map(HotDealCommentDto::fromEntity);
     }
 
     @Override

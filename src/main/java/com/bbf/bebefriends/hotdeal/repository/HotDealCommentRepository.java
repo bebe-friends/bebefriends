@@ -10,5 +10,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface HotDealCommentRepository extends JpaRepository<HotDealComment, Long> {
 
-    Page<HotDealComment> findByHotDealPost(HotDealPost hotDealPost, Pageable pageable);
+    Page<HotDealComment> findByHotDealPostAndDeletedAtIsNull(HotDealPost hotDealPost, Pageable pageable);
 }
