@@ -25,7 +25,6 @@ public class UserService {
     private final KakaoOAuthService kakaoOAuthService;
 
     public User findByUid(Long uid) {
-//        return userRepository.findByUidAndDeletedAtIsNull(uid)
         return userRepository.findByUidAndDeletedAtIsNull(uid)
                 .orElseThrow(() -> new UserControllerAdvice(ResponseCode.MEMBER_NOT_FOUND));
     }
@@ -59,7 +58,6 @@ public class UserService {
         KakaoUserInfo userInfo = kakaoOAuthService.getUserInfo(request.oauthToken());
         User user = userRepository.findByDeletedAtIsNullAndOauth2UserInfo_OauthId(userInfo.getId())
                 .orElseGet(() -> {
-//                            User findUser = userRepository.findUserByEmailAndDeletedAtIsNull(userInfo.getEmail())
                             User findUser = userRepository.findByEmailAndDeletedAtIsNull(userInfo.getEmail())
                                     .orElseThrow(() -> new UserControllerAdvice(ResponseCode.MEMBER_NOT_FOUND));
                             // Oauth2UserInfo 에 kakao oauth id 없을 경우 추가
@@ -81,13 +79,16 @@ public class UserService {
                 .orElse(null);
 
         if (user != null) {
-            user.setNickname(createNickname());
-            user.setDeletedAt(null);
-//            userRepository.updateNicknameAndDeletedAtByUid(user.getUid(), createNickname(), null);
-            return new UserDTO.UserAccessResponse(
-                    JwtTokenUtil.createAccessToken(String.valueOf(user.getUid()),
-                            new JwtPayload(UserRole.USER.toString(), user.getEmail()))
-            );
+            if (user.getDeletedAt() != null) {
+                user.setNickname(createNickname());
+                user.setDeletedAt(null);
+                return new UserDTO.UserAccessResponse(
+                        JwtTokenUtil.createAccessToken(String.valueOf(user.getUid()),
+                                new JwtPayload(UserRole.USER.toString(), user.getEmail()))
+                );
+            } else {
+                throw new UserControllerAdvice(ResponseCode.MEMBER_ALREADY_EXIST);
+            }
         }
 
         user = new User();
