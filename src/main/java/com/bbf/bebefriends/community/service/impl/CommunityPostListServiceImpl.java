@@ -5,6 +5,7 @@ import com.bbf.bebefriends.community.entity.CommunityCategory;
 import com.bbf.bebefriends.community.entity.CommunityImage;
 import com.bbf.bebefriends.community.entity.CommunityPost;
 import com.bbf.bebefriends.community.repository.CommunityCommentRepository;
+import com.bbf.bebefriends.community.repository.CommunityPostForAnonymousRepository;
 import com.bbf.bebefriends.community.repository.CommunityPostLikeRepository;
 import com.bbf.bebefriends.community.repository.CommunityPostRepository;
 import com.bbf.bebefriends.community.service.CommunityCategoryService;
@@ -15,6 +16,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -23,9 +25,10 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class CommunityPostListServiceImpl implements CommunityPostListService {
     private final CommunityPostRepository communityPostRepository;
-    private final CommunityCommentRepository communityCommentRepository;
+    private final CommunityPostForAnonymousRepository communityPostForAnonymousRepository;
     private final CommunityCategoryService communityCategoryService;
 
     // DTO 변환 (첫 번째 이미지 URL)
@@ -35,7 +38,7 @@ public class CommunityPostListServiceImpl implements CommunityPostListService {
                 .map(CommunityImage::getImgUrl)
                 .orElse(null);
 
-        int commentCount = communityCommentRepository.countByPostAndDeletedAtIsNull(post);
+//        int commentCount = communityCommentRepository.countByPostAndDeletedAtIsNull(post);
         return CommunityPostDTO.PostListResponse.builder()
                 .postId(post.getId())
                 .title(post.getTitle())
@@ -45,24 +48,37 @@ public class CommunityPostListServiceImpl implements CommunityPostListService {
                 .createdAt(post.getCreatedDate())
                 .viewCount(post.getViewCount())
                 .likeCount(post.getLikeCount())
-                .commentCount(commentCount)
+                .commentCount(post.getCommentCount())
                 .build();
     }
 
     // 모든 게시물
     @Override
-    public List<CommunityPostDTO.PostListResponse> getAllPosts() {
-        return communityPostRepository.findAllActivePosts()
+    public List<CommunityPostDTO.PostListResponse> getAllPosts(User user) {
+        if (user == null) {
+            return communityPostForAnonymousRepository.findAllActivePostsForAnonymous()
+                    .stream()
+                    .map(this::toDto)
+                    .collect(Collectors.toList());
+        }
+        List<CommunityPost> communityPosts = communityPostRepository.findAllActivePosts(user);
+        return communityPosts
                 .stream()
                 .map(this::toDto)
                 .collect(Collectors.toList());
     }
 
-    // 카테고리 별 조회
+    // 카테고리 별 조회 -> id로 조회하는게 더 낫나?
     @Override
-    public List<CommunityPostDTO.PostListResponse> getPostsByCategory(String request) {
+    public List<CommunityPostDTO.PostListResponse> getPostsByCategory(String request, User user) {
         CommunityCategory category = communityCategoryService.getCategoryByName(request);
-        return communityPostRepository.findByCategoryActive(category)
+        if (user == null) {
+            return communityPostForAnonymousRepository.findByCategoryActiveForAnonymous(category)
+                    .stream()
+                    .map(this::toDto)
+                    .collect(Collectors.toList());
+        }
+        return communityPostRepository.findByCategoryActive(category, user)
                 .stream()
                 .map(this::toDto)
                 .collect(Collectors.toList());
@@ -70,8 +86,14 @@ public class CommunityPostListServiceImpl implements CommunityPostListService {
 
     // 제목 혹은 글쓴이 검색
     @Override
-    public List<CommunityPostDTO.PostListResponse> getPostsBySearch(String query) {
-        return communityPostRepository.searchPostsByKeyword(query)
+    public List<CommunityPostDTO.PostListResponse> getPostsBySearch(String query, User user) {
+        if (user == null) {
+            return communityPostForAnonymousRepository.searchPostsByKeywordForAnonymous(query)
+                    .stream()
+                    .map(this::toDto)
+                    .collect(Collectors.toList());
+        }
+        return communityPostRepository.searchPostsByKeyword(query, user)
                 .stream()
                 .map(this::toDto)
                 .collect(Collectors.toList());

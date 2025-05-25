@@ -8,12 +8,12 @@ import java.util.List;
 
 public interface CommunityPostListService {
     // 전체 게시물 조회
-    List<CommunityPostDTO.PostListResponse> getAllPosts();
+    List<CommunityPostDTO.PostListResponse> getAllPosts(User user);
 
     // 카테고리 별 게시물 목록 조회
-    List<CommunityPostDTO.PostListResponse> getPostsByCategory(String category);
+    List<CommunityPostDTO.PostListResponse> getPostsByCategory(String category, User user);
     // 게시물 검색
-    List<CommunityPostDTO.PostListResponse> getPostsBySearch(String query);
+    List<CommunityPostDTO.PostListResponse> getPostsBySearch(String query, User user);
 
     // 제목 별 게시물 목록 조회
 //    List<CommunityPostDTO.PostListResponse> getPostsByTitle(String keyword);

@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+// TODO: 게시물 신고, 게시물 실제 삭제, 게시물 인증
 @Entity
 @Getter
 @Table(name = "community_posts")
@@ -41,8 +42,8 @@ public class CommunityPost extends BaseEntity {
     @OneToMany(mappedBy = "communityPost", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CommunityLink> links = new ArrayList<>();
 
-    private Boolean isCertificated;
-    private Boolean isReported;
+    private LocalDateTime isCertificated;
+    private LocalDateTime isReported;
     private LocalDateTime deletedAt;
 
     public void addImage(CommunityImage image) {
@@ -65,8 +66,8 @@ public class CommunityPost extends BaseEntity {
         post.likeCount = 0;
         post.commentCount = 0;
         post.deletedAt = null;
-        post.isCertificated = false;
-        post.isReported = false;
+        post.isCertificated = null;
+        post.isReported = null;
 
         return post;
     }

@@ -17,6 +17,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class CommunityCommentServiceImpl implements CommunityCommentService {
     private final CommunityCommentRepository communityCommentRepository;
     private final CommunityPostRepository communityPostRepository;
@@ -31,7 +32,7 @@ public class CommunityCommentServiceImpl implements CommunityCommentService {
                 .toList();
     }
 
-    // FIXME: 대댓글의 댓글은 불가능. 깊이는 최대 2까지만 설정하도록 수정
+    // TODO: 대댓글의 댓글은 불가능. 깊이는 최대 2까지만 설정하도록
     @Override
     @Transactional
     public String createComment(User user, CommunityCommentDTO.CreateCommentRequest request) {
