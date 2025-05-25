@@ -13,7 +13,7 @@ import org.springframework.stereotype.Repository;
 import java.time.LocalDateTime;
 import java.util.List;
 
-// FIXME: 페이지네이션 필요
+// TODO: 페이지네이션, not exist 로 쿼리 조건문 변경, 카테고리 파라미터를 id 값으로 변경, 비로그인 대상 메서드를 쿼리문으로 처리(querydsl)
 @Repository
 public interface CommunityPostRepository extends JpaRepository<CommunityPost, Long> {
     // 전체 게시글 조회(deletedAt과 isReported가 null인 전체 항목)
@@ -25,9 +25,10 @@ public interface CommunityPostRepository extends JpaRepository<CommunityPost, Lo
         AND p.id NOT IN (
           SELECT b.post.id
           FROM CommunityPostBlock b
+          WHERE b.user = :user
         )
     """)
-    List<CommunityPost> findAllActivePosts();
+    List<CommunityPost> findAllActivePosts(@Param("user") User user);
 
     // 카테고리 별 조회(deletedAt과 isReported가 null)
     @Query("""
@@ -39,9 +40,11 @@ public interface CommunityPostRepository extends JpaRepository<CommunityPost, Lo
         AND p.id NOT IN (
           SELECT b.post.id
           FROM CommunityPostBlock b
+          WHERE b.user = :user
         )
     """)
-    List<CommunityPost> findByCategoryActive(@Param("category") CommunityCategory category);
+    List<CommunityPost> findByCategoryActive(@Param("category") CommunityCategory category,
+                                             @Param("user") User user);
 
     // 제목 혹은 글쓴이로 검색
     @Query("""
@@ -55,9 +58,11 @@ public interface CommunityPostRepository extends JpaRepository<CommunityPost, Lo
           AND p.id NOT IN (
               SELECT b.post.id
               FROM CommunityPostBlock b
+              WHERE b.user = :user
           )
     """)
-    List<CommunityPost> searchPostsByKeyword(@Param("kw") String keyword);
+    List<CommunityPost> searchPostsByKeyword(@Param("kw") String keyword,
+                                             @Param("user") User user);
 
     // 제목으로 조회(deletedAt과 isReported가 null)
 //    @Query("""
@@ -103,7 +108,8 @@ public interface CommunityPostRepository extends JpaRepository<CommunityPost, Lo
         AND p.isReported IS NULL
         AND p.id NOT IN (
           SELECT b.post.id
-          FROM CommunityPostBlock b)
+          FROM CommunityPostBlock b
+          WHERE b.user = :user)
     """)
     List<CommunityPost> findCommentedByUserActive(@Param("user") User user);
 
@@ -118,7 +124,8 @@ public interface CommunityPostRepository extends JpaRepository<CommunityPost, Lo
         AND p.isReported IS NULL
         AND p.id NOT IN (
           SELECT b.post.id
-          FROM CommunityPostBlock b)
+          FROM CommunityPostBlock b
+          WHERE b.user = :user)
     """)
     List<CommunityPost> findLikedByUserActive(@Param("user") User user);
 

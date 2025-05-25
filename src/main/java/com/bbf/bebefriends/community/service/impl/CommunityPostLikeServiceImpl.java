@@ -56,7 +56,6 @@ public class CommunityPostLikeServiceImpl implements CommunityPostLikeService {
 //    public String deletePostLike(Long postId, CommunityPostLikeDTO.PostLikeRequest request) {
 //        CommunityPost communityPost = communityPostRepository.findById(postId)
 //                .orElseThrow(() -> new CommunityControllerAdvice(ResponseCode.COMMUNITY_POST_NOT_FOUND));
-//        // FIXME: 멤버 예외처리 수정 필요
 //        CommunityPostLike communityPostLike = communityPostLikeRepository.findByPostAndUser(communityPost,
 //                userRepository.findById(request.getUserUid()).orElseThrow())
 //                .orElseThrow(() -> new CommunityControllerAdvice(ResponseCode.COMMUNITY_POST_LIKE_NOT_FOUND));

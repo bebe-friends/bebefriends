@@ -5,12 +5,15 @@ import com.bbf.bebefriends.community.service.CommunityPostService;
 import com.bbf.bebefriends.global.entity.BaseResponse;
 import com.bbf.bebefriends.global.entity.UserDetailsImpl;
 import com.bbf.bebefriends.global.exception.ResponseCode;
+import com.bbf.bebefriends.member.entity.User;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -24,7 +27,6 @@ import java.util.List;
 public class CommunityPostController {
     private final CommunityPostService communityPostService;
 
-    // FIXME: multipartfile 부분 수정 필요
     // 게시글 작성
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(summary = "커뮤니티 게시글 생성", description = "게시물을 게시합니다.")
@@ -58,8 +60,16 @@ public class CommunityPostController {
     // 게시글 상세 페이지
     @GetMapping("/detail")
     @Operation(summary = "커뮤니티 게시글 상세 페이지", description = "게시글 상세 페이지를 조회합니다.")
-    public BaseResponse<CommunityPostDTO.PostDetailsResponse>  getPostDetails(@AuthenticationPrincipal UserDetailsImpl user,
-                                                                              @RequestParam Long postId) {
+    public BaseResponse<CommunityPostDTO.PostDetailsResponse>  getPostDetails(@RequestParam Long postId) {
+//        User currentUser = null;
+//        if (authentication != null
+//                && authentication.isAuthenticated()
+//                && !(authentication instanceof AnonymousAuthenticationToken)) {
+//
+//            UserDetailsImpl ud = (UserDetailsImpl) authentication.getPrincipal();
+//            currentUser = ud.getUser();
+//        }
+
         return BaseResponse.onSuccess(communityPostService.getPostDetail(postId), ResponseCode.OK);
     }
 }
