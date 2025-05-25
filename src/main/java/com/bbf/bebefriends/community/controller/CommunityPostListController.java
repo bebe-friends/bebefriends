@@ -18,20 +18,20 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/auth")
+@RequestMapping("/api/v1/post-list")
 @Tag(name = "게시물 목록 api", description = "모든 게시물·카테고리·제목·작성자·내가 쓴 게시물·댓글 단 게시물·좋아요한 게시물 목록 api")
 public class CommunityPostListController {
     private final CommunityPostListService communityPostListService;
 
     // 모든 게시물
-    @GetMapping("/all-posts")
+    @GetMapping("/all")
     @Operation(summary = "전체 게시물 목록", description = "전체 게시물을 조회합니다.(아무런 인증 필요 없음)")
     public BaseResponse<List<CommunityPostDTO.PostListResponse>> getPosts() {
         return BaseResponse.onSuccess(communityPostListService.getAllPosts(), ResponseCode.OK);
     }
 
     // 카테고리 별 조회
-    @GetMapping("/category-posts")
+    @GetMapping("/category")
     @Operation(summary = "카테고리 별 게시물 목록", description = "카테고리 별로 게시물 목록을 조회합니다.")
     public BaseResponse<List<CommunityPostDTO.PostListResponse>> getCategoryPosts(@RequestParam String category) {
         return BaseResponse.onSuccess(communityPostListService.getPostsByCategory(category), ResponseCode.OK);
@@ -59,21 +59,21 @@ public class CommunityPostListController {
 //    }
 
     // 내가 쓴 게시물
-    @GetMapping("/my-posts")
+    @GetMapping("/my")
     @Operation(summary = "내가 쓴 게시물", description = "내가 쓴 게시물을 조회합니다.")
     public BaseResponse<List<CommunityPostDTO.PostListResponse>> getMyPosts(@AuthenticationPrincipal UserDetailsImpl user) {
         return BaseResponse.onSuccess(communityPostListService.getMyPosts(user.getUser()), ResponseCode.OK);
     }
 
     // 댓글 단 게시물
-    @GetMapping("/commented-posts")
+    @GetMapping("/commented")
     @Operation(summary = "내가 댓글 단 게시물", description = "내가 댓글 단 게시물을 조회합니다.")
     public BaseResponse<List<CommunityPostDTO.PostListResponse>> getCommentedPosts(@AuthenticationPrincipal UserDetailsImpl user) {
         return BaseResponse.onSuccess(communityPostListService.getCommentedPosts(user.getUser()), ResponseCode.OK);
     }
 
     // 좋아요한 게시물
-    @GetMapping("/liked-posts")
+    @GetMapping("/liked")
     @Operation(summary = "내가 좋아요한 게시물", description = "내가 좋아요한 게시물을 조회합니다.")
     public BaseResponse<List<CommunityPostDTO.PostListResponse>> getLikedPosts(@AuthenticationPrincipal UserDetailsImpl user) {
         return BaseResponse.onSuccess(communityPostListService.getLikedPosts(user.getUser()), ResponseCode.OK);

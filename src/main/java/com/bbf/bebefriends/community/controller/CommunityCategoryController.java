@@ -18,20 +18,20 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/auth")
+@RequestMapping("/api/v1/community-category")
 @Tag(name = "커뮤니티 게시물 카테고리 api", description = "전체 카테고리 조회·카테고리 생성·수정 api")
 public class CommunityCategoryController {
     private final CommunityCategoryService communityCategoryService;
 
     // 전체 카테고리 조회
-    @GetMapping("/community-category")
+    @GetMapping()
     @Operation(summary = "전체 카테고리 조회", description = "전체 카테고리를 조회합니다.")
     public BaseResponse<List<CommunityCategory>> getAllCategory() {
         return BaseResponse.onSuccess(communityCategoryService.getAllCategory(), ResponseCode.OK);
     }
 
     // 카테고리 만들기
-    @PostMapping("/community-category")
+    @PostMapping()
     @Operation(summary = "카테고리 생성", description = "카테고리를 생성합니다.(관리자만 가능)")
     public BaseResponse<CommunityCategoryDTO.CreateCategoryResponse> createCategory(CommunityCategoryDTO.CreateCategoryRequest request,
                                                                                       @AuthenticationPrincipal UserDetailsImpl user) {
@@ -39,7 +39,7 @@ public class CommunityCategoryController {
     }
 
     // 카테고리 수정
-    @PatchMapping("/community-category")
+    @PatchMapping()
     @Operation(summary = "카테고리 이름 수정", description = "카테고리 이름을 수정합니다.(관리자만 가능)")
     public BaseResponse<CommunityCategoryDTO.UpdateCategoryResponse> updateCategory(CommunityCategoryDTO.UpdateCategoryRequest request,
                                                                                     @AuthenticationPrincipal UserDetailsImpl user) {

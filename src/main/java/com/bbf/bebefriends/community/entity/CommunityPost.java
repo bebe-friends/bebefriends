@@ -33,6 +33,7 @@ public class CommunityPost extends BaseEntity {
 
     private int viewCount;
     private int likeCount;
+    private int commentCount;
 
     @OneToMany(mappedBy = "communityPost", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CommunityImage> images = new ArrayList<>();
@@ -61,6 +62,8 @@ public class CommunityPost extends BaseEntity {
         post.title = postCreateRequest.getTitle();
         post.content = postCreateRequest.getContent();
         post.viewCount = 0;
+        post.likeCount = 0;
+        post.commentCount = 0;
         post.deletedAt = null;
         post.isCertificated = false;
         post.isReported = false;
@@ -93,5 +96,15 @@ public class CommunityPost extends BaseEntity {
     // 게시물 좋아요 취소
     public void decreaseLikeCount() {
         this.likeCount--;
+    }
+
+    // 댓글 생성
+    public void increaseCommentCount() {
+        this.commentCount++;
+    }
+
+    // 댓글 삭제
+    public void decreaseCommentCount() {
+        this.commentCount--;
     }
 }

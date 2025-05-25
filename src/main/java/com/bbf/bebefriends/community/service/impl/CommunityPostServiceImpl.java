@@ -34,14 +34,14 @@ public class CommunityPostServiceImpl implements CommunityPostService {
     // 게시물 생성 (게시물, 이미지, 링크)
     @Override
     @Transactional
-    public CommunityPostDTO.CreatePostResponse createPost(CommunityPostDTO.CreatePostRequest request, User user) {
+    public CommunityPostDTO.CreatePostResponse createPost(CommunityPostDTO.CreatePostRequest request, List<MultipartFile> images, User user) {
         CommunityCategory category = communityCategoryService.getCategoryByName(request.getCategory());
 
         CommunityPost communityPost = CommunityPost.createPost(user, category, request);
         communityPostRepository.save(communityPost);
 
-        if (request.getImg() != null) {
-            for (MultipartFile uploadedFile : request.getImg()){
+        if (images != null) {
+            for (MultipartFile uploadedFile : images){
                 String imgUrl = fireBaseService.uploadFirebaseBucket(uploadedFile);
                 CommunityImage image = CommunityImage.createImageFile(communityPost, imgUrl);
                 communityPost.addImage(image);
@@ -61,10 +61,12 @@ public class CommunityPostServiceImpl implements CommunityPostService {
     // 게시물 수정
     @Override
     @Transactional
-    public CommunityPostDTO.UpdatePostResponse updatePost(CommunityPostDTO.UpdatePostRequest request, User user) {
+    public CommunityPostDTO.UpdatePostResponse updatePost(CommunityPostDTO.UpdatePostRequest request, List<MultipartFile> newImages, User user) {
         CommunityPost post = communityPostRepository.findById(request.getPostId())
                 .orElseThrow(() -> new CommunityControllerAdvice(ResponseCode.COMMUNITY_POST_NOT_FOUND));
-        if (!(post.getUser().equals(user))) {
+        // FIXME: transactional 호출 시점에 새로운 영속성 컨텍스트가 시작되기 때문에 동일 영속성 컨텍스트가 아니라 제대로 작동하지 않음
+        // 인스턴스 동일성 문제를 해결하기 위해 값 비교를 하는 long 값을 equals로 비교하기
+        if (!(post.getUser().getUid().equals(user.getUid()))) {
             throw new CommunityControllerAdvice(ResponseCode._UNAUTHORIZED);
         }
 
@@ -86,9 +88,18 @@ public class CommunityPostServiceImpl implements CommunityPostService {
             post.getImages().remove(img); // 엔티티 관계에서도 제거
         });
 
-        if (request.getNewImages() != null) {
-            for (MultipartFile uploadedImage : request.getNewImages()) {
-                String imgUrl = fireBaseService.uploadFirebaseBucket(uploadedImage);
+//        if (request.getNewImages() != null) {
+//            for (MultipartFile uploadedImage : request.getNewImages()) {
+//                String imgUrl = fireBaseService.uploadFirebaseBucket(uploadedImage);
+//                CommunityImage newImg = CommunityImage.createImageFile(post, imgUrl);
+//                post.addImage(newImg);
+//            }
+//        }
+
+        // 2) 새로 올라온 이미지 처리
+        if (newImages != null && !newImages.isEmpty()) {
+            for (MultipartFile uploaded : newImages) {
+                String imgUrl = fireBaseService.uploadFirebaseBucket(uploaded);
                 CommunityImage newImg = CommunityImage.createImageFile(post, imgUrl);
                 post.addImage(newImg);
             }
@@ -110,7 +121,7 @@ public class CommunityPostServiceImpl implements CommunityPostService {
     public String deletePost(CommunityPostDTO.DeletePostRequest request, User user) {
         CommunityPost post = communityPostRepository.findById(request.getPostId())
                 .orElseThrow(() -> new CommunityControllerAdvice(ResponseCode.COMMUNITY_POST_NOT_FOUND));
-        if (!(post.getUser().equals(user))) {
+        if (!(post.getUser().getUid().equals(user.getUid()))) {
             throw new CommunityControllerAdvice(ResponseCode._UNAUTHORIZED);
         }
 
@@ -121,6 +132,7 @@ public class CommunityPostServiceImpl implements CommunityPostService {
 
     // 게시물 상세 페이지
     @Override
+    @Transactional
     public CommunityPostDTO.PostDetailsResponse getPostDetail(Long postId) {
         CommunityPost post = communityPostRepository.findById(postId)
                 .orElseThrow(() -> new CommunityControllerAdvice(ResponseCode.COMMUNITY_POST_NOT_FOUND));
@@ -136,7 +148,7 @@ public class CommunityPostServiceImpl implements CommunityPostService {
                 .createdAt(post.getCreatedDate())
                 .viewCount(post.getViewCount())
                 .likeCount(post.getLikeCount())
-                .commentCount(comments.size())
+                .commentCount(post.getCommentCount())
                 .content(post.getContent())
                 .imageUrls(post.getImages().stream().map(CommunityImage::getImgUrl).toList())
                 .links(post.getLinks().stream().map(CommunityLink::getLink).toList())

@@ -14,13 +14,13 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/auth")
+@RequestMapping("/api/v1/post-like")
 @Tag(name = "게시글 좋아요 api", description = "게시물 좋아요·취소 api")
 public class CommunityPostLikeController {
     private final CommunityPostLikeService communityPostLikeService;
 
     // 게시물 좋아요
-    @PostMapping("/post-like/{postId}")
+    @PostMapping("/{postId}")
     public BaseResponse<String> createPostLike(@PathVariable Long postId,
                                                @AuthenticationPrincipal UserDetailsImpl userDetails) {
         return BaseResponse.onSuccess(communityPostLikeService.updatePostLike(postId, userDetails.getUser()), ResponseCode.OK);
