@@ -37,8 +37,22 @@ public class HotDealPostController {
 
     @Operation(summary = "핫딜 게시글 등록", description = "핫딜 게시글을 등록합니다.")
     @PostMapping
-    public BaseResponse<HotDealPostDto> createHotDealPost(@RequestBody HotDealPostDto hotDealPostDto) {
-        return BaseResponse.onSuccess(hotDealPostService.createHotDealPost(hotDealPostDto), ResponseCode.OK);
+    public BaseResponse<HotDealPostDto> createHotDealPost(@RequestBody HotDealPostDto hotDealPostDto, @AuthenticationPrincipal User user) {
+        return BaseResponse.onSuccess(hotDealPostService.createHotDealPost(hotDealPostDto, user), ResponseCode.OK);
+
+    }
+
+    @Operation(summary = "핫딜 게시글 수정", description = "핫딜 게시글을 수정합니다.")
+    @PutMapping
+    public BaseResponse<HotDealPostDto> updateHotDealPost(@RequestBody HotDealPostDto hotDealPostDto, @AuthenticationPrincipal User user) {
+        return BaseResponse.onSuccess(hotDealPostService.updateHotDealPost(hotDealPostDto, user), ResponseCode.OK);
+
+    }
+
+    @Operation(summary = "핫딜 게시글 삭제", description = "핫딜 게시글을 삭제합니다.")
+    @DeleteMapping
+    public BaseResponse<Long> deleteHotDealPost(@RequestParam Long hotDealPostId, @AuthenticationPrincipal User user) {
+        return BaseResponse.onSuccess(hotDealPostService.deleteHotDealPost(hotDealPostId, user), ResponseCode.OK);
 
     }
 
@@ -57,8 +71,22 @@ public class HotDealPostController {
 
     @Operation(summary = "핫딜 댓글 등록", description = "핫딜 게시글의 댓글을 등록합니다.")
     @PostMapping("/comment")
-    public BaseResponse<HotDealCommentDto> createHotDealComment(@RequestBody HotDealCommentDto hotDealCommentDto) {
-        return BaseResponse.onSuccess(hotDealPostService.createHotDealComment(hotDealCommentDto), ResponseCode.OK);
+    public BaseResponse<HotDealCommentDto> createHotDealComment(@RequestBody HotDealCommentDto hotDealCommentDto, @AuthenticationPrincipal User user) {
+        return BaseResponse.onSuccess(hotDealPostService.createHotDealComment(hotDealCommentDto, user), ResponseCode.OK);
+
+    }
+
+    @Operation(summary = "핫딜 댓글 수정", description = "핫딜 게시글의 댓글을 수정합니다.")
+    @PutMapping("/comment")
+    public BaseResponse<HotDealCommentDto> updateHotDealComment(@RequestBody HotDealCommentDto hotDealCommentDto, @AuthenticationPrincipal User user) {
+        return BaseResponse.onSuccess(hotDealPostService.updateHotDealComment(hotDealCommentDto, user), ResponseCode.OK);
+
+    }
+
+    @Operation(summary = "핫딜 댓글 삭제", description = "핫딜 게시글의 댓글을 삭제합니다.")
+    @DeleteMapping("/comment")
+    public BaseResponse<Long> deleteHotDealComment(@RequestParam Long hotDealCommentId, @AuthenticationPrincipal User user) {
+        return BaseResponse.onSuccess(hotDealPostService.deleteHotDealComment(hotDealCommentId, user), ResponseCode.OK);
 
     }
 

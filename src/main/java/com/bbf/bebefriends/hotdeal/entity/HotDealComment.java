@@ -1,6 +1,8 @@
 package com.bbf.bebefriends.hotdeal.entity;
 
 import com.bbf.bebefriends.global.entity.BaseEntity;
+import com.bbf.bebefriends.hotdeal.dto.HotDealCommentDto;
+import com.bbf.bebefriends.member.entity.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -21,6 +23,10 @@ public class HotDealComment extends BaseEntity {
     private Long id;                                // 핫딜 댓글 식별자
 
     @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;                              // 회원 식별자
+
+    @ManyToOne
     @JoinColumn(name = "replied_comment_id")
     private HotDealComment repliedComment;          // 핫딜 대댓글 식별자
 
@@ -30,6 +36,16 @@ public class HotDealComment extends BaseEntity {
 
     private String content;                         // 내용
 
-    private LocalDateTime deleted_at;               // 삭제 여부
+    private LocalDateTime deletedAt;                // 삭제일자
+
+    public void update(HotDealCommentDto hotDealCommentDto) {
+        this.content = hotDealCommentDto.getContent();
+
+    }
+
+    public void delete() {
+        this.deletedAt = LocalDateTime.now();
+
+    }
 
 }

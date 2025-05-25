@@ -1,5 +1,7 @@
 package com.bbf.bebefriends.hotdeal.service.impl;
 
+import com.bbf.bebefriends.community.exception.CommunityControllerAdvice;
+import com.bbf.bebefriends.global.exception.ResponseCode;
 import com.bbf.bebefriends.hotdeal.dto.HotDealCommentDto;
 import com.bbf.bebefriends.hotdeal.dto.HotDealLikeDto;
 import com.bbf.bebefriends.hotdeal.dto.HotDealPostDto;
@@ -29,7 +31,7 @@ public class HotDealPostServiceImpl implements HotDealPostService {
 
     @Override
     public Page<HotDealPostDto> searchAllHotDealPost(Pageable pageable) {
-        return hotDealPostRepository.findAll(pageable).map(HotDealPostDto::fromEntity);
+        return hotDealPostRepository.findAllByDeletedAtIsNull(pageable).map(HotDealPostDto::fromEntity);
     }
 
     @Override
@@ -39,10 +41,10 @@ public class HotDealPostServiceImpl implements HotDealPostService {
                 .orElseThrow();
 
         // 조회한 카테고리를 통해 핫딜 게시글 조회
-        return hotDealPostRepository.findByHotDeal_HotDealCategory(hotDealCategory,pageable).map(HotDealPostDto::fromEntity);
+        return hotDealPostRepository.findByHotDeal_HotDealCategoryAndDeletedAtIsNull(hotDealCategory,pageable).map(HotDealPostDto::fromEntity);
     }
 
-    public HotDealPostDto createHotDealPost(HotDealPostDto hotDealPostDto) {
+    public HotDealPostDto createHotDealPost(HotDealPostDto hotDealPostDto, User user) {
         // 핫딜 초기화
         HotDeal hotDeal = null;
 
@@ -54,6 +56,7 @@ public class HotDealPostServiceImpl implements HotDealPostService {
 
         // 핫딜 게시글 생성
         HotDealPost hotDealPost = HotDealPost.builder()
+                .user(user)
                 .hotDeal(hotDeal)
                 .title(hotDealPostDto.getTitle())
                 .content(hotDealPostDto.getContent())
@@ -65,6 +68,48 @@ public class HotDealPostServiceImpl implements HotDealPostService {
         hotDealPostRepository.save(hotDealPost);
 
         return hotDealPostDto;
+    }
+
+    @Override
+    public HotDealPostDto updateHotDealPost(HotDealPostDto hotDealPostDto, User user) {
+        // 수정할 핫딜 게시글 조회
+        HotDealPost hotDealPost = hotDealPostRepository.findById(hotDealPostDto.getId())
+                .orElseThrow();
+
+        // 게시글 작성자가 아닌 경우
+        if (!(hotDealPost.getUser().equals(user))) {
+            throw new CommunityControllerAdvice(ResponseCode._UNAUTHORIZED);
+        }
+
+        // 기존과 다른 핫딜인 경우
+        if (!hotDealPost.getHotDeal().getId().equals(hotDealPostDto.getHotDealId())) {
+            // 수정된 핫딜로 세팅
+            HotDeal hotDeal = hotDealRepository.findById(hotDealPostDto.getHotDealId())
+                    .orElseThrow();
+            hotDealPost.updateHotDeal(hotDeal);
+        }
+
+        // 핫딜 게시글 업데이트
+        hotDealPost.update(hotDealPostDto);
+
+        return hotDealPostDto;
+    }
+
+    @Override
+    public Long deleteHotDealPost(Long hotDealPostId, User user) {
+        // 삭제할 핫딜 게시글 조회
+        HotDealPost hotDealPost = hotDealPostRepository.findById(hotDealPostId)
+                .orElseThrow();
+
+        // 게시글 작성자가 아닌 경우
+        if (!(hotDealPost.getUser().equals(user))) {
+            throw new CommunityControllerAdvice(ResponseCode._UNAUTHORIZED);
+        }
+
+        // 핫딜 게시글 삭제 처리
+        hotDealPost.delete();
+
+        return hotDealPostId;
     }
 
     @Override
@@ -91,7 +136,7 @@ public class HotDealPostServiceImpl implements HotDealPostService {
     }
 
     @Override
-    public HotDealCommentDto createHotDealComment(HotDealCommentDto hotDealCommentDto) {
+    public HotDealCommentDto createHotDealComment(HotDealCommentDto hotDealCommentDto, User user) {
         // 핫딜 댓글 초기화
         HotDealComment repliedComment = null;
 
@@ -108,6 +153,7 @@ public class HotDealPostServiceImpl implements HotDealPostService {
 
         // 핫딜 댓글 생성
         HotDealComment hotDealComment = HotDealComment.builder()
+                .user(user)
                 .repliedComment(repliedComment)
                 .hotDealPost(hotDealPost)
                 .content(hotDealCommentDto.getContent())
@@ -118,12 +164,46 @@ public class HotDealPostServiceImpl implements HotDealPostService {
     }
 
     @Override
+    public HotDealCommentDto updateHotDealComment(HotDealCommentDto hotDealCommentDto, User user) {
+        // 수정할 댓글 조회
+        HotDealComment hotDealComment = hotDealCommentRepository.findById(hotDealCommentDto.getId())
+                .orElseThrow();
+
+        // 댓글 작성자가 아닌 경우
+        if (!(hotDealComment.getUser().equals(user))) {
+            throw new CommunityControllerAdvice(ResponseCode._UNAUTHORIZED);
+        }
+
+        // 댓글 업데이트
+        hotDealComment.update(hotDealCommentDto);
+
+        return hotDealCommentDto;
+    }
+
+    @Override
+    public Long deleteHotDealComment(Long hotDealCommentId, User user) {
+        // 삭제 할 댓글 조회
+        HotDealComment hotDealComment = hotDealCommentRepository.findById(hotDealCommentId)
+                .orElseThrow();
+
+        // 댓글 작성자가 아닌 경우
+        if (!(hotDealComment.getUser().equals(user))) {
+            throw new CommunityControllerAdvice(ResponseCode._UNAUTHORIZED);
+        }
+
+        // 댓글 삭제 처리
+        hotDealComment.delete();
+
+        return hotDealCommentId;
+    }
+
+    @Override
     public Page<HotDealCommentDto> searchHotDealComment(Long hotDealPostId, Pageable pageable) {
         // 핫딜 게시글 조회
         HotDealPost hotDealPost = hotDealPostRepository.findById(hotDealPostId)
                 .orElseThrow();
 
-        return hotDealCommentRepository.findByHotDealPost(hotDealPost, pageable).map(HotDealCommentDto::fromEntity);
+        return hotDealCommentRepository.findByHotDealPostAndDeletedAtIsNull(hotDealPost, pageable).map(HotDealCommentDto::fromEntity);
     }
 
     @Override
