@@ -4,6 +4,7 @@ import com.bbf.bebefriends.global.exception.ResponseCode;
 import com.bbf.bebefriends.member.entity.User;
 import com.bbf.bebefriends.member.exception.UserControllerAdvice;
 import com.bbf.bebefriends.member.service.UserService;
+import com.bbf.bebefriends.notification.dto.NotificationDTO;
 import com.bbf.bebefriends.notification.entity.Notification;
 import com.bbf.bebefriends.notification.entity.NotificationType;
 import com.bbf.bebefriends.notification.repository.NotificationRepository;
@@ -33,10 +34,12 @@ public class NotificationService {
      * @return 알림 목록 (페이징 결과)
      */
     @Transactional(readOnly = true)
-    public Page<Notification> getNotificationsByUser(Long userId, int page, int size) {
+    public Page<NotificationDTO.NotificationResponse> getNotificationsByUser(Long userId, int page, int size) {
         User user = userService.findByUid(userId);
         Pageable pageable = PageRequest.of(page, size);
-        return notificationRepository.findByUserOrderByCreatedAtDesc(user, pageable);
+
+        Page<Notification> notifications = notificationRepository.findByUserOrderByCreatedAtDesc(user, pageable);
+        return notifications.map(this::toDto);
     }
 
     /**
@@ -49,10 +52,12 @@ public class NotificationService {
      * @return 알림 목록 (페이징 결과)
      */
     @Transactional(readOnly = true)
-    public Page<Notification> getNotificationsByType(Long userId, NotificationType type, int page, int size) {
+    public Page<NotificationDTO.NotificationResponse> getNotificationsByType(Long userId, NotificationType type, int page, int size) {
         User user = userService.findByUid(userId);
         Pageable pageable = PageRequest.of(page, size);
-        return notificationRepository.findByUserAndTypeOrderByCreatedAtDesc(user, type, pageable);
+
+        Page<Notification> notifications = notificationRepository.findByUserAndTypeOrderByCreatedAtDesc(user, type, pageable);
+        return notifications.map(this::toDto);
     }
 
     /**
@@ -73,6 +78,23 @@ public class NotificationService {
 
         notification.setRead(true);
         notificationRepository.save(notification);
+    }
+
+    /**
+     * 엔티티를 DTO로 변환 (Notification -> NotificationResponse)
+     *
+     * @param notification 알림 엔티티
+     * @return NotificationResponse DTO
+     */
+    private NotificationDTO.NotificationResponse toDto(Notification notification) {
+        return new NotificationDTO.NotificationResponse(
+                notification.getId(),
+                notification.getTitle(),
+                notification.getContent(),
+                notification.getType(),
+                notification.getCreatedAt(),
+                notification.isRead()
+        );
     }
 
 }
