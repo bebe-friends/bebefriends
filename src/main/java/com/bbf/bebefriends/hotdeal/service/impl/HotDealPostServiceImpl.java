@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -71,6 +72,7 @@ public class HotDealPostServiceImpl implements HotDealPostService {
     }
 
     @Override
+    @Transactional
     public HotDealPostDto updateHotDealPost(HotDealPostDto hotDealPostDto, User user) {
         // 수정할 핫딜 게시글 조회
         HotDealPost hotDealPost = hotDealPostRepository.findById(hotDealPostDto.getId())
@@ -96,6 +98,7 @@ public class HotDealPostServiceImpl implements HotDealPostService {
     }
 
     @Override
+    @Transactional
     public Long deleteHotDealPost(Long hotDealPostId, User user) {
         // 삭제할 핫딜 게시글 조회
         HotDealPost hotDealPost = hotDealPostRepository.findById(hotDealPostId)
@@ -164,6 +167,7 @@ public class HotDealPostServiceImpl implements HotDealPostService {
     }
 
     @Override
+    @Transactional
     public HotDealCommentDto updateHotDealComment(HotDealCommentDto hotDealCommentDto, User user) {
         // 수정할 댓글 조회
         HotDealComment hotDealComment = hotDealCommentRepository.findById(hotDealCommentDto.getId())
@@ -181,6 +185,7 @@ public class HotDealPostServiceImpl implements HotDealPostService {
     }
 
     @Override
+    @Transactional
     public Long deleteHotDealComment(Long hotDealCommentId, User user) {
         // 삭제 할 댓글 조회
         HotDealComment hotDealComment = hotDealCommentRepository.findById(hotDealCommentId)

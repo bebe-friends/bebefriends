@@ -1,12 +1,12 @@
 package com.bbf.bebefriends.hotdeal.service.impl;
 
 import com.bbf.bebefriends.hotdeal.dto.HotDealCategoryDto;
-import com.bbf.bebefriends.hotdeal.entity.HotDeal;
 import com.bbf.bebefriends.hotdeal.entity.HotDealCategory;
 import com.bbf.bebefriends.hotdeal.repository.HotDealCategoryRepository;
 import com.bbf.bebefriends.hotdeal.service.HotDealCategoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -39,10 +39,20 @@ public class HotDealCategoryServiceImpl implements HotDealCategoryService {
     }
 
     @Override
+    @Transactional
     public HotDealCategoryDto updateHotDealCategory(HotDealCategoryDto hotDealCategoryDto) {
         // 수정할 핫딜 카테고리 조회
-        HotDealCategory hotDealCategory = hotDealCategoryRepository.findById(hotDealCategoryDto.getParentCategoryId())
+        HotDealCategory hotDealCategory = hotDealCategoryRepository.findById(hotDealCategoryDto.getId())
                 .orElseThrow();
+
+
+        // 핫딜 카테고리가 없는 경우 (대분류인 카테고리 수정)
+        if (hotDealCategoryDto.getParentCategoryId() == null) {
+            // 핫딜 카테고리 업데이트
+            hotDealCategory.update(hotDealCategoryDto);
+            return hotDealCategoryDto;
+
+        }
 
         // 기존과 다른 상위 핫딜 카테고리인 경우
         if (!hotDealCategory.getParentCategory().getId().equals(hotDealCategoryDto.getParentCategoryId())) {
@@ -52,7 +62,7 @@ public class HotDealCategoryServiceImpl implements HotDealCategoryService {
             hotDealCategory.updateParentCategory(parentCategory);
         }
 
-        // 핫델 카테고리 업데이트
+        // 핫딜 카테고리 업데이트
         hotDealCategory.update(hotDealCategoryDto);
 
         return hotDealCategoryDto;
