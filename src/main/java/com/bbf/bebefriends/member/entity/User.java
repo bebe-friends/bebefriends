@@ -60,10 +60,10 @@ public class User extends BaseEntity {
     public static User createGuestUser() {
         User guestUser = new User();
         guestUser.setNickname("Guest_" + System.currentTimeMillis());
-        guestUser.setEmail(null); // Temporary users might not have an email
-        guestUser.setPhone(null); // Temporary users might not have a phone number
-        guestUser.setRole(UserRole.GUEST); // Assign the GUEST role
-        guestUser.setFcmToken(null); // FCM token can be null for temporary users
+        guestUser.setEmail(null);
+        guestUser.setPhone(null);
+        guestUser.setRole(UserRole.GUEST);
+        guestUser.setFcmToken(null);
         return guestUser;
     }
 }
