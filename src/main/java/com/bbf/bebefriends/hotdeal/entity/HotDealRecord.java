@@ -1,6 +1,7 @@
 package com.bbf.bebefriends.hotdeal.entity;
 
 import com.bbf.bebefriends.global.entity.BaseEntity;
+import com.bbf.bebefriends.hotdeal.dto.HotDealRecordDto;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -33,5 +34,16 @@ public class HotDealRecord extends BaseEntity {
 
     @Column(name = "hot_deal_price")
     private Integer hotDealPrice;       // 핫딜가
+
+    public void update(HotDealRecordDto hotDealRecordDto) {
+        this.date = hotDealRecordDto.getDate();
+        this.note = hotDealRecordDto.getNote();
+        this.searchPrice = hotDealRecordDto.getSearchPrice();
+        this.hotDealPrice = hotDealRecordDto.getHotDealPrice();
+    }
+
+    public void updateHotDeal(HotDeal hotDeal) {
+        this.hotDeal = hotDeal;
+    }
 
 }

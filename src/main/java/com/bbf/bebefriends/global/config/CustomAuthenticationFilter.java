@@ -2,7 +2,6 @@ package com.bbf.bebefriends.global.config;
 
 import com.bbf.bebefriends.global.entity.UserDetailsImpl;
 import com.bbf.bebefriends.member.entity.User;
-import com.bbf.bebefriends.member.entity.UserRole;
 import com.bbf.bebefriends.member.service.UserService;
 import com.bbf.bebefriends.member.util.JwtTokenUtil;
 import jakarta.servlet.FilterChain;
@@ -10,12 +9,10 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.Collections;
 
 public class CustomAuthenticationFilter extends OncePerRequestFilter {
 
@@ -48,9 +45,10 @@ public class CustomAuthenticationFilter extends OncePerRequestFilter {
 
             if ("PC".equalsIgnoreCase(deviceType)) {
                 // PC 에서 유저가 아닐때 "guest" 역할 부여
+                UserDetailsImpl userDetails = new UserDetailsImpl(User.createGuestUser());
                 UsernamePasswordAuthenticationToken guestAuthentication =
-                        new UsernamePasswordAuthenticationToken("guest", null,
-                                Collections.singleton(new SimpleGrantedAuthority(UserRole.GUEST.name())));
+                        new UsernamePasswordAuthenticationToken(userDetails, null,
+                                userDetails.getAuthorities());
                 SecurityContextHolder.getContext().setAuthentication(guestAuthentication);
             }
         }

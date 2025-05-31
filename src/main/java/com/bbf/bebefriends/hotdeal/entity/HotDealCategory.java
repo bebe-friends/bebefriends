@@ -1,6 +1,7 @@
 package com.bbf.bebefriends.hotdeal.entity;
 
 import com.bbf.bebefriends.global.entity.BaseEntity;
+import com.bbf.bebefriends.hotdeal.dto.HotDealCategoryDto;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -25,5 +26,14 @@ public class HotDealCategory extends BaseEntity {
     private String name;                            // 이름
 
     private Integer depth;                          // 깊이
+
+    public void update(HotDealCategoryDto hotDealCategoryDto) {
+        this.name = hotDealCategoryDto.getName();
+        this.depth = hotDealCategoryDto.getDepth();
+    }
+
+    public void updateParentCategory(HotDealCategory hotDealCategory) {
+        this.parentCategory = hotDealCategory;
+    }
 
 }

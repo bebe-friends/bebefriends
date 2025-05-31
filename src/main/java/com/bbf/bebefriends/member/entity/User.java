@@ -56,4 +56,14 @@ public class User extends BaseEntity {
 
     @ElementCollection
     private List<String> blockedPosts = new ArrayList<>();
+
+    public static User createGuestUser() {
+        User guestUser = new User();
+        guestUser.setNickname("Guest_" + System.currentTimeMillis());
+        guestUser.setEmail(null);
+        guestUser.setPhone(null);
+        guestUser.setRole(UserRole.GUEST);
+        guestUser.setFcmToken(null);
+        return guestUser;
+    }
 }

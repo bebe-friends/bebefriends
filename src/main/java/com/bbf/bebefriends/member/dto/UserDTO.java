@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 public class UserDTO {
 
@@ -155,9 +156,11 @@ public class UserDTO {
             boolean age_5,
 
             @NotNull
-            boolean age_6
+            boolean age_6,
 
-            // todo 핫딜 대 카테고리
+            @Schema(example = "[1, 2]", description = "핫딜 카테고리 설정 값 (미확정..)")
+            @NotNull
+            List<Long> categorys // String : ["가구"], Long : [1]
     ) {
     }
 
@@ -182,9 +185,11 @@ public class UserDTO {
             boolean age_5,
 
             @NotNull
-            boolean age_6
+            boolean age_6,
 
-            // todo 핫딜 대 카테고리
+            @Schema(example = "[\"가구\"]", description = "핫딜 카테고리 설정 값 (미확정..)")
+            @NotNull
+            List<String> categorys
     ) {
     }
 }

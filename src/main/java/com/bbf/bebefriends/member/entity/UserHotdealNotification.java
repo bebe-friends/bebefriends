@@ -1,11 +1,15 @@
 package com.bbf.bebefriends.member.entity;
 
 import com.bbf.bebefriends.global.entity.BaseEntity;
+import com.bbf.bebefriends.hotdeal.entity.HotDealCategory;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -43,6 +47,14 @@ public class UserHotdealNotification extends BaseEntity {
 
     @Column(nullable = false)
     private boolean age_6;
+
+    @ManyToMany
+    @JoinTable(
+            name = "user_hotdeal_categories",
+            joinColumns = @JoinColumn(name = "user_hotdeal_notification_id"),
+            inverseJoinColumns = @JoinColumn(name = "hot_deal_category_id")
+    )
+    private List<HotDealCategory> preferredCategories = new ArrayList<>();
 
     public static UserHotdealNotification of(
             User user,
