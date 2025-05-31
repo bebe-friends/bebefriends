@@ -22,13 +22,16 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/community-post")
+@RequestMapping("/api/v1/community")
 @Tag(name = "커뮤니티 게시글 api", description = "게시물 생성·수정·삭제·상세 페이지 관련 API")
 public class CommunityPostController {
     private final CommunityPostService communityPostService;
 
     // 게시글 작성
-    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(
+            value = "/post",
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE
+    )
     @Operation(summary = "커뮤니티 게시글 생성", description = "게시물을 게시합니다.")
     public BaseResponse<CommunityPostDTO.CreatePostResponse> createCommunityPost(
             @RequestPart("data") @Valid CommunityPostDTO.CreatePostRequest request,
@@ -39,7 +42,10 @@ public class CommunityPostController {
     }
 
     // 게시글 수정
-    @PatchMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PatchMapping(
+            value = "/post",
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE
+    )
     @Operation(summary = "커뮤니티 게시글 수정", description = "본인이 작성한 게시물을 수정합니다.")
     public BaseResponse<CommunityPostDTO.UpdatePostResponse> updatePost(
             @RequestPart("data") @Valid CommunityPostDTO.UpdatePostRequest request,
@@ -50,7 +56,7 @@ public class CommunityPostController {
     }
 
     // 게시글 삭제
-    @DeleteMapping()
+    @DeleteMapping("/post")
     @Operation(summary = "커뮤니티 게시글 삭제", description = "본인이 작성한 게시물을 삭제합니다.")
     public BaseResponse<String> deletePost(@Valid @RequestBody CommunityPostDTO.DeletePostRequest request,
                                              @AuthenticationPrincipal UserDetailsImpl user) {
@@ -58,7 +64,7 @@ public class CommunityPostController {
     }
 
     // 게시글 상세 페이지
-    @GetMapping("/detail")
+    @GetMapping("/post/detail")
     @Operation(summary = "커뮤니티 게시글 상세 페이지", description = "게시글 상세 페이지를 조회합니다.")
     public BaseResponse<CommunityPostDTO.PostDetailsResponse>  getPostDetails(@RequestParam Long postId) {
 //        User currentUser = null;
