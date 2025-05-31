@@ -15,8 +15,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
-
 @Service
 @RequiredArgsConstructor
 public class HotDealServiceImpl implements HotDealService {
@@ -112,6 +110,7 @@ public class HotDealServiceImpl implements HotDealService {
     }
 
     @Override
+    @Transactional
     public HotDealRecordDto updateHotDealRecord(HotDealRecordDto hotDealRecordDto) {
         // 수정할 핫딜 기록 조회
         HotDealRecord hotDealRecord = hotDealRecordRepository.findById(hotDealRecordDto.getId())
