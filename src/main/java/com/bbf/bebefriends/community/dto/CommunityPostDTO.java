@@ -82,6 +82,13 @@ public class CommunityPostDTO {
         private int commentCount;
     }
 
+    @Data
+    @AllArgsConstructor
+    public static class PostListWithCursorResponse {
+        private List<PostListResponse> posts;  // 실제 게시물
+        private Long lastCursorId;             // 마지막(마지막 인덱스) 게시물 id
+    }
+
     // 게시물 상세 페이지
     @Data
     @AllArgsConstructor

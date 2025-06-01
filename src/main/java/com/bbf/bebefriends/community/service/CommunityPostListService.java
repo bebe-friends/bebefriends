@@ -8,25 +8,19 @@ import java.util.List;
 
 public interface CommunityPostListService {
     // 전체 게시물 조회
-    List<CommunityPostDTO.PostListResponse> getAllPosts(User user);
+    CommunityPostDTO.PostListWithCursorResponse getAllPosts(User user, Long cursorId, int pageSize);
 
     // 카테고리 별 게시물 목록 조회
-    List<CommunityPostDTO.PostListResponse> getPostsByCategory(String category, User user);
+    CommunityPostDTO.PostListWithCursorResponse getPostsByCategory(String category, User user, Long cursorId, int pageSize);
     // 게시물 검색
-    List<CommunityPostDTO.PostListResponse> getPostsBySearch(String query, User user);
-
-    // 제목 별 게시물 목록 조회
-//    List<CommunityPostDTO.PostListResponse> getPostsByTitle(String keyword);
-
-    // 글쓴이 별 게시물 목록 조회
-//    List<CommunityPostDTO.PostListResponse> getPostsByAuthor(String keyword);
+    CommunityPostDTO.PostListWithCursorResponse getPostsBySearch(String query, User user, Long cursorId, int pageSize);
 
     // 내가 작성한 게시물 목록 조회
-    List<CommunityPostDTO.PostListResponse> getMyPosts(User user);
+    CommunityPostDTO.PostListWithCursorResponse getMyPosts(User user, Long cursorId, int pageSize);
 
     // 내가 댓글단 게시물 목록 조회
-    List<CommunityPostDTO.PostListResponse> getCommentedPosts(User user);
+    CommunityPostDTO.PostListWithCursorResponse getCommentedPosts(User user, Long cursorId, int pageSize);
 
     // 내가 좋아요한 게시물 목록 조회
-    List<CommunityPostDTO.PostListResponse> getLikedPosts(User user);
+    CommunityPostDTO.PostListWithCursorResponse getLikedPosts(User user, Long cursorId, int pageSize);
 }
