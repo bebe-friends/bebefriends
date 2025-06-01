@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-// TODO: 게시물 신고, 게시물 실제 삭제, 게시물 인증
+// TODO: 게시물 신고, 게시물 실제 삭제, 게시물 인증, 하드 삭제 시 댓글 cascade 설정
 @Entity
 @Getter
 @Table(name = "community_posts")

@@ -38,13 +38,17 @@ public class CommunityCommentServiceImpl implements CommunityCommentService {
     public String createComment(User user, CommunityCommentDTO.CreateCommentRequest request) {
         CommunityPost post = communityPostRepository.findById(request.getPostId())
                 .orElseThrow(() -> new CommunityControllerAdvice(ResponseCode.COMMUNITY_POST_NOT_FOUND));
-        CommunityComment parent;
-        if (request.getParentId() == null) {
-            parent = null;
-        } else {
+        CommunityComment parent = null;
+        if (request.getParentId() != null) {
             parent = communityCommentRepository.findById(request.getParentId())
                     .orElseThrow(() -> new CommunityControllerAdvice(ResponseCode.COMMENT_NOT_FOUND));
         }
+//        if (request.getParentId() == null) {
+//            parent = null;
+//        } else {
+//            parent = communityCommentRepository.findById(request.getParentId())
+//                    .orElseThrow(() -> new CommunityControllerAdvice(ResponseCode.COMMENT_NOT_FOUND));
+//        }
         CommunityComment comment = CommunityComment.createComment(post, user, parent, request);
         communityCommentRepository.save(comment);
 

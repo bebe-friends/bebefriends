@@ -11,6 +11,7 @@ import com.bbf.bebefriends.community.repository.CommunityPostRepository;
 import com.bbf.bebefriends.community.service.CommunityCategoryService;
 import com.bbf.bebefriends.community.service.CommunityPostListService;
 import com.bbf.bebefriends.member.entity.User;
+import com.bbf.bebefriends.member.entity.UserRole;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -72,7 +73,7 @@ public class CommunityPostListServiceImpl implements CommunityPostListService {
     @Override
     public List<CommunityPostDTO.PostListResponse> getPostsByCategory(String request, User user) {
         CommunityCategory category = communityCategoryService.getCategoryByName(request);
-        if (user == null) {
+        if (user.getRole() == UserRole.GUEST) {
             return communityPostForAnonymousRepository.findByCategoryActiveForAnonymous(category)
                     .stream()
                     .map(this::toDto)
@@ -87,7 +88,7 @@ public class CommunityPostListServiceImpl implements CommunityPostListService {
     // 제목 혹은 글쓴이 검색
     @Override
     public List<CommunityPostDTO.PostListResponse> getPostsBySearch(String query, User user) {
-        if (user == null) {
+        if (user.getRole() == UserRole.GUEST) {
             return communityPostForAnonymousRepository.searchPostsByKeywordForAnonymous(query)
                     .stream()
                     .map(this::toDto)
