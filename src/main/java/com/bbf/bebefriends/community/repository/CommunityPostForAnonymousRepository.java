@@ -3,6 +3,7 @@ package com.bbf.bebefriends.community.repository;
 import com.bbf.bebefriends.community.entity.CommunityCategory;
 import com.bbf.bebefriends.community.entity.CommunityPost;
 import com.bbf.bebefriends.member.entity.User;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -17,8 +18,10 @@ public interface CommunityPostForAnonymousRepository extends JpaRepository<Commu
       FROM CommunityPost p
       WHERE p.deletedAt IS NULL
         AND p.isReported IS NULL
+        AND ( :cursorId IS NULL OR p.id < :cursorId )
+      ORDER BY p.id DESC
     """)
-    List<CommunityPost> findAllActivePostsForAnonymous();
+    List<CommunityPost> findAllActivePostsForAnonymous(Long cursorId, Pageable pageable);
 
     // 카테고리 별 조회(deletedAt과 isReported가 null)
     @Query("""
@@ -27,8 +30,10 @@ public interface CommunityPostForAnonymousRepository extends JpaRepository<Commu
       WHERE p.category       = :category
         AND p.deletedAt      IS NULL
         AND p.isReported     IS NULL
+        AND ( :cursorId IS NULL OR p.id < :cursorId )
+      ORDER BY p.id DESC
     """)
-    List<CommunityPost> findByCategoryActiveForAnonymous(@Param("category") CommunityCategory category);
+    List<CommunityPost> findByCategoryActiveForAnonymous(@Param("category") CommunityCategory category, Long cursorId, Pageable pageable);
 
     // 제목 혹은 글쓴이로 검색
     @Query("""
@@ -39,6 +44,8 @@ public interface CommunityPostForAnonymousRepository extends JpaRepository<Commu
             OR LOWER(u.nickname) LIKE LOWER(CONCAT('%', :kw, '%')))
           AND p.deletedAt   IS NULL
           AND p.isReported  IS NULL
+          AND ( :cursorId IS NULL OR p.id < :cursorId )
+      ORDER BY p.id DESC
     """)
-    List<CommunityPost> searchPostsByKeywordForAnonymous(@Param("kw") String keyword);
+    List<CommunityPost> searchPostsByKeywordForAnonymous(@Param("kw") String keyword, Long cursorId, Pageable pageable);
 }

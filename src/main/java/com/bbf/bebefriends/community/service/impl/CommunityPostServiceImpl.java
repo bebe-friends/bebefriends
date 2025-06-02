@@ -138,8 +138,8 @@ public class CommunityPostServiceImpl implements CommunityPostService {
                 .orElseThrow(() -> new CommunityControllerAdvice(ResponseCode.COMMUNITY_POST_NOT_FOUND));
         post.increaseViewCount();
 
-        List<CommunityCommentDTO.CommentDetails> comments =
-                communityCommentServiceImpl.getCommentsByPost(post);
+//        List<CommunityCommentDTO.CommentDetails> comments =
+//                communityCommentServiceImpl.getCommentsByPost(post);
 
         return CommunityPostDTO.PostDetailsResponse.builder()
                 .postId(post.getId())
@@ -152,7 +152,6 @@ public class CommunityPostServiceImpl implements CommunityPostService {
                 .content(post.getContent())
                 .imageUrls(post.getImages().stream().map(CommunityImage::getImgUrl).toList())
                 .links(post.getLinks().stream().map(CommunityLink::getLink).toList())
-                .comments(comments)
                 .build();
     }
 }

@@ -53,95 +53,111 @@ public class CommunityPostListServiceImpl implements CommunityPostListService {
                 .build();
     }
 
-    // 모든 게시물
-    @Override
-    public List<CommunityPostDTO.PostListResponse> getAllPosts(User user) {
-        if (user == null) {
-            return communityPostForAnonymousRepository.findAllActivePostsForAnonymous()
+    public CommunityPostDTO.PostListWithCursorResponse toDtoWithCursor(List<CommunityPostDTO.PostListResponse> posts) {
+        Long newCursor = posts.isEmpty()
+                ? null
+                : posts.get(posts.size() - 1).getPostId();
+        return new CommunityPostDTO.PostListWithCursorResponse(posts, newCursor);
+    }
+
+    public CommunityPostDTO.PostListWithCursorResponse getAllPosts(User user, Long cursorId, int pageSize) {
+        Pageable limit = PageRequest.of(0, pageSize);
+
+        if (user.getRole() == UserRole.GUEST) {
+            List<CommunityPostDTO.PostListResponse> posts = communityPostForAnonymousRepository.findAllActivePostsForAnonymous(cursorId, limit)
                     .stream()
                     .map(this::toDto)
-                    .collect(Collectors.toList());
+                    .toList();
+
+            return toDtoWithCursor(posts);
         }
-        List<CommunityPost> communityPosts = communityPostRepository.findAllActivePosts(user);
-        return communityPosts
+        List<CommunityPostDTO.PostListResponse> posts = communityPostRepository.findAllActivePostsWithCursor(user, cursorId, limit)
                 .stream()
                 .map(this::toDto)
-                .collect(Collectors.toList());
+                .toList();
+
+        return toDtoWithCursor(posts);
     }
 
     // 카테고리 별 조회 -> id로 조회하는게 더 낫나?
     @Override
-    public List<CommunityPostDTO.PostListResponse> getPostsByCategory(String request, User user) {
+    public CommunityPostDTO.PostListWithCursorResponse getPostsByCategory(String request, User user, Long cursorId, int pageSize) {
         CommunityCategory category = communityCategoryService.getCategoryByName(request);
+        Pageable limit = PageRequest.of(0, pageSize);
+
         if (user.getRole() == UserRole.GUEST) {
-            return communityPostForAnonymousRepository.findByCategoryActiveForAnonymous(category)
+            List<CommunityPostDTO.PostListResponse> posts = communityPostForAnonymousRepository.findByCategoryActiveForAnonymous(category, cursorId, limit)
                     .stream()
                     .map(this::toDto)
-                    .collect(Collectors.toList());
+                    .toList();
+
+            return toDtoWithCursor(posts);
         }
-        return communityPostRepository.findByCategoryActive(category, user)
+        List<CommunityPostDTO.PostListResponse> posts = communityPostRepository.findByCategoryActive(category, user, cursorId, limit)
                 .stream()
                 .map(this::toDto)
-                .collect(Collectors.toList());
+                .toList();
+
+        return toDtoWithCursor(posts);
     }
 
     // 제목 혹은 글쓴이 검색
     @Override
-    public List<CommunityPostDTO.PostListResponse> getPostsBySearch(String query, User user) {
+    public CommunityPostDTO.PostListWithCursorResponse getPostsBySearch(String query, User user, Long cursorId, int pageSize) {
+        Pageable limit = PageRequest.of(0, pageSize);
+
         if (user.getRole() == UserRole.GUEST) {
-            return communityPostForAnonymousRepository.searchPostsByKeywordForAnonymous(query)
+            List<CommunityPostDTO.PostListResponse> posts = communityPostForAnonymousRepository.searchPostsByKeywordForAnonymous(query, cursorId, limit)
                     .stream()
                     .map(this::toDto)
-                    .collect(Collectors.toList());
+                    .toList();
+
+            return toDtoWithCursor(posts);
         }
-        return communityPostRepository.searchPostsByKeyword(query, user)
+        List<CommunityPostDTO.PostListResponse> posts = communityPostRepository.searchPostsByKeyword(query, user, cursorId, limit)
                 .stream()
                 .map(this::toDto)
-                .collect(Collectors.toList());
+                .toList();
+
+        return toDtoWithCursor(posts);
     }
-
-    // 제목으로 조회
-//    @Override
-//    public List<CommunityPostDTO.PostListResponse> getPostsByTitle(String keyword) {
-//        return communityPostRepository.findByTitleLikeActive(keyword)
-//                .stream()
-//                .map(this::toDto)
-//                .collect(Collectors.toList());
-//    }
-
-    // 작성자로 조회
-//    @Override
-//    public List<CommunityPostDTO.PostListResponse> getPostsByAuthor(String keyword) {
-//        return communityPostRepository.findByAuthorLikeActive(keyword)
-//                .stream()
-//                .map(this::toDto)
-//                .collect(Collectors.toList());
-//    }
 
     // 내가 쓴 게시물
     @Override
-    public List<CommunityPostDTO.PostListResponse> getMyPosts(User user) {
-        return communityPostRepository.findByUserAndDeletedAtIsNull(user)
+    public CommunityPostDTO.PostListWithCursorResponse getMyPosts(User user, Long cursorId, int pageSize) {
+        Pageable limit = PageRequest.of(0, pageSize);
+
+        List<CommunityPostDTO.PostListResponse> posts = communityPostRepository.findMyPostsWithCursor(user, cursorId, limit)
                 .stream()
                 .map(this::toDto)
-                .collect(Collectors.toList());
+                .toList();
+
+        return toDtoWithCursor(posts);
     }
 
     // 댓글 단 게시물
     @Override
-    public List<CommunityPostDTO.PostListResponse> getCommentedPosts(User user) {
-        return communityPostRepository.findCommentedByUserActive(user)
+    public CommunityPostDTO.PostListWithCursorResponse getCommentedPosts(User user, Long cursorId, int pageSize) {
+        Pageable limit = PageRequest.of(0, pageSize);
+
+        List<CommunityPostDTO.PostListResponse> posts = communityPostRepository.findCommentedByUserActive(user, cursorId, limit)
                 .stream()
                 .map(this::toDto)
-                .collect(Collectors.toList());
+                .toList();
+
+        return toDtoWithCursor(posts);
     }
 
     // 좋아요한 게시물
     @Override
-    public List<CommunityPostDTO.PostListResponse> getLikedPosts(User user) {
-        return communityPostRepository.findLikedByUserActive(user)
+    public CommunityPostDTO.PostListWithCursorResponse getLikedPosts(User user, Long cursorId, int pageSize) {
+        Pageable limit = PageRequest.of(0, pageSize);
+
+        List<CommunityPostDTO.PostListResponse> posts = communityPostRepository.findLikedByUserActive(user, cursorId, limit)
                 .stream()
                 .map(this::toDto)
-                .collect(Collectors.toList());
+                .toList();
+
+        return toDtoWithCursor(posts);
     }
 }

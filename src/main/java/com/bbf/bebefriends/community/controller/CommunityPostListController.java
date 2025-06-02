@@ -39,38 +39,44 @@ public class CommunityPostListController {
     @GetMapping
     @Operation(
             summary = "게시물 조회",
-            description = "type, category, keyword 조합에 따라 전체/내가 쓴/댓글 단/좋아요한/카테고리별/검색 조회"
+            description = """
+                          type, category, keyword 조합에 따라 전체/내가 쓴/댓글 단/좋아요한/카테고리별/검색 조회\
+                          첫 조회 시 cursorId 는 제외\
+                          기본 pageSize 는 20
+                          """
     )
-    public BaseResponse<List<CommunityPostDTO.PostListResponse>> getPosts(
+    public BaseResponse<CommunityPostDTO.PostListWithCursorResponse> getPosts(
             @AuthenticationPrincipal UserDetailsImpl user,
+            @RequestParam(value = "cursorId", required = false) Long cursorId,
+            @RequestParam(value = "pageSize", defaultValue = "20") int pageSize,
             @RequestParam(value = "type",     required = false) PostType   type,
             @RequestParam(value = "category", required = false) String     category,
             @RequestParam(value = "keyword",  required = false) String     keyword
     ) {
         User currentUser = user.getUser();
 
-        List<CommunityPostDTO.PostListResponse> posts;
+        CommunityPostDTO.PostListWithCursorResponse posts;
 
         if (keyword != null && !keyword.isBlank()) {
             // 검색어가 있으면 검색 서비스 호출
-            posts = communityPostListService.getPostsBySearch(keyword, currentUser);
+            posts = communityPostListService.getPostsBySearch(keyword, currentUser, cursorId, pageSize);
         }
         else if (category != null && !category.isBlank()) {
             // 카테고리 파라미터가 있으면 카테고리 조회 서비스 호출
-            posts = communityPostListService.getPostsByCategory(category, currentUser);
+            posts = communityPostListService.getPostsByCategory(category, currentUser, cursorId, pageSize);
         }
         else if (type != null) {
             // type 파라미터가 있으면 내가 쓴/댓글 단/좋아요한 조회
             switch (type) {
-                case MY        -> posts = communityPostListService.getMyPosts(currentUser);
-                case COMMENTED -> posts = communityPostListService.getCommentedPosts(currentUser);
-                case LIKED     -> posts = communityPostListService.getLikedPosts(currentUser);
+                case MY        -> posts = communityPostListService.getMyPosts(currentUser, cursorId, pageSize);
+                case COMMENTED -> posts = communityPostListService.getCommentedPosts(currentUser, cursorId, pageSize);
+                case LIKED     -> posts = communityPostListService.getLikedPosts(currentUser, cursorId, pageSize);
                 default        -> throw new CommunityControllerAdvice(ResponseCode._BAD_REQUEST);
             }
         }
         else {
             // 파라미터가 아무것도 없으면 전체 게시물 조회
-            posts = communityPostListService.getAllPosts(currentUser);
+            posts = communityPostListService.getAllPosts(currentUser, cursorId, pageSize);
         }
 
         return BaseResponse.onSuccess(posts, ResponseCode.OK);

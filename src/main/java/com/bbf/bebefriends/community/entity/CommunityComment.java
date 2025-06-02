@@ -21,8 +21,8 @@ public class CommunityComment extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_id")
     private CommunityComment parent;
-    @OneToMany(mappedBy = "parent")
-    private List<CommunityComment> subComments = new ArrayList<>();
+//    @OneToMany(mappedBy = "parent")
+//    private List<CommunityComment> subComments = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id")
