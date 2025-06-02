@@ -15,34 +15,65 @@ public interface CommunityCommentRepository extends JpaRepository<CommunityComme
     // 특정 게시물의 댓글 수 (deletedAt NULL)
     int countByPostAndDeletedAtIsNull(CommunityPost post);
     List<CommunityComment> findByPostAndParentIsNullAndDeletedAtIsNull(CommunityPost post);
+//    @Query(value = """
+//        SELECT
+//          p.comment_id        AS parentId,
+//          p.user_id           AS authorId,
+//          p.content           AS parentContent,
+//          p.created_date      AS parentCreatedDate,
+//          r.comment_id        AS childId,
+//          r.user_id           AS childAuthorId,
+//          r.content           AS childContent,
+//          r.created_date      AS childCreatedDate
+//        FROM community_comments p
+//          LEFT JOIN community_comments r
+//            ON r.parent_id = p.comment_id
+//            AND r.deleted_at IS NULL
+//        WHERE p.post_id        = :postId
+//          AND p.parent_id      IS NULL
+//          AND p.deleted_at     IS NULL
+//          AND (
+//                (:primaryOffset IS NULL)
+//                OR
+//                ( p.comment_id > :primaryOffset )
+//                OR
+//                ( p.comment_id = :primaryOffset AND r.comment_id > COALESCE(:subOffset, 0) )
+//              )
+//        ORDER BY p.comment_id ASC, r.comment_id ASC
+//        LIMIT :limit
+//        """,
+//            nativeQuery = true
+//    )
     @Query(value = """
-        SELECT 
-          p.comment_id        AS parentId,
-          p.user_id           AS authorId,
-          p.content           AS parentContent,
-          p.created_date      AS parentCreatedDate,
-          r.comment_id        AS childId,
-          r.user_id           AS childAuthorId,
-          r.content           AS childContent,
-          r.created_date      AS childCreatedDate
-        FROM community_comments p
-          LEFT JOIN community_comments r
-            ON r.parent_id = p.comment_id
-            AND r.deleted_at IS NULL
-        WHERE p.post_id        = :postId
-          AND p.parent_id      IS NULL
-          AND p.deleted_at     IS NULL
-          AND (
-                (:primaryOffset IS NULL) 
-                OR 
-                ( p.comment_id > :primaryOffset ) 
-                OR 
-                ( p.comment_id = :primaryOffset AND r.comment_id > COALESCE(:subOffset, 0) )
-              )
-        ORDER BY p.comment_id ASC, r.comment_id ASC
-        LIMIT :limit
-        """,
-            nativeQuery = true
+    SELECT 
+      p.comment_id           AS parentId,
+      pu.nickname            AS parentAuthorName,
+      p.content              AS parentContent,
+      p.created_date         AS parentCreatedDate,
+
+      r.comment_id           AS childId,
+      cu.nickname            AS childAuthorName,
+      r.content              AS childContent,
+      r.created_date         AS childCreatedDate
+    FROM community_comments p
+      LEFT JOIN community_comments r
+        ON r.parent_id = p.comment_id
+        AND r.deleted_at IS NULL
+      LEFT JOIN users pu
+        ON pu.uid = p.user_id
+      LEFT JOIN users cu
+        ON cu.uid = r.user_id
+    WHERE p.post_id        = :postId
+      AND p.parent_id      IS NULL
+      AND p.deleted_at     IS NULL
+      AND (
+            (:primaryOffset IS NULL)
+         OR ( p.comment_id > :primaryOffset )
+         OR ( p.comment_id = :primaryOffset AND r.comment_id > COALESCE(:subOffset, 0) )
+          )
+    ORDER BY p.comment_id ASC, r.comment_id ASC
+    LIMIT :limit
+    """, nativeQuery = true
     )
     List<CommunityCommentDTO.CommentCursorProjection> findCommentByCursor(
             @Param("postId")        Long postId,
