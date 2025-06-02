@@ -32,7 +32,9 @@ public class CommunityPostController {
             value = "/post",
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE
     )
-    @Operation(summary = "커뮤니티 게시글 생성", description = "게시물을 게시합니다.")
+    @Operation(summary = "커뮤니티 게시글 생성", description = "게시물을 게시합니다.\n" +
+            "카테고리 이름, 제목, 내용, 링크\n" +
+            "이미지 파일")
     public BaseResponse<CommunityPostDTO.CreatePostResponse> createCommunityPost(
             @RequestPart("data") @Valid CommunityPostDTO.CreatePostRequest request,
             @RequestPart(value = "images", required = false) List<MultipartFile> images,
@@ -46,13 +48,15 @@ public class CommunityPostController {
             value = "/post",
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE
     )
-    @Operation(summary = "커뮤니티 게시글 수정", description = "본인이 작성한 게시물을 수정합니다.")
+    @Operation(summary = "커뮤니티 게시글 수정", description = "본인이 작성한 게시물을 수정합니다.\n" +
+            "수정할 카테고리, 수정할 제목, 수정할 내용, 기존 이미지 url, 신규 url" +
+            "기존 이미지를 제외한 신규 이미지 파일")
     public BaseResponse<CommunityPostDTO.UpdatePostResponse> updatePost(
             @RequestPart("data") @Valid CommunityPostDTO.UpdatePostRequest request,
-            @RequestPart(value = "newImages", required = false) List<MultipartFile> newImages,
+            @RequestPart(value = "images", required = false) List<MultipartFile> images,
             @AuthenticationPrincipal UserDetailsImpl user
     ) {
-        return BaseResponse.onSuccess(communityPostService.updatePost(request, newImages, user.getUser()), ResponseCode.OK);
+        return BaseResponse.onSuccess(communityPostService.updatePost(request, images, user.getUser()), ResponseCode.OK);
     }
 
     // 게시글 삭제

@@ -1,8 +1,11 @@
 package com.bbf.bebefriends.community.repository;
 
+import com.bbf.bebefriends.community.dto.CommunityCommentDTO;
 import com.bbf.bebefriends.community.entity.CommunityComment;
 import com.bbf.bebefriends.community.entity.CommunityPost;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -12,4 +15,40 @@ public interface CommunityCommentRepository extends JpaRepository<CommunityComme
     // 특정 게시물의 댓글 수 (deletedAt NULL)
     int countByPostAndDeletedAtIsNull(CommunityPost post);
     List<CommunityComment> findByPostAndParentIsNullAndDeletedAtIsNull(CommunityPost post);
+    @Query(value = """
+        SELECT 
+          p.comment_id        AS parentId,
+          p.user_id           AS authorId,
+          p.content           AS parentContent,
+          p.created_date      AS parentCreatedDate,
+          r.comment_id        AS childId,
+          r.user_id           AS childAuthorId,
+          r.content           AS childContent,
+          r.created_date      AS childCreatedDate
+        FROM community_comments p
+          LEFT JOIN community_comments r
+            ON r.parent_id = p.comment_id
+            AND r.deleted_at IS NULL
+        WHERE p.post_id        = :postId
+          AND p.parent_id      IS NULL
+          AND p.deleted_at     IS NULL
+          AND (
+                (:primaryOffset IS NULL) 
+                OR 
+                ( p.comment_id > :primaryOffset ) 
+                OR 
+                ( p.comment_id = :primaryOffset AND r.comment_id > COALESCE(:subOffset, 0) )
+              )
+        ORDER BY p.comment_id ASC, r.comment_id ASC
+        LIMIT :limit
+        """,
+            nativeQuery = true
+    )
+    List<CommunityCommentDTO.CommentCursorProjection> findCommentByCursor(
+            @Param("postId")        Long postId,
+            @Param("primaryOffset") Long primaryOffset,  // 마지막으로 본 parent.comment_id
+            @Param("subOffset")     Long subOffset,      // 동일 parent 아래 마지막으로 본 child.comment_id
+            @Param("limit")         int   limit          // 페이지 크기
+    );
+
 }
