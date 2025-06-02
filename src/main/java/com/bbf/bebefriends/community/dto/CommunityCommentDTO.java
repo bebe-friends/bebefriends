@@ -71,13 +71,13 @@ public class CommunityCommentDTO {
     public interface CommentCursorProjection {
         // 부모 댓글 관련
         Long getParentId();          // parent.comment_id
-        Long getAuthorId();
+        String getParentAuthorName();
         String getParentContent();     // parent.content
         LocalDateTime getParentCreatedDate(); // parent.created_date
 
         // 자식 댓글 관련
         Long getChildId();
-        Long getChildAuthorId();
+        String getChildAuthorName();
         String getChildContent();
         LocalDateTime getChildCreatedDate();
 
