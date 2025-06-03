@@ -2,6 +2,8 @@ package com.bbf.bebefriends.notification.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 import java.util.List;
 
@@ -24,19 +26,20 @@ public class FcmDTO {
     public record HotdealNotificationRequest(
 
             @Schema(description = "핫딜 게시글 ID", example = "1")
-            @NotBlank
+            @NotNull
             Long hotdealId,
 
             @Schema(description = "핫딜 관련 나이 (대상 나이 필터 조건)", example = "[1, 2, 3]")
-            @NotBlank
+            @NotNull
+            @Size(min = 1, message = "적어도 하나 이상의 나이를 제공해야 합니다.")
             List<Integer> ages,
 
             @Schema(description = "핫딜 관련 카테고리 (대상 카테고리 필터 조건)", example = "[\"가구\"]")
-            @NotBlank
+            @NotNull
+            @Size(min = 1, message = "적어도 하나 이상의 카테고리를 제공해야 합니다.")
             List<String> categories,
 
             @Schema(description = "야간 여부 (true: 야간, false: 주간)", example = "true")
-            @NotBlank
             boolean isNight,
 
             @Schema(description = "알림 제목", example = "핫딜 알림 제목")

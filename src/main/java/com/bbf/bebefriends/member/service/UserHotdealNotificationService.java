@@ -37,18 +37,19 @@ public class UserHotdealNotificationService {
         notification.setAge_5(request.age_5());
         notification.setAge_6(request.age_6());
 
+        notification.getPreferredCategories().clear();
+
         List<HotDealCategory> categories = request.categorys().stream()
                 .map(categoryId -> hotDealCategoryRepository.findById(categoryId)
                         .orElseThrow(() -> new UserControllerAdvice(ResponseCode._BAD_REQUEST)))
                 .collect(Collectors.toList());
-
-        notification.setPreferredCategories(categories);
+        notification.getPreferredCategories().addAll(categories);
 
         hotdealNotificationRepository.save(notification);
     }
 
     public UserDTO.UserHotdealNotificationResponse getHotdealNotificationSettings(User user) {
-        UserHotdealNotification notification = hotdealNotificationRepository.findUserHotdealNotificationByUser(user)
+        UserHotdealNotification notification = hotdealNotificationRepository.findByUserWithCategories(user)
                 .orElseThrow(() -> new UserControllerAdvice(ResponseCode._INTERNAL_SERVER_ERROR));
 
         List<String> categoryNames = notification.getPreferredCategories().stream()

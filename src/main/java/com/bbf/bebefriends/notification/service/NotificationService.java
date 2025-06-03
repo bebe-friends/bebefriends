@@ -116,7 +116,7 @@ public class NotificationService {
             return;
         }
 
-        fcmSend(userTokens, title, content);
+//        fcmSend(userTokens, title, content);
 
         log.info("핫딜 알림이 성공적으로 발송되었습니다.");
     }

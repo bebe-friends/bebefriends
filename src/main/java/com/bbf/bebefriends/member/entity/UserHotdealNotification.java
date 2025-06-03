@@ -8,7 +8,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -48,13 +47,13 @@ public class UserHotdealNotification extends BaseEntity {
     @Column(nullable = false)
     private boolean age_6;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "user_hotdeal_categories",
             joinColumns = @JoinColumn(name = "user_hotdeal_notification_id"),
             inverseJoinColumns = @JoinColumn(name = "hot_deal_category_id")
     )
-    private List<HotDealCategory> preferredCategories = new ArrayList<>();
+    private List<HotDealCategory> preferredCategories;
 
     public static UserHotdealNotification of(
             User user,
