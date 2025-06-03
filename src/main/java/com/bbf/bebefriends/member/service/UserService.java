@@ -29,6 +29,11 @@ public class UserService {
                 .orElseThrow(() -> new UserControllerAdvice(ResponseCode.MEMBER_NOT_FOUND));
     }
 
+    public UserDTO.UserInfoResponse getUserInfo(Long uid) {
+        User user = findByUid(uid);
+        return new UserDTO.UserInfoResponse(user.getNickname());
+    }
+
     public void updateNickname(Long uid, String nickname) {
         User user = findByUid(uid);
         user.setNickname(nickname);
