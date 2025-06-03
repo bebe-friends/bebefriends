@@ -25,6 +25,9 @@ public class NotificationDTO {
             @Schema(description = "알림 생성 날짜 및 시간", example = "2023-11-01T12:00:00")
             @NotNull LocalDateTime createdAt,
 
+            @Schema(description = "참조 ID", example = "123")
+            Long referenceId,
+
             @Schema(description = "읽음 여부", example = "false")
             @NotNull boolean isRead
     ) {}
