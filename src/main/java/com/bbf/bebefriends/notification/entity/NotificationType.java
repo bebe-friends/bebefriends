@@ -5,4 +5,6 @@ public enum NotificationType {
     NOTICE,   // 공지
     EVENT,    // 이벤트
     HOTDEAL   // 핫딜
+
+    // todo. LIKE, REPLY, SYSTEM
 }
