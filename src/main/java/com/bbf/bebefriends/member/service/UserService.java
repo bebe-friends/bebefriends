@@ -60,8 +60,15 @@ public class UserService {
                 .orElseGet(() -> {
                             User findUser = userRepository.findByEmailAndDeletedAtIsNull(userInfo.getEmail())
                                     .orElseThrow(() -> new UserControllerAdvice(ResponseCode.MEMBER_NOT_FOUND));
-                            // Oauth2UserInfo 에 kakao oauth id 없을 경우 추가
-                            findUser.getOauth2UserInfo().setOauthId(userInfo.getId());
+
+                            // Oauth2UserInfo가 없는 경우 새로 생성
+                            if (findUser.getOauth2UserInfo() == null) {
+                                Oauth2UserInfo oauth2UserInfo = new Oauth2UserInfo();
+                                oauth2UserInfo.setOauthId(userInfo.getId());
+                                findUser.setOauth2UserInfo(oauth2UserInfo);
+                            } else {
+                                findUser.getOauth2UserInfo().setOauthId(userInfo.getId());
+                            }
                             return findUser;
                         }
                 );
