@@ -96,8 +96,8 @@ public class NotificationService {
                 notification.getContent(),
                 notification.getType(),
                 notification.getCreatedAt(),
+                notification.getReferenceId(),
                 notification.isRead()
         );
     }
-
 }
