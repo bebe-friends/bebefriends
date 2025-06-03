@@ -34,6 +34,9 @@ public class Notification extends BaseEntity {
     @Column(nullable = false)
     private NotificationType type;
 
+    @Column(nullable = true)
+    private Long referenceId;
+
     @Column(nullable = false)
     private boolean isRead = false;
 

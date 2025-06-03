@@ -26,7 +26,7 @@ public class CommunityNotificationService {
      * @param post 댓글이 작성된 게시글
      * @param commentContent 댓글 내용
      */
-    public void sendCommentNotification(User commenter, CommunityPost post, String commentContent) {
+    public void sendCommentNotification(User commenter, CommunityPost post, String commentContent, Long commentId) {
         User postCreator = post.getUser(); // 게시글 작성자
 
         if (postCreator == null || !isNotificationAllowed(postCreator) || !isCommentNotificationAllowed(postCreator)) {
@@ -42,7 +42,7 @@ public class CommunityNotificationService {
         fcmService.sendPushNotification(postCreator.getFcmToken(), title, body);
         log.info("게시글 작성자 '{}'에게 댓글 알림을 발송하였습니다.", postCreator.getNickname());
 
-        saveNotification(postCreator, title, body, NotificationType.COMMENT);
+        saveNotification(postCreator, title, body, NotificationType.COMMENT, commentId);
     }
 
     /**
@@ -52,7 +52,7 @@ public class CommunityNotificationService {
      * @param parentComment 답글이 작성된 상위 댓글
      * @param replyContent 답글 내용
      */
-    public void sendReplyNotification(User replier, CommunityComment parentComment, String replyContent) {
+    public void sendReplyNotification(User replier, CommunityComment parentComment, String replyContent, Long replyId) {
         User commentCreator = parentComment.getUser(); // 상위 댓글 작성자
 
         if (commentCreator == null || !isNotificationAllowed(commentCreator) || !isCommentNotificationAllowed(commentCreator)) {
@@ -68,7 +68,7 @@ public class CommunityNotificationService {
         fcmService.sendPushNotification(commentCreator.getFcmToken(), title, body);
         log.info("댓글 작성자 '{}'에게 답글 알림을 발송하였습니다.", commentCreator.getNickname());
 
-        saveNotification(commentCreator, title, body, NotificationType.COMMENT);
+        saveNotification(commentCreator, title, body, NotificationType.REPLY, replyId);
     }
 
     /**
@@ -100,10 +100,22 @@ public class CommunityNotificationService {
         return true;
     }
 
-    private void saveNotification(User user, String title, String content, NotificationType type) {
+    /**
+     * 알림 저장
+     *
+     * @param user 알림 저장 대상 유저
+     * @param title 알림 제목
+     * @param content 알림 내용
+     * @param type 알림 타입 - 게시글, 핫딜, 등
+     * @param referenceId 알림의 참조 ID 정보 (게시글 ID, 핫딜 ID 알림 정보를 통해서 컨텐츠 접근 제공)
+     */
+    private void saveNotification(
+            User user, String title, String content, NotificationType type, Long referenceId
+    ) {
         Notification notification = Notification.createNotification(user, title, content);
-        notification.setType(type); // 알림 타입 설정
-        notification.setRead(false); // 초기값은 읽지 않음 상태
+        notification.setType(type);
+        notification.setRead(false);
+        notification.setReferenceId(referenceId);
         notificationRepository.save(notification);
         log.info("알림이 DB에 저장되었습니다. 사용자: '{}', 제목: '{}'", user.getNickname(), title);
     }

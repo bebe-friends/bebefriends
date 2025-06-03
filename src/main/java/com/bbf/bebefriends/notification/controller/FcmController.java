@@ -5,7 +5,7 @@ import com.bbf.bebefriends.global.entity.BaseResponse;
 import com.bbf.bebefriends.global.exception.ResponseCode;
 import com.bbf.bebefriends.notification.dto.FcmDTO;
 import com.bbf.bebefriends.notification.service.FcmService;
-import com.bbf.bebefriends.notification.service.NotificationService;
+import com.bbf.bebefriends.notification.service.HotdealNotificationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class FcmController {
 
     private final FcmService fcmService;
-    private final NotificationService notificationService;
+    private final HotdealNotificationService hotdealNotificationService;
 
     @Operation(summary = "FCM 푸시 알림", description = "fcm token 사용해서 푸시 알림 테스트")
     @PostMapping("/send")
@@ -38,7 +38,7 @@ public class FcmController {
     public BaseResponse<String> sendHotdealNotification(
             @Valid @RequestBody FcmDTO.HotdealNotificationRequest request
     ) {
-        notificationService.sendHotdealNotifications(
+        hotdealNotificationService.sendHotdealNotifications(
                 request.hotdealId(),
                 request.ages(),
                 request.categories(),
