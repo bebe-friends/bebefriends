@@ -8,11 +8,11 @@ import java.util.List;
 import java.util.Optional;
 
 public interface CommunityCommentService {
-    List<CommunityCommentDTO.CommentCursorProjection> getCommentsByPost(Long   postId,
+    List<CommunityCommentDTO.CommentDetails> getCommentsByPost(Long   postId,
                                                                Long   primaryOffset,
                                                                Long   subOffset,
                                                                int    limit);
-    Optional<CommunityCommentDTO.CommentCursor> getNextCursor(CommunityCommentDTO.CommentCursorProjection lastRow);
+//    Optional<CommunityCommentDTO.CommentCursor> getNextCursor(CommunityCommentDTO.CommentCursorProjection lastRow);
     String createComment(User user, CommunityCommentDTO.CreateCommentRequest request);
 
     String updateComment(User user, CommunityCommentDTO.UpdateCommentRequest request);

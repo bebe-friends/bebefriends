@@ -12,14 +12,14 @@ public class CommunityPostDTO {
     @Data
     public static class CreatePostRequest {
         @NonNull
-        private String category;
+        private Long categoryId;
         @NonNull
         private String title;
         @NonNull
         private String content;
 
 //        private List<MultipartFile> img;
-        private List<String> link;
+        private List<String> links;
     }
 
     @Data
@@ -39,7 +39,7 @@ public class CommunityPostDTO {
         @NonNull
         private Long postId;
         @NonNull
-        private String category;
+        private Long categoryId;
         @NonNull
         private String title;
         @NonNull
@@ -48,7 +48,7 @@ public class CommunityPostDTO {
 //        private List<MultipartFile> newImages;
         private List<String> existingImageUrls;
 
-        private List<String> newLinks;
+        private List<String> links;
     }
 
     @Data
