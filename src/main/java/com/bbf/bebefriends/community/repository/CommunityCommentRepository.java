@@ -47,11 +47,13 @@ public interface CommunityCommentRepository extends JpaRepository<CommunityComme
     @Query(value = """
     SELECT 
       p.comment_id           AS parentId,
+      p.user_id              AS parentUserId,
       pu.nickname            AS parentAuthorName,
       p.content              AS parentContent,
       p.created_date         AS parentCreatedDate,
 
       r.comment_id           AS childId,
+      r.user_id              AS childUserId,
       cu.nickname            AS childAuthorName,
       r.content              AS childContent,
       r.created_date         AS childCreatedDate

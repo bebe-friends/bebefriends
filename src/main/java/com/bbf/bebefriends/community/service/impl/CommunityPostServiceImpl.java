@@ -7,6 +7,7 @@ import com.bbf.bebefriends.community.entity.CommunityImage;
 import com.bbf.bebefriends.community.entity.CommunityLink;
 import com.bbf.bebefriends.community.entity.CommunityPost;
 import com.bbf.bebefriends.community.exception.CommunityControllerAdvice;
+import com.bbf.bebefriends.community.repository.CommunityCategoryRepository;
 import com.bbf.bebefriends.community.repository.CommunityImageRepository;
 import com.bbf.bebefriends.community.repository.CommunityLinkRepository;
 import com.bbf.bebefriends.community.repository.CommunityPostRepository;
@@ -27,7 +28,7 @@ import java.util.List;
 @Transactional(readOnly = true)
 public class CommunityPostServiceImpl implements CommunityPostService {
     private final CommunityPostRepository communityPostRepository;
-    private final CommunityCategoryService communityCategoryService;
+    private final CommunityCategoryRepository communityCategoryRepository;
     private final FireBaseService fireBaseService;
     private final CommunityCommentServiceImpl communityCommentServiceImpl;
 
@@ -35,7 +36,8 @@ public class CommunityPostServiceImpl implements CommunityPostService {
     @Override
     @Transactional
     public CommunityPostDTO.CreatePostResponse createPost(CommunityPostDTO.CreatePostRequest request, List<MultipartFile> images, User user) {
-        CommunityCategory category = communityCategoryService.getCategoryByName(request.getCategory());
+        CommunityCategory category = communityCategoryRepository.findById(request.getCategoryId())
+                .orElseThrow(() -> new CommunityControllerAdvice(ResponseCode.COMMUNITY_CATEGORY_NOT_FOUND));
 
         CommunityPost communityPost = CommunityPost.createPost(user, category, request);
         communityPostRepository.save(communityPost);
@@ -70,7 +72,8 @@ public class CommunityPostServiceImpl implements CommunityPostService {
             throw new CommunityControllerAdvice(ResponseCode._UNAUTHORIZED);
         }
 
-        CommunityCategory category = communityCategoryService.getCategoryByName(request.getCategory());
+        CommunityCategory category = communityCategoryRepository.findById(request.getCategoryId())
+                .orElseThrow(() -> new CommunityControllerAdvice(ResponseCode.COMMUNITY_CATEGORY_NOT_FOUND));
         post.updatePost(category, request);
 
         List<CommunityImage> currentImages = post.getImages();

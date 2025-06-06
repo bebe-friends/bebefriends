@@ -13,8 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -23,49 +22,74 @@ public class CommunityCommentServiceImpl implements CommunityCommentService {
     private final CommunityCommentRepository communityCommentRepository;
     private final CommunityPostRepository communityPostRepository;
 
-    /**
-     * 커서 기반(flatten) 댓글 페이지네이션
-     *
-     * @param postId         대상 게시글 ID
-     * @param primaryOffset  마지막으로 본 부모ID (null 이면 첫 페이지)
-     * @param subOffset      마지막으로 본 자식ID (해당 부모에서)
-     *                       → “부모만”인 경우 subOffset을 0으로 넘기면 곧바로 다음 부모부터 시작
-     * @param limit          페이지 크기(항목 개수)
-     * @return List<CommentCursorProjection> – 보려는 댓글 리스트
-     */
     @Override
-    public List<CommunityCommentDTO.CommentCursorProjection> getCommentsByPost(
+    public List<CommunityCommentDTO.CommentDetails> getCommentsByPost(
             Long   postId,
             Long   primaryOffset,
             Long   subOffset,
             int    limit
     ) {
-        CommunityPost post = communityPostRepository.findById(postId)
+        communityPostRepository.findById(postId)
                 .orElseThrow(() -> new CommunityControllerAdvice(ResponseCode.COMMUNITY_POST_NOT_FOUND));
 
-        return communityCommentRepository.findCommentByCursor(
+        List<CommunityCommentDTO.CommentCursorProjection> rows = communityCommentRepository.findCommentByCursor(
                 postId,
                 primaryOffset,
                 subOffset,
                 limit
         );
-    }
 
-    /**
-     * “다음 페이지 커서” 계산 헬퍼
-     *
-     * @param lastRow 마지막으로 반환된 CommentCursorProjection
-     * @return (parentId, childId) 쌍; 다음 페이지 요청 시 넘겨 줄 커서
-     */
-    public Optional<CommunityCommentDTO.CommentCursor> getNextCursor(CommunityCommentDTO.CommentCursorProjection lastRow) {
-        if (lastRow == null) {
-            return Optional.empty();
+        Set<Long> visitedParent = new HashSet<>();
+        List<CommunityCommentDTO.CommentDetails> returnDTOs = new ArrayList<>();
+
+        for (CommunityCommentDTO.CommentCursorProjection row : rows) {
+            Long pId   = row.getParentId();
+            Long cId   = row.getChildId();
+
+            // 부모 댓글이 아직 추가되지 않았다면
+            if (!visitedParent.contains(pId)) {
+                CommunityCommentDTO.CommentDetails parentDto = CommunityCommentDTO.CommentDetails.builder()
+                        .commentId(pId)
+                        .authorId(row.getParentUserId())
+                        .authorName(row.getParentAuthorName())
+                        .content(row.getParentContent())
+                        .createdAt(row.getParentCreatedDate())
+                        .parentCommentId(null)
+                        .build();
+                returnDTOs.add(parentDto);
+                visitedParent.add(pId);
+            }
+
+            // childId가 null이 아니면
+            if (cId != null) {
+                CommunityCommentDTO.CommentDetails childDto = CommunityCommentDTO.CommentDetails.builder()
+                        .commentId(cId)
+                        .authorId(row.getChildUserId())
+                        .authorName(row.getChildAuthorName())
+                        .content(row.getChildContent())
+                        .createdAt(row.getChildCreatedDate())
+                        .parentCommentId(pId)
+                        .build();
+                returnDTOs.add(childDto);
+            }
+
+            if (returnDTOs.size() >= limit) {
+                break;
+            }
         }
-        Long nextPrimary = lastRow.getParentId();
-        Long nextSub = lastRow.getChildId();  // 자식이 null이면 그냥 null 넘어감
 
-        return Optional.of(new CommunityCommentDTO.CommentCursor(nextPrimary, nextSub));
+        return returnDTOs;
     }
+
+//    public Optional<CommunityCommentDTO.CommentCursor> getNextCursor(CommunityCommentDTO.CommentCursorProjection lastRow) {
+//        if (lastRow == null) {
+//            return Optional.empty();
+//        }
+//        Long nextPrimary = lastRow.getParentId();
+//        Long nextSub = lastRow.getChildId();  // 자식이 null이면 그냥 null 넘어감
+//
+//        return Optional.of(new CommunityCommentDTO.CommentCursor(nextPrimary, nextSub));
+//    }
 
     // TODO: 대댓글의 댓글은 불가능. 깊이는 최대 2까지만 설정하도록
     @Override

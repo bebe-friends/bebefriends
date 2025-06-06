@@ -21,11 +21,6 @@ public class CommunityCommentDTO {
         private String content;
     }
 
-    @Data
-    public static class CreateCommentResponse {
-
-    }
-
     // 수정
     @Data
     public static class UpdateCommentRequest {
@@ -36,11 +31,6 @@ public class CommunityCommentDTO {
         private String content;
     }
 
-    @Data
-    public static class UpdateCommentResponse {
-
-    }
-
     // 삭제
     @Data
     public static class DeleteCommentRequest {
@@ -48,20 +38,16 @@ public class CommunityCommentDTO {
         private Long commentId;
     }
 
-    @Data
-    public static class DeleteCommentResponse {
-
-    }
-
     // 댓글 상세
     @Data
     @Builder
     public static class CommentDetails {
         private Long commentId;
-        private String commenter;
+        private Long authorId;
+        private String authorName;
         private String content;
         private LocalDateTime createdAt;
-//        private List<CommentDetails> replies;
+        private Long parentCommentId;
     }
 
     /**
@@ -71,12 +57,14 @@ public class CommunityCommentDTO {
     public interface CommentCursorProjection {
         // 부모 댓글 관련
         Long getParentId();          // parent.comment_id
+        Long getParentUserId();
         String getParentAuthorName();
         String getParentContent();     // parent.content
         LocalDateTime getParentCreatedDate(); // parent.created_date
 
         // 자식 댓글 관련
         Long getChildId();
+        Long getChildUserId();
         String getChildAuthorName();
         String getChildContent();
         LocalDateTime getChildCreatedDate();
