@@ -50,8 +50,8 @@ public class CommunityPostServiceImpl implements CommunityPostService {
             }
         }
 
-        if (request.getLink() != null) {
-            for (String uploadedLink : request.getLink()){
+        if (request.getLinks() != null) {
+            for (String uploadedLink : request.getLinks()){
                 CommunityLink link = CommunityLink.createLink(communityPost, uploadedLink);
                 communityPost.addLink(link);
             }
@@ -109,8 +109,8 @@ public class CommunityPostServiceImpl implements CommunityPostService {
         }
 
         post.getLinks().clear();
-        if (request.getNewLinks() != null) {
-            for (String uploadedLink : request.getNewLinks()) {
+        if (request.getLinks() != null) {
+            for (String uploadedLink : request.getLinks()) {
                 post.addLink(CommunityLink.createLink(post, uploadedLink));
             }
         }
