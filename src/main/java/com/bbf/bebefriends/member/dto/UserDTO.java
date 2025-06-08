@@ -55,6 +55,11 @@ public class UserDTO {
             @NotNull Boolean age
     ) {}
 
+    @Schema(description = "유저 정보 조회 결과")
+    public record UserInfoResponse(
+            String nickname
+    ) {}
+
     @Schema(description = "이용자 알림 설정")
     public record UpdateNotificationSettingsRequest(
             @NotNull

@@ -4,6 +4,7 @@ import com.bbf.bebefriends.global.entity.BaseResponse;
 import com.bbf.bebefriends.global.entity.UserDetailsImpl;
 import com.bbf.bebefriends.global.exception.ResponseCode;
 import com.bbf.bebefriends.member.dto.AuthDTO;
+import com.bbf.bebefriends.member.dto.UserDTO;
 import com.bbf.bebefriends.member.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -45,5 +46,11 @@ public class UserController {
     ) {
         userService.updateFcmToken(user.getUserId(), request);
         return BaseResponse.onSuccess("토큰 갱신 성공", ResponseCode.OK);
+    }
+
+    @Operation(summary = "유저 정보 조회", description = "현재 로그인 되어 있는 유저의 정보 조회")
+    @GetMapping
+    public BaseResponse<UserDTO.UserInfoResponse> getUserInfo(@AuthenticationPrincipal UserDetailsImpl user) {
+        return BaseResponse.onSuccess(userService.getUserInfo(user.getUserId()), ResponseCode.OK);
     }
 }
