@@ -7,6 +7,10 @@ import lombok.Getter;
 
 import java.util.List;
 
+@Schema(
+        name        = "BasePageResponse",
+        description = "커서 기반 페이징 응답 스펙 (PostListResponse 전용)"
+)
 @Getter
 @Builder
 @AllArgsConstructor

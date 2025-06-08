@@ -3,11 +3,16 @@ package com.bbf.bebefriends.community.controller;
 import com.bbf.bebefriends.community.dto.CommunityPostDTO;
 import com.bbf.bebefriends.community.exception.CommunityControllerAdvice;
 import com.bbf.bebefriends.community.service.CommunityPostListService;
+import com.bbf.bebefriends.global.entity.BasePageResponse;
 import com.bbf.bebefriends.global.entity.BaseResponse;
 import com.bbf.bebefriends.global.entity.UserDetailsImpl;
 import com.bbf.bebefriends.global.exception.ResponseCode;
+import com.bbf.bebefriends.global.spec.CommunityPostListPageResponseSpec;
 import com.bbf.bebefriends.member.entity.User;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -15,8 +20,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -43,9 +46,16 @@ public class CommunityPostListController {
                           type, category, keyword 조합에 따라 전체/내가 쓴/댓글 단/좋아요한/카테고리별/검색 조회\n
                           첫 조회 시 cursorId 는 제외\n
                           기본 pageSize 는 20
-                          """
+                          """,
+            responses = @ApiResponse(
+                    content = @Content(
+                            schema = @Schema(
+                                    implementation = CommunityPostListPageResponseSpec.class
+                            )
+                    )
+            )
     )
-    public BaseResponse<CommunityPostDTO.PostListWithCursorResponse> getPosts(
+    public BaseResponse<BasePageResponse<CommunityPostDTO.PostListResponse>> getPosts(
             @AuthenticationPrincipal UserDetailsImpl user,
             @RequestParam(value = "cursorId", required = false) Long cursorId,
             @RequestParam(value = "pageSize", defaultValue = "20") int pageSize,
@@ -55,7 +65,7 @@ public class CommunityPostListController {
     ) {
         User currentUser = user.getUser();
 
-        CommunityPostDTO.PostListWithCursorResponse response;
+        BasePageResponse<CommunityPostDTO.PostListResponse> response;
 
         if (keyword != null && !keyword.isBlank()) {
             // 검색어가 있으면 검색 서비스 호출
