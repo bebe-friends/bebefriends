@@ -25,7 +25,7 @@ public class CommunityCategoryController {
 
     // 전체 카테고리 조회
     @GetMapping("/category")
-    @Operation(summary = "전체 카테고리 조회", description = "전체 카테고리를 조회합니다.")
+    @Operation(summary = "전체 카테고리 목록 조회", description = "전체 카테고리 목록을 조회합니다.")
     public BaseResponse<List<CommunityCategory>> getAllCategory() {
         return BaseResponse.onSuccess(communityCategoryService.getAllCategory(), ResponseCode.OK);
     }
