@@ -3,11 +3,16 @@ package com.bbf.bebefriends.community.controller;
 import com.bbf.bebefriends.community.dto.CommunityPostDTO;
 import com.bbf.bebefriends.community.exception.CommunityControllerAdvice;
 import com.bbf.bebefriends.community.service.CommunityPostListService;
+import com.bbf.bebefriends.global.entity.BasePageResponse;
 import com.bbf.bebefriends.global.entity.BaseResponse;
 import com.bbf.bebefriends.global.entity.UserDetailsImpl;
 import com.bbf.bebefriends.global.exception.ResponseCode;
+import com.bbf.bebefriends.global.spec.CommunityPostListPageResponseSpec;
 import com.bbf.bebefriends.member.entity.User;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -15,8 +20,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -40,12 +43,19 @@ public class CommunityPostListController {
     @Operation(
             summary = "게시물 조회",
             description = """
-                          type, category, keyword 조합에 따라 전체/내가 쓴/댓글 단/좋아요한/카테고리별/검색 조회\
-                          첫 조회 시 cursorId 는 제외\
+                          type, category, keyword 조합에 따라 전체/내가 쓴/댓글 단/좋아요한/카테고리별/검색 조회\n
+                          첫 조회 시 cursorId 는 제외\n
                           기본 pageSize 는 20
-                          """
+                          """,
+            responses = @ApiResponse(
+                    content = @Content(
+                            schema = @Schema(
+                                    implementation = CommunityPostListPageResponseSpec.class
+                            )
+                    )
+            )
     )
-    public BaseResponse<CommunityPostDTO.PostListWithCursorResponse> getPosts(
+    public BaseResponse<BasePageResponse<CommunityPostDTO.PostListResponse>> getPosts(
             @AuthenticationPrincipal UserDetailsImpl user,
             @RequestParam(value = "cursorId", required = false) Long cursorId,
             @RequestParam(value = "pageSize", defaultValue = "20") int pageSize,
@@ -55,31 +65,31 @@ public class CommunityPostListController {
     ) {
         User currentUser = user.getUser();
 
-        CommunityPostDTO.PostListWithCursorResponse posts;
+        BasePageResponse<CommunityPostDTO.PostListResponse> response;
 
         if (keyword != null && !keyword.isBlank()) {
             // 검색어가 있으면 검색 서비스 호출
-            posts = communityPostListService.getPostsBySearch(keyword, currentUser, cursorId, pageSize);
+            response = communityPostListService.getPostsBySearch(keyword, currentUser, cursorId, pageSize);
         }
         else if (category != null && !category.isBlank()) {
             // 카테고리 파라미터가 있으면 카테고리 조회 서비스 호출
-            posts = communityPostListService.getPostsByCategory(category, currentUser, cursorId, pageSize);
+            response = communityPostListService.getPostsByCategory(category, currentUser, cursorId, pageSize);
         }
         else if (type != null) {
             // type 파라미터가 있으면 내가 쓴/댓글 단/좋아요한 조회
             switch (type) {
-                case MY        -> posts = communityPostListService.getMyPosts(currentUser, cursorId, pageSize);
-                case COMMENTED -> posts = communityPostListService.getCommentedPosts(currentUser, cursorId, pageSize);
-                case LIKED     -> posts = communityPostListService.getLikedPosts(currentUser, cursorId, pageSize);
+                case MY        -> response = communityPostListService.getMyPosts(currentUser, cursorId, pageSize);
+                case COMMENTED -> response = communityPostListService.getCommentedPosts(currentUser, cursorId, pageSize);
+                case LIKED     -> response = communityPostListService.getLikedPosts(currentUser, cursorId, pageSize);
                 default        -> throw new CommunityControllerAdvice(ResponseCode._BAD_REQUEST);
             }
         }
         else {
             // 파라미터가 아무것도 없으면 전체 게시물 조회
-            posts = communityPostListService.getAllPosts(currentUser, cursorId, pageSize);
+            response = communityPostListService.getAllPosts(currentUser, cursorId, pageSize);
         }
 
-        return BaseResponse.onSuccess(posts, ResponseCode.OK);
+        return BaseResponse.onSuccess(response, ResponseCode.OK);
     }
 
     // 조회 타입 구분용 enum

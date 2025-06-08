@@ -2,7 +2,6 @@ package com.bbf.bebefriends.community.dto;
 
 import com.bbf.bebefriends.community.entity.CommunityPost;
 import lombok.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -82,12 +81,12 @@ public class CommunityPostDTO {
         private int commentCount;
     }
 
-    @Data
-    @AllArgsConstructor
-    public static class PostListWithCursorResponse {
-        private List<PostListResponse> posts;  // 실제 게시물
-        private Long lastCursorId;             // 마지막(마지막 인덱스) 게시물 id
-    }
+//    @Data
+//    @AllArgsConstructor
+//    public static class PostListWithCursorResponse {
+//        private List<PostListResponse> posts;  // 실제 게시물
+//        private Long lastCursorId;             // 마지막(마지막 인덱스) 게시물 id
+//    }
 
     // 게시물 상세 페이지
     @Data
