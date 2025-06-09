@@ -3,9 +3,9 @@ package com.bbf.bebefriends.community.dto;
 import lombok.Data;
 import lombok.NonNull;
 
-public class CommunityPostBlockDTO {
+public class CommunityPostReportDTO {
     @Data
-    public static class PostBlockRequest {
+    public static class PostReportRequest {
         @NonNull
         private Long postId;
         @NonNull
