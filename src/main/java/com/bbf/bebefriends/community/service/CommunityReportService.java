@@ -5,4 +5,5 @@ import com.bbf.bebefriends.member.entity.User;
 
 public interface CommunityReportService {
     String reportPost(User user, CommunityPostReportDTO.PostReportRequest request);
+    String blockPost(User user, Long postId);
 }

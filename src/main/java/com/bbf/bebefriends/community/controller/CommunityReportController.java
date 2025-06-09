@@ -21,10 +21,18 @@ public class CommunityReportController {
     // 게시물 신고
     @PostMapping("/post/report")
     @Operation(summary = "커뮤니티 게시글 신고",
-            description = "게시물을 신고합니다.\n" +
-                          "게시글 id, 신고 사유, 신고 내용\n")
+               description = "게시물을 신고합니다.\n" +
+                             "게시글 id, 신고 사유, 신고 내용")
     public BaseResponse<String> reportPost(@AuthenticationPrincipal UserDetailsImpl user,
                                            @RequestBody CommunityPostReportDTO.PostReportRequest request) {
         return BaseResponse.onSuccess(communityReportService.reportPost(user.getUser(), request), ResponseCode.OK);
+    }
+
+    // 게시물 차단
+    @PostMapping("/post/block")
+    @Operation(summary = "커뮤니티 게시글 차단", description = "게시물을 차단합니다.")
+    public BaseResponse<String> blockPost(@AuthenticationPrincipal UserDetailsImpl user,
+                                          @RequestParam Long postId) {
+        return BaseResponse.onSuccess(communityReportService.blockPost(user.getUser(), postId), ResponseCode.OK);
     }
 }
