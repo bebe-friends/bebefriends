@@ -10,7 +10,6 @@ public interface CommunityPostService {
     CommunityPostDTO.CreatePostResponse createPost(CommunityPostDTO.CreatePostRequest request, List<MultipartFile> images, User user);
     CommunityPostDTO.UpdatePostResponse updatePost(CommunityPostDTO.UpdatePostRequest request, List<MultipartFile> newImages, User user);
     String deletePost(CommunityPostDTO.DeletePostRequest request, User user);
-
     CommunityPostDTO.PostDetailsResponse getPostDetail(Long postId);
 
     // TODO: 소프트 삭제된 게시물 삭제처리

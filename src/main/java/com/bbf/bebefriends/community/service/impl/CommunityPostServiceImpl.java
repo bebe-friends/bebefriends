@@ -16,6 +16,8 @@ import com.bbf.bebefriends.community.service.CommunityPostService;
 import com.bbf.bebefriends.global.exception.ResponseCode;
 import com.bbf.bebefriends.global.utils.file.FireBaseService;
 import com.bbf.bebefriends.member.entity.User;
+import com.bbf.bebefriends.member.exception.UserControllerAdvice;
+import com.bbf.bebefriends.member.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

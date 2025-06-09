@@ -70,7 +70,7 @@ public class CommunityPostController {
     // 게시글 상세 페이지
     @GetMapping("/post/detail")
     @Operation(summary = "커뮤니티 게시글 상세 페이지", description = "게시글 상세 페이지를 조회합니다.")
-    public BaseResponse<CommunityPostDTO.PostDetailsResponse>  getPostDetails(@RequestParam Long postId) {
+    public BaseResponse<CommunityPostDTO.PostDetailsResponse> getPostDetails(@RequestParam Long postId) {
         return BaseResponse.onSuccess(communityPostService.getPostDetail(postId), ResponseCode.OK);
     }
 }
