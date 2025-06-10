@@ -4,6 +4,7 @@ import com.bbf.bebefriends.community.dto.CommunityPostDTO;
 import com.bbf.bebefriends.community.entity.CommunityCategory;
 import com.bbf.bebefriends.community.entity.CommunityImage;
 import com.bbf.bebefriends.community.entity.CommunityPost;
+import com.bbf.bebefriends.community.repository.CommunityPostBlockRepository;
 import com.bbf.bebefriends.community.repository.CommunityPostForAnonymousRepository;
 import com.bbf.bebefriends.community.repository.CommunityPostRepository;
 import com.bbf.bebefriends.community.service.CommunityCategoryService;
@@ -26,8 +27,31 @@ public class CommunityPostListServiceImpl implements CommunityPostListService {
     private final CommunityPostRepository communityPostRepository;
     private final CommunityPostForAnonymousRepository communityPostForAnonymousRepository;
     private final CommunityCategoryService communityCategoryService;
+    private final CommunityPostBlockRepository communityPostBlockRepository;
 
     // DTO 변환 (첫 번째 이미지 URL)
+    private CommunityPostDTO.PostListResponse toDto(CommunityPost post, User user) {
+        String firstImg = post.getImages().stream()
+                .findFirst()
+                .map(CommunityImage::getImgUrl)
+                .orElse(null);
+        Boolean isBlocked = communityPostBlockRepository.existsByPostAndUser(post, user);
+
+//        int commentCount = communityCommentRepository.countByPostAndDeletedAtIsNull(post);
+        return CommunityPostDTO.PostListResponse.builder()
+                .postId(post.getId())
+                .title(post.getTitle())
+                .author(post.getUser().getNickname())
+                .content(post.getContent())
+                .firstImageUrl(firstImg)
+                .createdAt(post.getCreatedDate())
+                .viewCount(post.getViewCount())
+                .likeCount(post.getLikeCount())
+                .commentCount(post.getCommentCount())
+                .isBlocked(isBlocked)
+                .build();
+    }
+
     private CommunityPostDTO.PostListResponse toDto(CommunityPost post) {
         String firstImg = post.getImages().stream()
                 .findFirst()
@@ -45,6 +69,7 @@ public class CommunityPostListServiceImpl implements CommunityPostListService {
                 .viewCount(post.getViewCount())
                 .likeCount(post.getLikeCount())
                 .commentCount(post.getCommentCount())
+                .isBlocked(null)
                 .build();
     }
 
@@ -75,7 +100,7 @@ public class CommunityPostListServiceImpl implements CommunityPostListService {
         }
         List<CommunityPostDTO.PostListResponse> posts = communityPostRepository.findAllActivePostsWithCursor(user, cursorId, limit)
                 .stream()
-                .map(this::toDto)
+                .map(post -> toDto(post, user))
                 .toList();
 
         return toDtoWithCursor(posts, pageSize);
@@ -97,7 +122,7 @@ public class CommunityPostListServiceImpl implements CommunityPostListService {
         }
         List<CommunityPostDTO.PostListResponse> posts = communityPostRepository.findByCategoryActive(category, user, cursorId, limit)
                 .stream()
-                .map(this::toDto)
+                .map(post -> toDto(post, user))
                 .toList();
 
         return toDtoWithCursor(posts, pageSize);
@@ -118,7 +143,7 @@ public class CommunityPostListServiceImpl implements CommunityPostListService {
         }
         List<CommunityPostDTO.PostListResponse> posts = communityPostRepository.searchPostsByKeyword(query, user, cursorId, limit)
                 .stream()
-                .map(this::toDto)
+                .map(post -> toDto(post, user))
                 .toList();
 
         return toDtoWithCursor(posts, pageSize);
@@ -131,7 +156,7 @@ public class CommunityPostListServiceImpl implements CommunityPostListService {
 
         List<CommunityPostDTO.PostListResponse> posts = communityPostRepository.findMyPostsWithCursor(user, cursorId, limit)
                 .stream()
-                .map(this::toDto)
+                .map(post -> toDto(post, user))
                 .toList();
 
         return toDtoWithCursor(posts, pageSize);
@@ -144,7 +169,7 @@ public class CommunityPostListServiceImpl implements CommunityPostListService {
 
         List<CommunityPostDTO.PostListResponse> posts = communityPostRepository.findCommentedByUserActive(user, cursorId, limit)
                 .stream()
-                .map(this::toDto)
+                .map(post -> toDto(post, user))
                 .toList();
 
         return toDtoWithCursor(posts, pageSize);
@@ -157,7 +182,7 @@ public class CommunityPostListServiceImpl implements CommunityPostListService {
 
         List<CommunityPostDTO.PostListResponse> posts = communityPostRepository.findLikedByUserActive(user, cursorId, limit)
                 .stream()
-                .map(this::toDto)
+                .map(post -> toDto(post, user))
                 .toList();
 
         return toDtoWithCursor(posts, pageSize);

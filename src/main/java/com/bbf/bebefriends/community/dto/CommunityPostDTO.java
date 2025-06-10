@@ -79,6 +79,7 @@ public class CommunityPostDTO {
         private int viewCount;
         private int likeCount;
         private int commentCount;
+        private Boolean isBlocked;
     }
 
 //    @Data

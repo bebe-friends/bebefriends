@@ -23,11 +23,6 @@ public interface CommunityPostRepository extends JpaRepository<CommunityPost, Lo
       FROM CommunityPost p
       WHERE p.deletedAt IS NULL
         AND p.isReported IS NULL
-        AND p.id NOT IN (
-            SELECT b.post.id
-            FROM CommunityPostBlock b
-            WHERE b.user = :user
-        )
         AND ( :cursorId IS NULL OR p.id < :cursorId )
       ORDER BY p.id DESC
     """)
@@ -45,11 +40,6 @@ public interface CommunityPostRepository extends JpaRepository<CommunityPost, Lo
       WHERE p.category       = :category
         AND p.deletedAt      IS NULL
         AND p.isReported     IS NULL
-        AND p.id NOT IN (
-          SELECT b.post.id
-          FROM CommunityPostBlock b
-          WHERE b.user = :user
-        )
         AND ( :cursorId IS NULL OR p.id < :cursorId )
       ORDER BY p.id DESC
     """)
@@ -67,11 +57,6 @@ public interface CommunityPostRepository extends JpaRepository<CommunityPost, Lo
             OR LOWER(u.nickname) LIKE LOWER(CONCAT('%', :kw, '%')))
           AND p.deletedAt   IS NULL
           AND p.isReported  IS NULL
-          AND p.id NOT IN (
-              SELECT b.post.id
-              FROM CommunityPostBlock b
-              WHERE b.user = :user
-          )
           AND ( :cursorId IS NULL OR p.id < :cursorId )
       ORDER BY p.id DESC
     """)
@@ -104,11 +89,6 @@ public interface CommunityPostRepository extends JpaRepository<CommunityPost, Lo
       WHERE c.user = :user
         AND p.deletedAt IS NULL
         AND p.isReported IS NULL
-        AND p.id NOT IN (
-          SELECT b.post.id
-          FROM CommunityPostBlock b
-          WHERE b.user = :user
-          )
         AND ( :cursorId IS NULL OR p.id < :cursorId )
       ORDER BY p.id DESC
     """)
@@ -125,11 +105,6 @@ public interface CommunityPostRepository extends JpaRepository<CommunityPost, Lo
       WHERE l.user = :user
         AND p.deletedAt IS NULL
         AND p.isReported IS NULL
-        AND p.id NOT IN (
-          SELECT b.post.id
-          FROM CommunityPostBlock b
-          WHERE b.user = :user
-          )
         AND ( :cursorId IS NULL OR p.id < :cursorId )
       ORDER BY p.id DESC
     """)
