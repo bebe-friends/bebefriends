@@ -79,6 +79,7 @@ public class CommunityPostDTO {
         private int viewCount;
         private int likeCount;
         private int commentCount;
+        private Boolean isBlocked;
     }
 
 //    @Data
@@ -103,6 +104,6 @@ public class CommunityPostDTO {
         private String content;
         private List<String> imageUrls;
         private List<String> links;
-//        private List<CommunityCommentDTO.CommentDetails> comments; // 댓글(대댓글 포함)
+//        private List<CommunityCommentDTO.ParentCommentResponse> comments; // 댓글(대댓글 포함)
     }
 }

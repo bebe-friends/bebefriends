@@ -9,7 +9,7 @@ public interface CommunityPostListService {
     BasePageResponse<CommunityPostDTO.PostListResponse> getAllPosts(User user, Long cursorId, int pageSize);
 
     // 카테고리 별 게시물 목록 조회
-    BasePageResponse<CommunityPostDTO.PostListResponse> getPostsByCategory(String category, User user, Long cursorId, int pageSize);
+    BasePageResponse<CommunityPostDTO.PostListResponse> getPostsByCategory(Long categoryId, User user, Long cursorId, int pageSize);
     // 게시물 검색
     BasePageResponse<CommunityPostDTO.PostListResponse> getPostsBySearch(String query, User user, Long cursorId, int pageSize);
 

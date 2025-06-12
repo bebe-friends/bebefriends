@@ -9,7 +9,7 @@ import java.util.List;
 
 @Schema(
         name        = "BasePageResponse",
-        description = "커서 기반 페이징 응답 스펙 (PostListResponse 전용)"
+        description = "커서 기반 페이징 응답 스펙"
 )
 @Getter
 @Builder
@@ -21,14 +21,10 @@ public class BasePageResponse<T> {
     @Schema(description = "마지막 커서 ID (다음 조회 시 이 ID 이후의 데이터를 조회)")
     private Long lastCursorId;
 
-    @Schema(description = "추가 데이터 존재 여부")
-    private boolean hasNext;
-
-    public static <T> BasePageResponse<T> of(List<T> items, Long lastCursorId, boolean hasNext) {
+    public static <T> BasePageResponse<T> of(List<T> items, Long lastCursorId) {
         return BasePageResponse.<T>builder()
                 .items(items)
                 .lastCursorId(lastCursorId)
-                .hasNext(hasNext)
                 .build();
     }
 }

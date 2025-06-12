@@ -5,6 +5,7 @@ import com.bbf.bebefriends.community.entity.CommunityPost;
 import com.bbf.bebefriends.member.entity.User;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 import org.springframework.data.repository.query.Param;
@@ -23,11 +24,6 @@ public interface CommunityPostRepository extends JpaRepository<CommunityPost, Lo
       FROM CommunityPost p
       WHERE p.deletedAt IS NULL
         AND p.isReported IS NULL
-        AND p.id NOT IN (
-            SELECT b.post.id
-            FROM CommunityPostBlock b
-            WHERE b.user = :user
-        )
         AND ( :cursorId IS NULL OR p.id < :cursorId )
       ORDER BY p.id DESC
     """)
@@ -45,11 +41,6 @@ public interface CommunityPostRepository extends JpaRepository<CommunityPost, Lo
       WHERE p.category       = :category
         AND p.deletedAt      IS NULL
         AND p.isReported     IS NULL
-        AND p.id NOT IN (
-          SELECT b.post.id
-          FROM CommunityPostBlock b
-          WHERE b.user = :user
-        )
         AND ( :cursorId IS NULL OR p.id < :cursorId )
       ORDER BY p.id DESC
     """)
@@ -67,11 +58,6 @@ public interface CommunityPostRepository extends JpaRepository<CommunityPost, Lo
             OR LOWER(u.nickname) LIKE LOWER(CONCAT('%', :kw, '%')))
           AND p.deletedAt   IS NULL
           AND p.isReported  IS NULL
-          AND p.id NOT IN (
-              SELECT b.post.id
-              FROM CommunityPostBlock b
-              WHERE b.user = :user
-          )
           AND ( :cursorId IS NULL OR p.id < :cursorId )
       ORDER BY p.id DESC
     """)
@@ -104,11 +90,6 @@ public interface CommunityPostRepository extends JpaRepository<CommunityPost, Lo
       WHERE c.user = :user
         AND p.deletedAt IS NULL
         AND p.isReported IS NULL
-        AND p.id NOT IN (
-          SELECT b.post.id
-          FROM CommunityPostBlock b
-          WHERE b.user = :user
-          )
         AND ( :cursorId IS NULL OR p.id < :cursorId )
       ORDER BY p.id DESC
     """)
@@ -125,11 +106,6 @@ public interface CommunityPostRepository extends JpaRepository<CommunityPost, Lo
       WHERE l.user = :user
         AND p.deletedAt IS NULL
         AND p.isReported IS NULL
-        AND p.id NOT IN (
-          SELECT b.post.id
-          FROM CommunityPostBlock b
-          WHERE b.user = :user
-          )
         AND ( :cursorId IS NULL OR p.id < :cursorId )
       ORDER BY p.id DESC
     """)
@@ -137,7 +113,5 @@ public interface CommunityPostRepository extends JpaRepository<CommunityPost, Lo
                                               @Param("cursorId") Long cursorId,
                                               Pageable pageable);
 
-    // 댓글을 따로 만들어서 비동기처리해야하나?
-    // 게시물 상세 페이지
-    
+    List<CommunityPost> findAllByDeletedAtBefore(LocalDateTime threshold);
 }

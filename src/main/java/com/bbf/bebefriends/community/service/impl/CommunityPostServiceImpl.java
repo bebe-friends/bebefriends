@@ -143,7 +143,7 @@ public class CommunityPostServiceImpl implements CommunityPostService {
                 .orElseThrow(() -> new CommunityControllerAdvice(ResponseCode.COMMUNITY_POST_NOT_FOUND));
         post.increaseViewCount();
 
-//        List<CommunityCommentDTO.CommentDetails> comments =
+//        List<CommunityCommentDTO.ParentCommentResponse> comments =
 //                communityCommentServiceImpl.getCommentsByPost(post);
 
         return CommunityPostDTO.PostDetailsResponse.builder()

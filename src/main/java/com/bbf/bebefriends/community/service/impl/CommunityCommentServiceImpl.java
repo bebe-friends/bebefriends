@@ -7,9 +7,13 @@ import com.bbf.bebefriends.community.exception.CommunityControllerAdvice;
 import com.bbf.bebefriends.community.repository.CommunityCommentRepository;
 import com.bbf.bebefriends.community.repository.CommunityPostRepository;
 import com.bbf.bebefriends.community.service.CommunityCommentService;
+import com.bbf.bebefriends.global.entity.BasePageResponse;
 import com.bbf.bebefriends.global.exception.ResponseCode;
 import com.bbf.bebefriends.member.entity.User;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,64 +26,135 @@ public class CommunityCommentServiceImpl implements CommunityCommentService {
     private final CommunityCommentRepository communityCommentRepository;
     private final CommunityPostRepository communityPostRepository;
 
+    // 부모 댓글과 각 댓글마다 최대 3개 대댓글 조회
     @Override
-    public List<CommunityCommentDTO.CommentDetails> getCommentsByPost(
-            Long   postId,
-            Long   primaryOffset,
-            Long   subOffset,
-            int    limit
-    ) {
-        communityPostRepository.findById(postId)
+    public BasePageResponse<CommunityCommentDTO.ParentCommentResponse> getParentComments(Long postId, Long cursorId, int  pageSize) {
+        CommunityPost post = communityPostRepository.findById(postId)
                 .orElseThrow(() -> new CommunityControllerAdvice(ResponseCode.COMMUNITY_POST_NOT_FOUND));
 
-        List<CommunityCommentDTO.CommentCursorProjection> rows = communityCommentRepository.findCommentByCursor(
-                postId,
-                primaryOffset,
-                subOffset,
-                limit
-        );
+        Pageable parentLimit = PageRequest.of(0, pageSize);
+        List<CommunityComment> parents = communityCommentRepository
+                .findParentCommentsWithCursor(post, cursorId, parentLimit);
 
-        Set<Long> visitedParent = new HashSet<>();
-        List<CommunityCommentDTO.CommentDetails> returnDTOs = new ArrayList<>();
+        List<CommunityCommentDTO.ParentCommentResponse> dtos = parents.stream()
+                .map(parent -> {
+                    Pageable childLimit = PageRequest.of(0, 3, Sort.by("id").ascending());
 
-        for (CommunityCommentDTO.CommentCursorProjection row : rows) {
-            Long pId   = row.getParentId();
-            Long cId   = row.getChildId();
+                    List<CommunityComment> children = communityCommentRepository
+                            .findChildCommentsWithCursor(parent, null, childLimit);
 
-            // 부모 댓글이 아직 추가되지 않았다면
-            if (!visitedParent.contains(pId)) {
-                CommunityCommentDTO.CommentDetails parentDto = CommunityCommentDTO.CommentDetails.builder()
-                        .commentId(pId)
-                        .authorId(row.getParentUserId())
-                        .authorName(row.getParentAuthorName())
-                        .content(row.getParentContent())
-                        .createdAt(row.getParentCreatedDate())
-                        .parentCommentId(null)
-                        .build();
-                returnDTOs.add(parentDto);
-                visitedParent.add(pId);
-            }
+                    List<CommunityCommentDTO.ChildCommentDTO> childDtos = children.stream()
+                            .map(child -> CommunityCommentDTO.ChildCommentDTO.builder()
+                                    .commentId(child.getId())
+                                    .parentId(parent.getId())
+                                    .authorName(child.getUser().getNickname())
+                                    .content(child.getContent())
+                                    .createdDate(child.getCreatedDate())
+                                    .build())
+                            .toList();
 
-            // childId가 null이 아니면
-            if (cId != null) {
-                CommunityCommentDTO.CommentDetails childDto = CommunityCommentDTO.CommentDetails.builder()
-                        .commentId(cId)
-                        .authorId(row.getChildUserId())
-                        .authorName(row.getChildAuthorName())
-                        .content(row.getChildContent())
-                        .createdAt(row.getChildCreatedDate())
-                        .parentCommentId(pId)
-                        .build();
-                returnDTOs.add(childDto);
-            }
+                    return CommunityCommentDTO.ParentCommentResponse.builder()
+                            .commentId(parent.getId())
+                            .authorId(parent.getUser().getUid())
+                            .authorName(parent.getUser().getNickname())
+                            .content(parent.getContent())
+                            .createdAt(parent.getCreatedDate())
+                            .replyComments(childDtos)
+                            .totalReplyCount(communityCommentRepository.countByParentAndDeletedAtIsNull(parent))
+                            .hasMoreComment(children.size() > 3)
+                            .build();
+                })
+                .toList();
 
-            if (returnDTOs.size() >= limit) {
-                break;
-            }
-        }
+        Long lastCursor = dtos.isEmpty() ? null : dtos.get(dtos.size() - 1).getCommentId();
 
-        return returnDTOs;
+        return BasePageResponse.of(dtos, lastCursor);
     }
+
+    // 대댓글 페이지네이션
+    @Override
+    public BasePageResponse<CommunityCommentDTO.ChildCommentDTO> getChildComments(Long parentId, Long cursorId, int pageSize) {
+        CommunityComment parent = communityCommentRepository.findById(parentId)
+                .orElseThrow(() -> new CommunityControllerAdvice(ResponseCode.COMMENT_NOT_FOUND));
+
+        Pageable Limit = PageRequest.of(0, pageSize);
+
+        List<CommunityComment> children = communityCommentRepository
+                .findChildCommentsWithCursor(parent, cursorId, Limit);
+
+        List<CommunityCommentDTO.ChildCommentDTO> childDtos = children.stream()
+                .map(child -> CommunityCommentDTO.ChildCommentDTO.builder()
+                        .commentId(child.getId())
+                        .parentId(parentId)
+                        .authorName(child.getUser().getNickname())
+                        .content(child.getContent())
+                        .createdDate(child.getCreatedDate())
+                        .build())
+                .toList();
+
+        Long lastCursor = childDtos.isEmpty() ? null : childDtos.get(childDtos.size() - 1).getCommentId();
+
+        return BasePageResponse.of(childDtos, lastCursor);
+    }
+
+//    @Override
+//    public List<CommunityCommentDTO.ParentCommentResponse> getCommentsByPost(
+//            Long   postId,
+//            Long   primaryOffset,
+//            Long   subOffset,
+//            int    limit
+//    ) {
+//        communityPostRepository.findById(postId)
+//                .orElseThrow(() -> new CommunityControllerAdvice(ResponseCode.COMMUNITY_POST_NOT_FOUND));
+//
+//        List<CommunityCommentDTO.CommentCursorProjection> rows = communityCommentRepository.findCommentByCursor(
+//                postId,
+//                primaryOffset,
+//                subOffset,
+//                limit
+//        );
+//
+//        Set<Long> visitedParent = new HashSet<>();
+//        List<CommunityCommentDTO.ParentCommentResponse> returnDTOs = new ArrayList<>();
+//
+//        for (CommunityCommentDTO.CommentCursorProjection row : rows) {
+//            Long pId   = row.getParentId();
+//            Long cId   = row.getChildId();
+//
+//            // 부모 댓글이 아직 추가되지 않았다면
+//            if (!visitedParent.contains(pId)) {
+//                CommunityCommentDTO.ParentCommentResponse parentDto = CommunityCommentDTO.ParentCommentResponse.builder()
+//                        .commentId(pId)
+//                        .authorId(row.getParentUserId())
+//                        .authorName(row.getParentAuthorName())
+//                        .content(row.getParentContent())
+//                        .createdAt(row.getParentCreatedDate())
+//                        .parentCommentId(null)
+//                        .build();
+//                returnDTOs.add(parentDto);
+//                visitedParent.add(pId);
+//            }
+//
+//            // childId가 null이 아니면
+//            if (cId != null) {
+//                CommunityCommentDTO.ParentCommentResponse childDto = CommunityCommentDTO.ParentCommentResponse.builder()
+//                        .commentId(cId)
+//                        .authorId(row.getChildUserId())
+//                        .authorName(row.getChildAuthorName())
+//                        .content(row.getChildContent())
+//                        .createdAt(row.getChildCreatedDate())
+//                        .parentCommentId(pId)
+//                        .build();
+//                returnDTOs.add(childDto);
+//            }
+//
+//            if (returnDTOs.size() >= limit) {
+//                break;
+//            }
+//        }
+//
+//        return returnDTOs;
+//    }
 
 //    public Optional<CommunityCommentDTO.CommentCursor> getNextCursor(CommunityCommentDTO.CommentCursorProjection lastRow) {
 //        if (lastRow == null) {
@@ -139,13 +214,13 @@ public class CommunityCommentServiceImpl implements CommunityCommentService {
         return "댓글을 삭제하였습니다.";
     }
 
-//    private CommunityCommentDTO.CommentDetails toDto(CommunityComment comment) {
-//        List<CommunityCommentDTO.CommentDetails> replies = comment.getSubComments().stream()
+//    private CommunityCommentDTO.ParentCommentResponse toDto(CommunityComment comment) {
+//        List<CommunityCommentDTO.ParentCommentResponse> replies = comment.getSubComments().stream()
 //                .filter(c -> c.getDeletedAt() == null)
 //                .map(this::toDto)
 //                .toList();
 //
-//        return CommunityCommentDTO.CommentDetails.builder()
+//        return CommunityCommentDTO.ParentCommentResponse.builder()
 //                .commentId(comment.getId())
 //                .commenter(comment.getUser().getNickname())
 //                .content(comment.getContent())
