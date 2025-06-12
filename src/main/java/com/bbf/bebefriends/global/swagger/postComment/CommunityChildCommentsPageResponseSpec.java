@@ -1,7 +1,5 @@
-package com.bbf.bebefriends.global.spec;
+package com.bbf.bebefriends.global.swagger.postComment;
 
-import com.bbf.bebefriends.community.dto.CommunityPostDTO;
-import com.bbf.bebefriends.global.entity.BasePageResponse;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -12,7 +10,7 @@ import lombok.Getter;
         description = "BaseResponse<CursorPageResponse<T>> 전용 스펙"
 )
 @Getter
-public class CommunityPostListPageResponseSpec {
+public class CommunityChildCommentsPageResponseSpec {
     @JsonProperty("isSuccess")
     @Schema(description = "성공 여부", example = "true")
     private boolean isSuccess;
@@ -25,7 +23,7 @@ public class CommunityPostListPageResponseSpec {
 
     @Schema(
             description = "페이징 결과",
-            implementation = CursorPageResponseOfPostListResponse.class
+            implementation = CursorPageResponseOfChildComments.class
     )
-    private CursorPageResponseOfPostListResponse result;
+    private CursorPageResponseOfParentComments result;
 }

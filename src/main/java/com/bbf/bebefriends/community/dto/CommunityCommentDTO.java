@@ -1,9 +1,6 @@
 package com.bbf.bebefriends.community.dto;
 
-import lombok.Builder;
-import lombok.Data;
-import lombok.Getter;
-import lombok.NonNull;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -41,13 +38,26 @@ public class CommunityCommentDTO {
     // 댓글 상세
     @Data
     @Builder
-    public static class CommentDetails {
+    public static class ParentCommentResponse {
         private Long commentId;
         private Long authorId;
         private String authorName;
         private String content;
         private LocalDateTime createdAt;
-        private Long parentCommentId;
+        private long totalReplyCount;
+        private Boolean hasMoreComment;
+        private List<ChildCommentDTO> replyComments;
+    }
+
+    @Data
+    @Builder
+    @AllArgsConstructor
+    public static class ChildCommentDTO {
+        private Long parentId;
+        private Long commentId;
+        private String authorName;
+        private String content;
+        private LocalDateTime createdDate;
     }
 
     /**

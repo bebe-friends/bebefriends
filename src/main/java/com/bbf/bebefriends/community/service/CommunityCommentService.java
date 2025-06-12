@@ -1,21 +1,17 @@
 package com.bbf.bebefriends.community.service;
 
 import com.bbf.bebefriends.community.dto.CommunityCommentDTO;
-import com.bbf.bebefriends.community.service.impl.CommunityCommentServiceImpl;
+import com.bbf.bebefriends.global.entity.BasePageResponse;
 import com.bbf.bebefriends.member.entity.User;
 
-import java.util.List;
-import java.util.Optional;
-
 public interface CommunityCommentService {
-    List<CommunityCommentDTO.CommentDetails> getCommentsByPost(Long   postId,
-                                                               Long   primaryOffset,
-                                                               Long   subOffset,
-                                                               int    limit);
-//    Optional<CommunityCommentDTO.CommentCursor> getNextCursor(CommunityCommentDTO.CommentCursorProjection lastRow);
+    BasePageResponse<CommunityCommentDTO.ParentCommentResponse> getParentComments(Long postId, Long parentPage, int parentSize);
+    BasePageResponse<CommunityCommentDTO.ChildCommentDTO> getChildComments(Long parentId, Long cursorId, int  pageSize);
     String createComment(User user, CommunityCommentDTO.CreateCommentRequest request);
 
     String updateComment(User user, CommunityCommentDTO.UpdateCommentRequest request);
 
     String deleteComment(User user, CommunityCommentDTO.DeleteCommentRequest request);
+//    List<CommunityCommentDTO.ParentCommentResponse> getCommentsByPost(Long postId, Long primaryOffset, Long subOffset, int limit);
+//    Optional<CommunityCommentDTO.CommentCursor> getNextCursor(CommunityCommentDTO.CommentCursorProjection lastRow);
 }
