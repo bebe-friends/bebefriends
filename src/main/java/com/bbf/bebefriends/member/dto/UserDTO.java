@@ -57,6 +57,8 @@ public class UserDTO {
 
     @Schema(description = "유저 정보 조회 결과")
     public record UserInfoResponse(
+            Long userId,
+
             String nickname
     ) {}
 

@@ -31,7 +31,7 @@ public class UserService {
 
     public UserDTO.UserInfoResponse getUserInfo(Long uid) {
         User user = findByUid(uid);
-        return new UserDTO.UserInfoResponse(user.getNickname());
+        return new UserDTO.UserInfoResponse(user.getUid(), user.getNickname());
     }
 
     public void updateNickname(Long uid, String nickname) {
