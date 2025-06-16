@@ -7,7 +7,8 @@ import lombok.Getter;
 
 @Entity
 @Getter
-public class CommunityPostBlock extends BaseEntity {
+@Table(name = "community_comment_block")
+public class CommunityCommentBlock extends BaseEntity {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
@@ -16,14 +17,14 @@ public class CommunityPostBlock extends BaseEntity {
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "post_id")
-    private CommunityPost post;
+    @JoinColumn(name = "comment_id")
+    private CommunityComment comment;
 
-    public static CommunityPostBlock createPostBlock(User user, CommunityPost post) {
-        CommunityPostBlock block = new CommunityPostBlock();
+    public static CommunityCommentBlock createCommentBlock(User user, CommunityComment comment) {
+        CommunityCommentBlock block = new CommunityCommentBlock();
 
         block.user = user;
-        block.post = post;
+        block.comment = comment;
 
         return block;
     }

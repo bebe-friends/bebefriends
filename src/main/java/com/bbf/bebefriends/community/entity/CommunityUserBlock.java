@@ -7,24 +7,26 @@ import lombok.Getter;
 
 @Entity
 @Getter
-public class CommunityPostBlock extends BaseEntity {
+public class CommunityUserBlock extends BaseEntity {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    // 차단한 주체
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
 
+    // 차단된 대상
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "post_id")
-    private CommunityPost post;
+    @JoinColumn(name = "blocked_user_id")
+    private User blockedUser;
 
-    public static CommunityPostBlock createPostBlock(User user, CommunityPost post) {
-        CommunityPostBlock block = new CommunityPostBlock();
+    public static CommunityUserBlock createUserBlock(User user, User blockedUser) {
+        CommunityUserBlock userBlock = new CommunityUserBlock();
 
-        block.user = user;
-        block.post = post;
+        userBlock.user = user;
+        userBlock.blockedUser = blockedUser;
 
-        return block;
+        return userBlock;
     }
 }

@@ -4,12 +4,15 @@ import com.bbf.bebefriends.community.dto.CommunityCommentDTO;
 import com.bbf.bebefriends.community.entity.CommunityComment;
 import com.bbf.bebefriends.community.entity.CommunityPost;
 import com.bbf.bebefriends.community.exception.CommunityControllerAdvice;
+import com.bbf.bebefriends.community.repository.CommunityCommentBlockRepository;
 import com.bbf.bebefriends.community.repository.CommunityCommentRepository;
 import com.bbf.bebefriends.community.repository.CommunityPostRepository;
+import com.bbf.bebefriends.community.repository.CommunityUserBlockRepository;
 import com.bbf.bebefriends.community.service.CommunityCommentService;
 import com.bbf.bebefriends.global.entity.BasePageResponse;
 import com.bbf.bebefriends.global.exception.ResponseCode;
 import com.bbf.bebefriends.member.entity.User;
+import com.bbf.bebefriends.member.entity.UserRole;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -25,10 +28,27 @@ import java.util.*;
 public class CommunityCommentServiceImpl implements CommunityCommentService {
     private final CommunityCommentRepository communityCommentRepository;
     private final CommunityPostRepository communityPostRepository;
+    private final CommunityUserBlockRepository communityUserBlockRepository;
+    private final CommunityCommentBlockRepository communityCommentBlockRepository;
+
+    private Boolean checkBlocked(User currentUser, CommunityComment comment) {
+        if (currentUser.getRole() == UserRole.GUEST) {
+            return false;
+        }
+
+        // 유저가 작성자를 차단했는지
+        boolean userBlocked = communityUserBlockRepository
+                .existsByUserAndBlockedUser(currentUser, comment.getUser());
+        // 이 댓글을 직접 차단했는지
+        boolean commentBlocked = communityCommentBlockRepository
+                .existsByUserAndComment(currentUser, comment);
+
+        return userBlocked || commentBlocked;
+    }
 
     // 부모 댓글과 각 댓글마다 최대 3개 대댓글 조회
     @Override
-    public BasePageResponse<CommunityCommentDTO.ParentCommentResponse> getParentComments(Long postId, Long cursorId, int  pageSize) {
+    public BasePageResponse<CommunityCommentDTO.ParentCommentResponse> getParentComments(User user, Long postId, Long cursorId, int pageSize) {
         CommunityPost post = communityPostRepository.findById(postId)
                 .orElseThrow(() -> new CommunityControllerAdvice(ResponseCode.COMMUNITY_POST_NOT_FOUND));
 
@@ -49,7 +69,9 @@ public class CommunityCommentServiceImpl implements CommunityCommentService {
                                     .parentId(parent.getId())
                                     .authorName(child.getUser().getNickname())
                                     .content(child.getContent())
-                                    .createdDate(child.getCreatedDate())
+                                    .createdAt(child.getCreatedDate())
+                                    .isBlocked(checkBlocked(user, child))
+                                    .isDeleted(communityCommentRepository.existsByIdAndDeletedAtIsNotNull(child.getId()))
                                     .build())
                             .toList();
 
@@ -62,6 +84,8 @@ public class CommunityCommentServiceImpl implements CommunityCommentService {
                             .replyComments(childDtos)
                             .totalReplyCount(communityCommentRepository.countByParentAndDeletedAtIsNull(parent))
                             .hasMoreComment(children.size() > 3)
+                            .isBlocked(checkBlocked(user, parent))
+                            .isDeleted(communityCommentRepository.existsByIdAndDeletedAtIsNotNull(parent.getId()))
                             .build();
                 })
                 .toList();
@@ -73,7 +97,7 @@ public class CommunityCommentServiceImpl implements CommunityCommentService {
 
     // 대댓글 페이지네이션
     @Override
-    public BasePageResponse<CommunityCommentDTO.ChildCommentDTO> getChildComments(Long parentId, Long cursorId, int pageSize) {
+    public BasePageResponse<CommunityCommentDTO.ChildCommentDTO> getChildComments(User user, Long parentId, Long cursorId, int pageSize) {
         CommunityComment parent = communityCommentRepository.findById(parentId)
                 .orElseThrow(() -> new CommunityControllerAdvice(ResponseCode.COMMENT_NOT_FOUND));
 
@@ -88,7 +112,9 @@ public class CommunityCommentServiceImpl implements CommunityCommentService {
                         .parentId(parentId)
                         .authorName(child.getUser().getNickname())
                         .content(child.getContent())
-                        .createdDate(child.getCreatedDate())
+                        .createdAt(child.getCreatedDate())
+                        .isBlocked(checkBlocked(user, child))
+                        .isDeleted(communityCommentRepository.existsByIdAndDeletedAtIsNotNull(child.getId()))
                         .build())
                 .toList();
 
