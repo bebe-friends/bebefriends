@@ -13,4 +13,14 @@ public class CommunityPostReportDTO {
         @NonNull
         private String content;
     }
+
+    @Data
+    public static class CommentReportRequest {
+        @NonNull
+        private Long commentId;
+        @NonNull
+        private String reason;
+        @NonNull
+        private String content;
+    }
 }

@@ -1,9 +1,7 @@
 package com.bbf.bebefriends.community.repository;
 
-import com.bbf.bebefriends.community.dto.CommunityCommentDTO;
 import com.bbf.bebefriends.community.entity.CommunityComment;
 import com.bbf.bebefriends.community.entity.CommunityPost;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -86,4 +84,5 @@ public interface CommunityCommentRepository extends JpaRepository<CommunityComme
 //    );
 
     List<CommunityComment> findAllByDeletedAtBefore(LocalDateTime threshold);
+    Boolean existsByIdAndDeletedAtIsNotNull(Long commentId);
 }

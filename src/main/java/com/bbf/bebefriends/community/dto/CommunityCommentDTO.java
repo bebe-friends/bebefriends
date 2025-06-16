@@ -46,6 +46,8 @@ public class CommunityCommentDTO {
         private LocalDateTime createdAt;
         private long totalReplyCount;
         private Boolean hasMoreComment;
+        private Boolean isDeleted;
+        private Boolean isBlocked;
         private List<ChildCommentDTO> replyComments;
     }
 
@@ -57,7 +59,9 @@ public class CommunityCommentDTO {
         private Long commentId;
         private String authorName;
         private String content;
-        private LocalDateTime createdDate;
+        private LocalDateTime createdAt;
+        private Boolean isDeleted;
+        private Boolean isBlocked;
     }
 
     /**

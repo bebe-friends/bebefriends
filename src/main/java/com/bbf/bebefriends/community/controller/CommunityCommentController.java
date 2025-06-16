@@ -63,11 +63,12 @@ public class CommunityCommentController {
             )
     )
     public BaseResponse<BasePageResponse<CommunityCommentDTO.ParentCommentResponse>> getDefaultComments(
+            @AuthenticationPrincipal UserDetailsImpl user,
             @PathVariable Long postId,
             @RequestParam(value = "cursorId", required = false) Long cursorId,
             @RequestParam(value = "pageSize", defaultValue = "10") int pageSize
     ) {
-        return BaseResponse.onSuccess(communityCommentService.getParentComments(postId, cursorId, pageSize), ResponseCode.OK);
+        return BaseResponse.onSuccess(communityCommentService.getParentComments(user.getUser(), postId, cursorId, pageSize), ResponseCode.OK);
     }
 
     @GetMapping("/{parentId}/replies")
@@ -89,11 +90,12 @@ public class CommunityCommentController {
             )
     )
     public BaseResponse<BasePageResponse<CommunityCommentDTO.ChildCommentDTO>> getReplies(
+            @AuthenticationPrincipal UserDetailsImpl user,
             @PathVariable Long parentId,
             @RequestParam(value = "cursorId", required = false) Long cursorId,
             @RequestParam(value = "pageSize", defaultValue = "20") int pageSize
     ) {
-        return BaseResponse.onSuccess(communityCommentService.getChildComments(parentId, cursorId, pageSize), ResponseCode.OK);
+        return BaseResponse.onSuccess(communityCommentService.getChildComments(user.getUser(), parentId, cursorId, pageSize), ResponseCode.OK);
     }
 
 //    @GetMapping("/post/{postId}/comment-details")

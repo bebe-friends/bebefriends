@@ -1,4 +1,4 @@
-package com.bbf.bebefriends.global.schoulder;
+package com.bbf.bebefriends.global.scheduler;
 
 import com.bbf.bebefriends.community.entity.CommunityComment;
 import com.bbf.bebefriends.community.entity.CommunityPost;
