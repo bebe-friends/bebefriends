@@ -21,7 +21,8 @@ public interface CommunityPostForAnonymousRepository extends JpaRepository<Commu
         AND ( :cursorId IS NULL OR p.id < :cursorId )
       ORDER BY p.id DESC
     """)
-    List<CommunityPost> findAllActivePostsForAnonymous(Long cursorId, Pageable pageable);
+    List<CommunityPost> findAllActivePostsForAnonymous(@Param("cursorId") Long cursorId,
+                                                       Pageable pageable);
 
     // 카테고리 별 조회(deletedAt과 isReported가 null)
     @Query("""
@@ -33,7 +34,9 @@ public interface CommunityPostForAnonymousRepository extends JpaRepository<Commu
         AND ( :cursorId IS NULL OR p.id < :cursorId )
       ORDER BY p.id DESC
     """)
-    List<CommunityPost> findByCategoryActiveForAnonymous(@Param("category") CommunityCategory category, Long cursorId, Pageable pageable);
+    List<CommunityPost> findByCategoryActiveForAnonymous(@Param("category") CommunityCategory category,
+                                                         @Param("cursorId") Long cursorId,
+                                                         Pageable pageable);
 
     // 제목 혹은 글쓴이로 검색
     @Query("""
@@ -47,5 +50,7 @@ public interface CommunityPostForAnonymousRepository extends JpaRepository<Commu
           AND ( :cursorId IS NULL OR p.id < :cursorId )
       ORDER BY p.id DESC
     """)
-    List<CommunityPost> searchPostsByKeywordForAnonymous(@Param("kw") String keyword, Long cursorId, Pageable pageable);
+    List<CommunityPost> searchPostsByKeywordForAnonymous(@Param("kw") String keyword,
+                                                         @Param("cursorId") Long cursorId,
+                                                         Pageable pageable);
 }

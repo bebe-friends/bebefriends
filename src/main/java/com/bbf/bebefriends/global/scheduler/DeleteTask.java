@@ -37,7 +37,7 @@ public class DeleteTask {
         hotDealCommentRepository.deleteByDeletedAtBefore(cutoffDate);
 
         List<CommunityPost> expiredPosts = communityPostRepository.findAllByDeletedAtBefore(cutoffDate);
-        List<CommunityComment> expiredComments = communityCommentRepository.findAllByDeletedAtBefore(cutoffDate);
+//        List<CommunityComment> expiredComments = communityCommentRepository.findAllByDeletedAtBefore(cutoffDate);
 
         for (CommunityPost post : expiredPosts) {
             post.getImages().forEach(img ->
@@ -46,6 +46,6 @@ public class DeleteTask {
         }
 
         communityPostRepository.deleteAll(expiredPosts);
-        communityCommentRepository.deleteAll(expiredComments);
+//        communityCommentRepository.deleteAll(expiredComments);
     }
 }
