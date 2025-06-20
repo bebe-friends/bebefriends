@@ -1,37 +1,56 @@
 package com.bbf.bebefriends.hotdeal.dto;
 
-import com.bbf.bebefriends.hotdeal.entity.HotDeal;
-import lombok.*;
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotNull;
 
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
+import java.util.List;
+
 public class HotDealDto {
 
-    private Long id;                    // 핫딜 식별자
+    public record HotDealRequest(
 
-    private Long hotDealCategoryId;     // 카테고리 식별자
+            @Schema(description = "핫딜 제목", example = "제목")
+            @NotNull String name,
 
-    private String name;                // 이름
+            @Schema(description = "핫딜 내용", example = "핫딜을 알려드립니다.")
+            @NotNull String content,
 
-    private String imgPath;             // 이미지 경로
+            @Schema(description = "핫딜 링크", example = "http://coupang.com/ABC")
+            @NotNull List<String> links,
 
-    private String unit;                // 단위
+            @Schema(description = "핫딜 대 카테고리 ID", example = "1")
+            @NotNull Long hotDealCategoryId,
 
-    private String status;              // 상태
+            @NotNull
+            boolean age_0,
 
-    // Entity -> dto
-    public static HotDealDto fromEntity(HotDeal hotDeal) {
-        return HotDealDto.builder()
-                .id(hotDeal.getId())
-                .hotDealCategoryId(hotDeal.getHotDealCategory().getId())
-                .name(hotDeal.getName())
-                .imgPath(hotDeal.getImgPath())
-                .status(hotDeal.getStatus())
-                .build();
+            @NotNull
+            boolean age_1,
 
-    }
+            @NotNull
+            boolean age_2,
+
+            @NotNull
+            boolean age_3,
+
+            @NotNull
+            boolean age_4,
+
+            @NotNull
+            boolean age_5,
+
+            @NotNull
+            boolean age_6
+
+    ) {}
+
+    @Schema(description = "핫딜 상태 변경 요청")
+    public record HotDealStatusRequest(
+            @Schema(description = "핫딜 ID", example = "1")
+            @NotNull Long id,
+
+            @Schema(description = "핫딜 상태 값", example = "true")
+            @NotNull boolean status
+    ) {}
 
 }
