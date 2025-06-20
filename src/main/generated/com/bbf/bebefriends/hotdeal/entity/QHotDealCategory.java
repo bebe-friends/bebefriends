@@ -35,6 +35,8 @@ public class QHotDealCategory extends EntityPathBase<HotDealCategory> {
 
     public final QHotDealCategory parentCategory;
 
+    public final ListPath<HotDealCategory, QHotDealCategory> subCategories = this.<HotDealCategory, QHotDealCategory>createList("subCategories", HotDealCategory.class, QHotDealCategory.class, PathInits.DIRECT2);
+
     //inherited
     public final DateTimePath<java.time.LocalDateTime> updatedDate = _super.updatedDate;
 
