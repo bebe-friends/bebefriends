@@ -1,40 +1,48 @@
 package com.bbf.bebefriends.hotdeal.dto;
 
-import com.bbf.bebefriends.hotdeal.entity.HotDealRecord;
-import lombok.*;
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotNull;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
 public class HotDealRecordDto {
 
-    private Long id;                    // 핫딜 기록 식별자
 
-    private Long hotDealId;             // 핫딜 식별자
+    @Schema(description = "핫딜 기록 생성 요청")
+    public record HotDealRecordRequest(
+            @Schema(description = "핫딜 ID", example = "1")
+            @NotNull Long hotDealId,
 
-    private LocalDate date;             // 날짜
+            @Schema(description = "검색 최저가", example = "20000")
+            @NotNull Integer searchPrice,
 
-    private String note;                // 비고
+            @Schema(description = "핫딜 가격", example = "15000")
+            @NotNull Integer hotDealPrice,
 
-    private Integer searchPrice;         // 검색가
+            @Schema(description = "비고", example = "토스페이")
+            @NotNull String note,
 
-    private Integer hotDealPrice;        // 핫딜가
+            @Schema(description = "핫딜 기록 등록 날짜", example = "2025-06-18")
+            @NotNull LocalDateTime date
 
-    // Entity -> dto
-    public static HotDealRecordDto fromEntity(HotDealRecord hotDealRecord) {
-        return HotDealRecordDto.builder()
-                .id(hotDealRecord.getId())
-                .hotDealId(hotDealRecord.getHotDeal().getId())
-                .date(hotDealRecord.getDate())
-                .note(hotDealRecord.getNote())
-                .searchPrice(hotDealRecord.getSearchPrice())
-                .hotDealPrice(hotDealRecord.getHotDealPrice())
-                .build();
-    }
+    ) {}
 
+
+    @Schema(description = "핫딜 기록 응답")
+    public record HotDealRecordResponse(
+
+            @Schema(description = "검색 최저가", example = "20000")
+            @NotNull Integer searchPrice,
+
+            @Schema(description = "핫딜 가격", example = "15000")
+            @NotNull Integer hotDealPrice,
+
+            @Schema(description = "비고", example = "토스페이")
+            @NotNull String note,
+
+            @Schema(description = "핫딜 기록 등록 날짜", example = "2025-06-18")
+            @NotNull LocalDateTime date
+
+    ) {}
 
 }
