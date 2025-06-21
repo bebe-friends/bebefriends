@@ -1,86 +1,51 @@
 package com.bbf.bebefriends.hotdeal.controller;
 
+import com.bbf.bebefriends.community.exception.CommunityControllerAdvice;
 import com.bbf.bebefriends.global.entity.BaseResponse;
+import com.bbf.bebefriends.global.entity.UserDetailsImpl;
 import com.bbf.bebefriends.global.exception.ResponseCode;
 import com.bbf.bebefriends.hotdeal.dto.HotDealDto;
-import com.bbf.bebefriends.hotdeal.dto.HotDealRecordDto;
 import com.bbf.bebefriends.hotdeal.service.HotDealService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
-@Tag(name = "핫딜", description = "핫딜 관련 API")
+import java.util.List;
+
+@Tag(name = "핫딜 상품", description = "핫딜 상품 관련 API")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/hot-deal")
+@RequestMapping("/api/v1/hotdeal")
 public class HotDealController {
 
     private final HotDealService hotDealService;
 
-    @Operation(summary = "핫딜 등록", description = "핫딜을 등록합니다.")
-    @PostMapping
-    public BaseResponse<HotDealDto> createHotDeal(@RequestBody HotDealDto hotDealDto) {
-        return BaseResponse.onSuccess(hotDealService.createHotDeal(hotDealDto), ResponseCode.OK);
-
+    @Operation(summary = "핫딜 상품 상태 변경", description = "등록되어 있는 핫딜 상품의 상태를 변경 합니다.")
+    @PostMapping("/status")
+    public BaseResponse<Void> changeHotDealStatus(@RequestBody HotDealDto.HotDealStatusRequest request,
+                                                    @AuthenticationPrincipal UserDetailsImpl userDetails
+    ) {
+        if (!userDetails.getRole().equals("ROLE_ADMIN")) {
+            throw new CommunityControllerAdvice(ResponseCode._UNAUTHORIZED);
+        }
+        hotDealService.updateHotDealStatus(userDetails.getUser(), request);
+        return BaseResponse.onSuccess(null, ResponseCode.NO_CONTENT);
     }
 
-    @Operation(summary = "핫딜 수정", description = "핫딜을 수정합니다.")
-    @PutMapping
-    public BaseResponse<HotDealDto> updateHotDeal(@RequestBody HotDealDto hotDealDto) {
-        return BaseResponse.onSuccess(hotDealService.updateHotDeal(hotDealDto), ResponseCode.OK);
-
-    }
-
-    @Operation(summary = "핫딜 삭제", description = "핫딜을 삭제합니다.")
-    @DeleteMapping
-    public BaseResponse<Long> deleteHotDeal(@RequestParam Long hotDealId) {
-        return BaseResponse.onSuccess(hotDealService.deleteHotDeal(hotDealId), ResponseCode.OK);
-
-    }
-
-    @Operation(summary = "핫딜 전체 조회", description = "핫딜을 전체 조회합니다.")
-    @GetMapping
-    public BaseResponse<Page<HotDealDto>> searchAllHotDeal(Pageable pageable) {
-        return BaseResponse.onSuccess(hotDealService.searchAllHotDeal(pageable), ResponseCode.OK);
-
-    }
-
-    @Operation(summary = "핫딜 카테고리별 조회", description = "카테고리별로 핫딜을 조회합니다.")
-    @GetMapping("/category")
-    public BaseResponse<Page<HotDealDto>> searchCategoryHotDeal(@RequestParam Long hotDealCategoryId, Pageable pageable) {
-        return BaseResponse.onSuccess(hotDealService.searchCategoryHotDeal(hotDealCategoryId, pageable), ResponseCode.OK);
-
-    }
-
-    @Operation(summary = "핫딜 기록 등록", description = "핫딜 기록을 등록합니다.")
-    @PostMapping("/record")
-    public BaseResponse<HotDealRecordDto> createHotDealRecord(@RequestBody HotDealRecordDto hotDealRecordDto) {
-        return BaseResponse.onSuccess(hotDealService.createHotDealRecord(hotDealRecordDto), ResponseCode.OK);
-
-    }
-
-    @Operation(summary = "핫딜 기록 수정", description = "핫딜 기록을 수정합니다.")
-    @PutMapping("/record")
-    public BaseResponse<HotDealRecordDto> updateHotDealRecord(@RequestBody HotDealRecordDto hotDealRecordDto) {
-        return BaseResponse.onSuccess(hotDealService.updateHotDealRecord(hotDealRecordDto), ResponseCode.OK);
-
-    }
-
-    @Operation(summary = "핫딜 기록 삭제", description = "핫딜 기록을 삭제합니다.")
-    @DeleteMapping("/record")
-    public BaseResponse<Long> deleteHotDealRecord(@RequestParam Long hotDealRecordId) {
-        return BaseResponse.onSuccess(hotDealService.deleteHotDealRecord(hotDealRecordId), ResponseCode.OK);
-
-    }
-
-    @Operation(summary = "핫딜 기록 검색", description = "핫딜 기록을 검색합니다.")
-    @GetMapping("/record")
-    public BaseResponse<Page<HotDealRecordDto>> searchHotDealRecord(@RequestParam Long hotDealId, Pageable pageable) {
-        return BaseResponse.onSuccess(hotDealService.searchHotDealRecord(hotDealId, pageable), ResponseCode.OK);
-
+    @Operation(summary = "핫딜 상품 등록", description = "핫딜 상품을 등록합니다.")
+    @PostMapping("/create")
+    public BaseResponse<Void> createHotDeal(@RequestBody HotDealDto.HotDealRequest request,
+                                              @RequestPart(value = "images", required = false) List<MultipartFile> images,
+                                              @AuthenticationPrincipal UserDetailsImpl userDetails
+    ) {
+        if (!userDetails.getRole().equals("ROLE_ADMIN")) {
+            throw new CommunityControllerAdvice(ResponseCode._UNAUTHORIZED);
+        }
+        hotDealService.createHotDeal(userDetails.getUser(), request, images);
+        return BaseResponse.onSuccess(null, ResponseCode.CREATED);
     }
 
 }

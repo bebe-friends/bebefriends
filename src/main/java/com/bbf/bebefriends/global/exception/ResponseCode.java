@@ -1,6 +1,5 @@
 package com.bbf.bebefriends.global.exception;
 
-import com.google.api.Http;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -54,6 +53,11 @@ public enum ResponseCode {
     TOKEN_INVALID_EXCEPTION(HttpStatus.BAD_REQUEST, "TOKEN4003", "유효하지 않은 토큰입니다"),
     JWT_SIGNATURE_INVALID_EXCEPTION(HttpStatus.BAD_REQUEST, "TOKEN4004", "JWT 토큰이 올바르지 않습니다(header.payload.signature)"),
     FIREBASE_TOKEN_INVALID_EXCEPTION(HttpStatus.BAD_REQUEST, "TOKEN4005", "유효하지 않은 firebase 토큰입니다"),
+
+    // HotDeal Error
+    HOTDEAL_NOT_FOUND(HttpStatus.BAD_REQUEST, "TOKEN5001", "핫딜을 찾을 수 없습니다."),
+    HOTDEAL_RECORD_NOT_FOUND(HttpStatus.BAD_REQUEST, "TOKEN5002", "핫딜 기록을 찾을 수 없습니다."),
+    HOTDEAL_CATEGORY_NOT_FOUND(HttpStatus.BAD_REQUEST, "TOKEN5003", "등록되지 않은 카테고리 입니다."),
 
     // AWS S3 Error
     S3_UPLOAD_FAIL(HttpStatus.BAD_REQUEST, "S34001", "파일 업로드에 실패했습니다."),

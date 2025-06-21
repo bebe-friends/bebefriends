@@ -79,6 +79,6 @@ public class SwaggerConfig {
      */
     @Bean
     public GroupedOpenApi hotdealApi() {
-        return buildGroupedOpenApi("핫딜 관련 API @유석균", "com.bbf.bebefriends.hotdeal.controller");
+        return buildGroupedOpenApi("핫딜 관련 API", "com.bbf.bebefriends.hotdeal.controller");
     }
 }

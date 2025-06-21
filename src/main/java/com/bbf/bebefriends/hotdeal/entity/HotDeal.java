@@ -2,14 +2,17 @@ package com.bbf.bebefriends.hotdeal.entity;
 
 import com.bbf.bebefriends.global.entity.BaseEntity;
 import com.bbf.bebefriends.hotdeal.dto.HotDealDto;
+import com.bbf.bebefriends.member.entity.User;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity(name = "hot_deal")
 @Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -17,29 +20,54 @@ public class HotDeal extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;                                // 핫딜 식별자
+    private Long id;
 
     @ManyToOne
     @JoinColumn(name = "hot_deal_category_id")
-    private HotDealCategory hotDealCategory;        // 핫딜 카테고리 식별자
+    private HotDealCategory hotDealCategory;
 
-    private String name;                            // 이름
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
 
-    private String imgPath;                         // 이미지 경로
+    private String name;
 
-    private String unit;                            // 단위
+    private String content;
 
-    private String status;                          // 핫딜 상태
+    private String imgPath;
 
-    public void update(HotDealDto hotDealDto) {
-        this.name = hotDealDto.getName();
-        this.imgPath = hotDealDto.getImgPath();
-        this.unit = hotDealDto.getUnit();
-        this.status = hotDealDto.getStatus();
+    private String unit;
+
+    private Boolean status;
+
+    private int viewCount;
+    private int likeCount;
+    private int commentCount;
+
+    private LocalDateTime deletedAt;
+
+
+    public static HotDeal createHotDeal(User user,
+                                        HotDealCategory category,
+                                        HotDealDto.HotDealRequest request,
+                                        List<MultipartFile> imgPath
+    ) {
+        HotDeal hotDeal = new HotDeal();
+
+        hotDeal.user = user;
+        hotDeal.content = request.content();
+        hotDeal.viewCount = 0;
+        hotDeal.likeCount = 0;
+        hotDeal.commentCount = 0;
+        hotDeal.deletedAt = null;
+        hotDeal.status = false;
+        hotDeal.hotDealCategory = category;
+        hotDeal.name = request.name();
+
+        // todo. 이미지 작업
+
+        return hotDeal;
     }
 
-    public void updateHotDealCategory(HotDealCategory hotDealCategory) {
-        this.hotDealCategory = hotDealCategory;
-    }
-
+    // todo. 핫딜 게시글 관련 기능들
 }

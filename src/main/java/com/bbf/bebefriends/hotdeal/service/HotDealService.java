@@ -1,28 +1,53 @@
 package com.bbf.bebefriends.hotdeal.service;
 
+import com.bbf.bebefriends.global.exception.ResponseCode;
 import com.bbf.bebefriends.hotdeal.dto.HotDealDto;
-import com.bbf.bebefriends.hotdeal.dto.HotDealRecordDto;
-import com.bbf.bebefriends.hotdeal.entity.HotDealRecord;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import com.bbf.bebefriends.hotdeal.entity.HotDeal;
+import com.bbf.bebefriends.hotdeal.entity.HotDealCategory;
+import com.bbf.bebefriends.hotdeal.exception.HotDealControllerAdvice;
+import com.bbf.bebefriends.hotdeal.repository.HotDealRepository;
+import com.bbf.bebefriends.member.entity.User;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
-public interface HotDealService {
+import java.util.List;
 
-    HotDealDto createHotDeal(HotDealDto hotDealDto);
+@Slf4j
+@Service
+@RequiredArgsConstructor
+public class HotDealService {
 
-    HotDealDto updateHotDeal(HotDealDto hotDealDto);
+    private final HotDealRepository hotDealRepository;
+    private final HotDealCategoryService hotDealCategoryService;
 
-    Long deleteHotDeal(Long hotDealId);
+    public HotDeal findByHotDeal(Long hotDealId) {
+        return hotDealRepository.findById(hotDealId)
+                .orElseThrow(() -> new HotDealControllerAdvice(ResponseCode.HOTDEAL_NOT_FOUND));
+    }
 
-    Page<HotDealDto> searchAllHotDeal(Pageable pageable);
+    @Transactional
+    public void createHotDeal(
+            User user, HotDealDto.HotDealRequest request, List<MultipartFile> images
+    ) {
+        HotDealCategory hotDealCategory =
+                hotDealCategoryService.findByHotDealCategory(request.hotDealCategoryId());
 
-    Page<HotDealDto> searchCategoryHotDeal(Long hotDealCategoryId, Pageable pageable);
+        HotDeal hotDeal = HotDeal.createHotDeal(user, hotDealCategory, request, images);
+        hotDealRepository.save(hotDeal);
+    }
 
-    HotDealRecordDto createHotDealRecord(HotDealRecordDto hotDealRecordDto);
+    @Transactional
+    public void updateHotDealStatus(User user, HotDealDto.HotDealStatusRequest request) {
+        HotDeal hotDeal = findByHotDeal(request.id());
+        if (!hotDeal.getUser().getUid().equals(user.getUid())) {
+            throw new HotDealControllerAdvice(ResponseCode._UNAUTHORIZED);
+        }
 
-    HotDealRecordDto updateHotDealRecord(HotDealRecordDto hotDealRecordDto);
+        hotDeal.setStatus(request.status());
+        hotDealRepository.save(hotDeal);
+    }
 
-    Long deleteHotDealRecord(Long hotDealRecordId);
-
-    Page<HotDealRecordDto> searchHotDealRecord(Long hotDealId, Pageable pageable);
 }

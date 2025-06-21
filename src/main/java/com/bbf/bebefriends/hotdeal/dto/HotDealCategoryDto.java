@@ -10,13 +10,10 @@ import lombok.*;
 @Builder(toBuilder = true)
 public class HotDealCategoryDto {
 
-    private Long id;                    // 카테고리 식별자
-
-    private Long parentCategoryId;      // 상위 카테고리 식별자
-
-    private String name;                // 이름
-
-    private Integer depth;              // 깊이
+    private Long id;
+    private Long parentCategoryId;
+    private String name;
+    private Integer depth;
 
     public static HotDealCategoryDto fromEntity(HotDealCategory hotDealCategory) {
         HotDealCategoryDto hotDealCategoryDto = HotDealCategoryDto.builder()
@@ -25,7 +22,6 @@ public class HotDealCategoryDto {
                 .depth(hotDealCategory.getDepth())
                 .build();
 
-        // 상위 카테고리가 있는 경우
         if (hotDealCategory.getParentCategory() != null) {
             hotDealCategoryDto = hotDealCategoryDto.toBuilder()
                     .parentCategoryId(hotDealCategory.getParentCategory().getId())

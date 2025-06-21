@@ -37,8 +37,6 @@ public class QCommunityComment extends EntityPathBase<CommunityComment> {
 
     public final QCommunityPost post;
 
-    public final ListPath<CommunityComment, QCommunityComment> subComments = this.<CommunityComment, QCommunityComment>createList("subComments", CommunityComment.class, QCommunityComment.class, PathInits.DIRECT2);
-
     //inherited
     public final DateTimePath<java.time.LocalDateTime> updatedDate = _super.updatedDate;
 
