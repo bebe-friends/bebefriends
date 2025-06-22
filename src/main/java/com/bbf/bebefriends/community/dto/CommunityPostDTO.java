@@ -97,6 +97,7 @@ public class CommunityPostDTO {
         private Long postId;
         private String title;
         private String author;
+        private Long authorId;
         private LocalDateTime createdAt;
         private int viewCount;
         private int likeCount;

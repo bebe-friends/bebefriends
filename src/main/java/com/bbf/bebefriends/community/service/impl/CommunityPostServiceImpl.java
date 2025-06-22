@@ -150,6 +150,7 @@ public class CommunityPostServiceImpl implements CommunityPostService {
                 .postId(post.getId())
                 .title(post.getTitle())
                 .author(post.getUser().getNickname())
+                .authorId(post.getUser().getUid())
                 .createdAt(post.getCreatedDate())
                 .viewCount(post.getViewCount())
                 .likeCount(post.getLikeCount())
