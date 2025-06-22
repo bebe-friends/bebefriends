@@ -2,10 +2,12 @@ package com.bbf.bebefriends.hotdeal.service;
 
 import com.bbf.bebefriends.community.exception.CommunityControllerAdvice;
 import com.bbf.bebefriends.global.exception.ResponseCode;
+import com.bbf.bebefriends.global.utils.file.FireBaseService;
 import com.bbf.bebefriends.hotdeal.dto.HotDealCommentDto;
 import com.bbf.bebefriends.hotdeal.dto.HotDealLikeDto;
 import com.bbf.bebefriends.hotdeal.dto.HotDealPostDto;
 import com.bbf.bebefriends.hotdeal.entity.*;
+import com.bbf.bebefriends.hotdeal.exception.HotDealControllerAdvice;
 import com.bbf.bebefriends.hotdeal.repository.*;
 import com.bbf.bebefriends.member.entity.User;
 import lombok.RequiredArgsConstructor;
@@ -13,8 +15,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -27,109 +33,118 @@ public class HotDealPostService {
     private final HotDealCommentRepository hotDealCommentRepository;
     private final HotDealLikeRepository hotDealLikeRepository;
     private final HotDealPostViewRepository hotDealPostViewRepository;
+    private final FireBaseService fireBaseService;
 
-    public Page<HotDealPostDto> searchAllHotDealPost(Pageable pageable) {
-        return hotDealPostRepository.findAllByDeletedAtIsNull(pageable).map(HotDealPostDto::fromEntity);
-    }
+//    public Page<HotDealPostDto> searchAllHotDealPost(Pageable pageable) {
+//        return hotDealPostRepository.findAllByDeletedAtIsNull(pageable).map(HotDealPostDto::fromEntity);
+//    }
+//
+//    public Page<HotDealPostDto> searchCategoryHotDealPost(Long hotDealCategoryId,Pageable pageable) {
+//        // 핫딜 카테고리 조회
+//        HotDealCategory hotDealCategory = hotDealCategoryRepository.findById(hotDealCategoryId)
+//                .orElseThrow();
+//
+//        // 조회한 카테고리를 통해 핫딜 게시글 조회
+//        return hotDealPostRepository.findByHotDeal_HotDealCategoryAndDeletedAtIsNull(hotDealCategory,pageable).map(HotDealPostDto::fromEntity);
+//    }
 
-    public Page<HotDealPostDto> searchCategoryHotDealPost(Long hotDealCategoryId,Pageable pageable) {
-        // 핫딜 카테고리 조회
-        HotDealCategory hotDealCategory = hotDealCategoryRepository.findById(hotDealCategoryId)
-                .orElseThrow();
-
-        // 조회한 카테고리를 통해 핫딜 게시글 조회
-        return hotDealPostRepository.findByHotDeal_HotDealCategoryAndDeletedAtIsNull(hotDealCategory,pageable).map(HotDealPostDto::fromEntity);
-    }
-
-    public HotDealPostDto createHotDealPost(HotDealPostDto hotDealPostDto, User user) {
+    // 핫딜 게시글 생성
+    public HotDealPostDto.CreateHotDealPostResponse createHotDealPost(HotDealPostDto.CreateHotDealPostRequest request,
+                                                                      List<MultipartFile> images,
+                                                                      User user) {
         // 핫딜 초기화
         HotDeal hotDeal = null;
 
         // 핫딜 식별자가 있는 경우 핫딜 조회
-        if (hotDealPostDto.getHotDealId() != null) {
-            hotDeal = hotDealRepository.findById(hotDealPostDto.getHotDealId())
-                    .orElseThrow();
+        if (request.getHotDealId() != null) {
+            hotDeal = hotDealRepository.findById(request.getHotDealId())
+                    .orElseThrow(() -> new HotDealControllerAdvice(ResponseCode.HOTDEAL_NOT_FOUND));
         }
 
-        // 핫딜 게시글 생성
-        HotDealPost hotDealPost = HotDealPost.builder()
-                .user(user)
-                .hotDeal(hotDeal)
-                .title(hotDealPostDto.getTitle())
-                .content(hotDealPostDto.getContent())
-                .link(hotDealPostDto.getLink())
-                .imgPath(hotDealPostDto.getImgPath())
-                .status(hotDealPostDto.getStatus())
-                .age(hotDealPostDto.getAge())
-                .build();
-        hotDealPostRepository.save(hotDealPost);
+        List<String> imgPaths = new ArrayList<>();
+        for (MultipartFile uploadedFile : images){
+            String imgUrl = fireBaseService.uploadFirebaseBucket(uploadedFile);
+            imgPaths.add(imgUrl);
+        }
 
-        return hotDealPostDto;
+        String links = String.join(",", request.getLinks());
+        String img = String.join(",", imgPaths);
+        String ages = request.getAge().stream()
+                        .map(String::valueOf)
+                        .collect(Collectors.joining(","));
+        HotDealPost post = HotDealPost.createHotDealPost(user, hotDeal, request, links, img, ages);
+
+        hotDealPostRepository.save(post);
+
+        return new HotDealPostDto.CreateHotDealPostResponse(post);
     }
 
+    // 핫딜 게시글 수정
     @Transactional
-    public HotDealPostDto updateHotDealPost(HotDealPostDto hotDealPostDto, User user) {
+    public HotDealPostDto.UpdateHotDealPostResponse updateHotDealPost(HotDealPostDto.UpdateHotDealPostRequest request,
+                                                                      List<MultipartFile> images) {
         // 수정할 핫딜 게시글 조회
-        HotDealPost hotDealPost = hotDealPostRepository.findById(hotDealPostDto.getId())
-                .orElseThrow();
-
-        // 게시글 작성자가 아닌 경우
-        if (!(hotDealPost.getUser().equals(user))) {
-            throw new CommunityControllerAdvice(ResponseCode._UNAUTHORIZED);
-        }
+        HotDealPost hotDealPost = hotDealPostRepository.findById(request.getHotDealPostId())
+                .orElseThrow(() -> new HotDealControllerAdvice(ResponseCode.HOTDEAL_POST_NOT_FOUND));
 
         // 기존과 다른 핫딜인 경우
-        if (!hotDealPost.getHotDeal().getId().equals(hotDealPostDto.getHotDealId())) {
+        if (!hotDealPost.getHotDeal().getId().equals(request.getHotDealId())) {
             // 수정된 핫딜로 세팅
-            HotDeal hotDeal = hotDealRepository.findById(hotDealPostDto.getHotDealId())
+            HotDeal hotDeal = hotDealRepository.findById(request.getHotDealId())
                     .orElseThrow();
             hotDealPost.updateHotDeal(hotDeal);
         }
 
-        // 핫딜 게시글 업데이트
-        hotDealPost.update(hotDealPostDto);
+        List<String> newImgPaths = new ArrayList<>();
+        for (MultipartFile uploadedFile : images){
+            String imgUrl = fireBaseService.uploadFirebaseBucket(uploadedFile);
+            newImgPaths.add(imgUrl);
+        }
 
-        return hotDealPostDto;
+        String links = String.join(",", request.getLinks());
+        String img = String.join(",", request.getImgPaths()) + String.join(",", newImgPaths);
+        String ages = request.getAge().stream()
+                .map(String::valueOf)
+                .collect(Collectors.joining(","));
+
+        hotDealPost.updatePost(request, links, img, ages);
+
+        return new HotDealPostDto.UpdateHotDealPostResponse(hotDealPost);
     }
 
     @Transactional
-    public Long deleteHotDealPost(Long hotDealPostId, User user) {
+    public String deleteHotDealPost(HotDealPostDto.DeleteHotDealPostRequest request) {
         // 삭제할 핫딜 게시글 조회
-        HotDealPost hotDealPost = hotDealPostRepository.findById(hotDealPostId)
+        HotDealPost hotDealPost = hotDealPostRepository.findById(request.getHotDealPostId())
                 .orElseThrow();
-
-        // 게시글 작성자가 아닌 경우
-        if (!(hotDealPost.getUser().equals(user))) {
-            throw new CommunityControllerAdvice(ResponseCode._UNAUTHORIZED);
-        }
 
         // 핫딜 게시글 삭제 처리
-        hotDealPost.delete();
+        hotDealPost.setDeletedAt();
 
-        return hotDealPostId;
+        return "핫딜 게시글이 삭제되었습니다.";
     }
 
-    public HotDealPostDto searchHotDealPostDetail(Long hotDealPostId, User user) {
-        HotDealPost hotDealPost = hotDealPostRepository.findById(hotDealPostId)
-                .orElseThrow();
-
-        Optional<HotDealPostView> hotDealPostView = hotDealPostViewRepository.findByUserAndHotDealPost(user, hotDealPost);
-
-        // 조회한 게시글이 아닌 경우
-        if (hotDealPostView.isEmpty()) {
-            // 핫딜 게시글 조회 저장
-            HotDealPostView newhotDealPostView = HotDealPostView.builder()
-                    .user(user)
-                    .hotDealPost(hotDealPost)
-                    .build();
-            hotDealPostViewRepository.save(newhotDealPostView);
-
-            // 조회수 증가
-            hotDealPost.increaseViewCount();
-        }
-
-        return HotDealPostDto.fromEntity(hotDealPost);
-    }
+//    public HotDealPostDto searchHotDealPostDetail(Long hotDealPostId, User user) {
+//        HotDealPost hotDealPost = hotDealPostRepository.findById(hotDealPostId)
+//                .orElseThrow();
+//
+//        Optional<HotDealPostView> hotDealPostView = hotDealPostViewRepository.findByUserAndHotDealPost(user, hotDealPost);
+//
+//        // 조회한 게시글이 아닌 경우
+//        if (hotDealPostView.isEmpty()) {
+//            // 핫딜 게시글 조회 저장
+//            HotDealPostView newhotDealPostView = HotDealPostView.builder()
+//                    .user(user)
+//                    .hotDealPost(hotDealPost)
+//                    .build();
+//            hotDealPostViewRepository.save(newhotDealPostView);
+//
+//            // 조회수 증가
+//            hotDealPost.increaseViewCount();
+//        }
+//
+//        return HotDealPostDto.fromEntity(hotDealPost);
+//    }
 
     public HotDealCommentDto createHotDealComment(HotDealCommentDto hotDealCommentDto, User user) {
         // 핫딜 댓글 초기화

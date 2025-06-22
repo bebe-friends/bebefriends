@@ -40,13 +40,33 @@ public class HotDealPost extends BaseEntity {
 
     private String status;                  // 핫딜 상태
 
-    private Integer age;                    // 나이
+    private String age;                    // 나이
 
     private int viewCount;                  // 조회수
 
     private int likeCount;                  // 좋아요 수
 
     private LocalDateTime deletedAt;        // 삭제일자
+
+    public static HotDealPost createHotDealPost(User user,
+                                                HotDeal hotDeal,
+                                                HotDealPostDto.CreateHotDealPostRequest request,
+                                                String links,
+                                                String imgPaths,
+                                                String age) {
+        HotDealPost hotDealPost = new HotDealPost();
+
+        hotDealPost.user = user;
+        hotDealPost.hotDeal = hotDeal;
+        hotDealPost.title = request.getTitle();
+        hotDealPost.content = request.getContent();
+        hotDealPost.link = links;
+        hotDealPost.imgPath = imgPaths;
+        hotDealPost.status = request.getStatus();
+        hotDealPost.age = age;
+
+        return hotDealPost;
+    }
 
     // 게시글 조회수 증가
     public void increaseViewCount() {
@@ -63,19 +83,21 @@ public class HotDealPost extends BaseEntity {
         this.likeCount--;
     }
 
-    public void update(HotDealPostDto hotDealPostDto) {
-        this.content = hotDealPostDto.getContent();
-        this.link = hotDealPostDto.getLink();
-        this.imgPath = hotDealPostDto.getImgPath();
-        this.status = hotDealPostDto.getStatus();
-        this.age = hotDealPostDto.getAge();
+    public void updatePost(HotDealPostDto.UpdateHotDealPostRequest request,
+                           String links,
+                           String imgPaths,
+                           String age) {
+        this.content = request.getContent();
+        this.link = links;
+        this.imgPath = imgPaths;
+        this.age = age;
     }
 
     public void updateHotDeal(HotDeal hotDeal) {
         this.hotDeal = hotDeal;
     }
 
-    public void delete() {
+    public void setDeletedAt() {
         this.deletedAt = LocalDateTime.now();
     }
 
