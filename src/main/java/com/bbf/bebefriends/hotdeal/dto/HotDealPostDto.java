@@ -1,52 +1,114 @@
 package com.bbf.bebefriends.hotdeal.dto;
 
+import com.bbf.bebefriends.community.entity.CommunityPost;
 import com.bbf.bebefriends.hotdeal.entity.HotDealPost;
 import lombok.*;
+import org.springframework.web.multipart.MultipartFile;
 
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
+import java.util.List;
+
 public class HotDealPostDto {
 
-    private Long id;                    // 핫딜 게시글 식별자
+    @Data
+    public static class CreateHotDealPostRequest {
+        private Long hotDealId;             // 핫딜 식별자
 
-    private Long userId;                // 회원 식별자
+        @NonNull
+        private String title;               // 핫딜 게시글 제목
 
-    private Long hotDealId;             // 핫딜 식별자
+        @NonNull
+        private String content;             // 핫딜 게시글 내용
 
-    private String title;               // 핫딜 게시글 제목
+        private List<String> links;                // 링크
 
-    private String content;             // 핫딜 게시글 내용
+        @NonNull
+        private String status;              // 상태
 
-    private String link;                // 링크
-
-    private String imgPath;             // 이미지 경로
-
-    private String status;              // 상태
-
-    private Integer age;                // 나이
-
-    private int viewCount;              // 조회수
-
-    private int likeCount;              // 좋아요 수
-
-    // Entity -> dto
-    public static HotDealPostDto fromEntity(HotDealPost hotDealPost) {
-        return HotDealPostDto.builder()
-                .id(hotDealPost.getId())
-                .userId(hotDealPost.getUser().getUid())
-                .hotDealId(hotDealPost.getHotDeal().getId())
-                .title(hotDealPost.getTitle())
-                .content(hotDealPost.getContent())
-                .link(hotDealPost.getLink())
-                .imgPath(hotDealPost.getImgPath())
-                .status(hotDealPost.getStatus())
-                .age(hotDealPost.getAge())
-                .viewCount(hotDealPost.getViewCount())
-                .likeCount(hotDealPost.getLikeCount())
-                .build();
+        private List<Integer> age;                // 나이
     }
+
+    @Data
+    public static class CreateHotDealPostResponse {
+        private Long hotDealPostId;
+
+        public CreateHotDealPostResponse(HotDealPost hotDealPost) {
+            this.hotDealPostId = hotDealPost.getId();
+        }
+    }
+
+    @Data
+    public static class UpdateHotDealPostRequest {
+        @NonNull
+        private Long hotDealPostId;
+
+        private Long hotDealId;
+
+        private String content;
+
+        private List<String> Links;
+
+        private List<String> imgPaths;
+
+        private String status;
+
+        private List<Integer> age;
+    }
+
+    @Data
+    public static class UpdateHotDealPostResponse {
+        private Long postId;
+
+        public UpdateHotDealPostResponse(HotDealPost post) {
+            this.postId = post.getId();
+        }
+    }
+
+    @Data
+    public static class DeleteHotDealPostRequest {
+        @NonNull
+        private Long hotDealPostId;
+    }
+
+    @Data
+    public static class HotDealPostDetailsResponse {
+        private Long id;                    // 핫딜 게시글 식별자
+
+        private Long userId;                // 회원 식별자
+
+        private Long hotDealPostId;             // 핫딜 식별자
+
+        private String title;               // 핫딜 게시글 제목
+
+        private String content;             // 핫딜 게시글 내용
+
+        private List<String> link;                // 링크
+
+        private List<String> imgPath;             // 이미지 경로
+
+        private String status;              // 상태
+
+        private List<Integer> age;                // 나이
+
+        private int viewCount;              // 조회수
+
+        private int likeCount;              // 좋아요 수
+
+    }
+    // Entity -> dto
+//    public static HotDealPostDto fromEntity(HotDealPost hotDealPost) {
+//        return HotDealPostDto.builder()
+//                .id(hotDealPost.getId())
+//                .userId(hotDealPost.getUser().getUid())
+//                .hotDealId(hotDealPost.getHotDeal().getId())
+//                .title(hotDealPost.getTitle())
+//                .content(hotDealPost.getContent())
+//                .link(hotDealPost.getLink())
+//                .imgPath(hotDealPost.getImgPath())
+//                .status(hotDealPost.getStatus())
+//                .age(hotDealPost.getAge())
+//                .viewCount(hotDealPost.getViewCount())
+//                .likeCount(hotDealPost.getLikeCount())
+//                .build();
+//    }
 
 }

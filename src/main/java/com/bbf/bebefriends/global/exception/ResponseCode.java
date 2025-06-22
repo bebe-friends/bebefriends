@@ -58,6 +58,7 @@ public enum ResponseCode {
     HOTDEAL_NOT_FOUND(HttpStatus.BAD_REQUEST, "TOKEN5001", "핫딜을 찾을 수 없습니다."),
     HOTDEAL_RECORD_NOT_FOUND(HttpStatus.BAD_REQUEST, "TOKEN5002", "핫딜 기록을 찾을 수 없습니다."),
     HOTDEAL_CATEGORY_NOT_FOUND(HttpStatus.BAD_REQUEST, "TOKEN5003", "등록되지 않은 카테고리 입니다."),
+    HOTDEAL_POST_NOT_FOUND(HttpStatus.NOT_FOUND, "TOKEN5004", "핫딜 게시글을 찾을 수 없습니다."),
 
     // AWS S3 Error
     S3_UPLOAD_FAIL(HttpStatus.BAD_REQUEST, "S34001", "파일 업로드에 실패했습니다."),
