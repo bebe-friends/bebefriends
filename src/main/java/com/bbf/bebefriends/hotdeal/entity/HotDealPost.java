@@ -32,10 +32,12 @@ public class HotDealPost extends BaseEntity {
 
     private String title;                   // 제목
 
+    @Column(columnDefinition = "TEXT")
     private String content;                 // 내용
 
     private String link;                    // 링크
 
+    @Lob
     private String imgPath;                 // 이미지 경로
 
     private String status;                  // 핫딜 상태
