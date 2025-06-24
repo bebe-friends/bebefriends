@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -25,30 +26,17 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class HotDealPostService {
 
     private final HotDealRepository hotDealRepository;
     private final HotDealPostRepository hotDealPostRepository;
-    private final HotDealCategoryRepository hotDealCategoryRepository;
     private final HotDealCommentRepository hotDealCommentRepository;
-    private final HotDealLikeRepository hotDealLikeRepository;
     private final HotDealPostViewRepository hotDealPostViewRepository;
     private final FireBaseService fireBaseService;
 
-//    public Page<HotDealPostDto> searchAllHotDealPost(Pageable pageable) {
-//        return hotDealPostRepository.findAllByDeletedAtIsNull(pageable).map(HotDealPostDto::fromEntity);
-//    }
-//
-//    public Page<HotDealPostDto> searchCategoryHotDealPost(Long hotDealCategoryId,Pageable pageable) {
-//        // 핫딜 카테고리 조회
-//        HotDealCategory hotDealCategory = hotDealCategoryRepository.findById(hotDealCategoryId)
-//                .orElseThrow();
-//
-//        // 조회한 카테고리를 통해 핫딜 게시글 조회
-//        return hotDealPostRepository.findByHotDeal_HotDealCategoryAndDeletedAtIsNull(hotDealCategory,pageable).map(HotDealPostDto::fromEntity);
-//    }
-
     // 핫딜 게시글 생성
+    @Transactional
     public HotDealPostDto.CreateHotDealPostResponse createHotDealPost(HotDealPostDto.CreateHotDealPostRequest request,
                                                                       List<MultipartFile> images,
                                                                       User user) {
@@ -112,6 +100,7 @@ public class HotDealPostService {
         return new HotDealPostDto.UpdateHotDealPostResponse(hotDealPost);
     }
 
+    // 핫딜 게시물 삭제
     @Transactional
     public String deleteHotDealPost(HotDealPostDto.DeleteHotDealPostRequest request) {
         // 삭제할 핫딜 게시글 조회
@@ -124,13 +113,38 @@ public class HotDealPostService {
         return "핫딜 게시글이 삭제되었습니다.";
     }
 
-//    public HotDealPostDto searchHotDealPostDetail(Long hotDealPostId, User user) {
-//        HotDealPost hotDealPost = hotDealPostRepository.findById(hotDealPostId)
-//                .orElseThrow();
-//
+    // 핫딜 게시물 상세조회
+    public HotDealPostDto.HotDealPostDetailsResponse searchHotDealPostDetail(Long hotDealPostId, User user) {
+        HotDealPost hotDealPost = hotDealPostRepository.findById(hotDealPostId)
+                .orElseThrow(() -> new HotDealControllerAdvice(ResponseCode.HOTDEAL_POST_NOT_FOUND));
+        hotDealPost.increaseViewCount();
+
+        Long hotDealId = null;
+        if (hotDealPost.getHotDeal() != null) {
+            hotDealId = hotDealPost.getHotDeal().getId();
+        }
+
+        List<String> links = Arrays.stream(hotDealPost.getLink().split(",")).toList();
+        List<String> imgPaths = Arrays.stream(hotDealPost.getImgPath().split(",")).toList();
+        List<String> ages = Arrays.stream(hotDealPost.getAge().split(",")).toList();
+
+        return HotDealPostDto.HotDealPostDetailsResponse.builder()
+                .postId(hotDealPost.getId())
+                .userId(hotDealPost.getUser().getUid())
+                .title(hotDealPost.getTitle())
+                .content(hotDealPost.getContent())
+                .hotDealId(hotDealId)
+                .link(links)
+                .imgPath(imgPaths)
+                .status(hotDealPost.getStatus())
+                .age(ages)
+                .viewCount(hotDealPost.getViewCount())
+                .likeCount(hotDealPost.getLikeCount())
+                .build();
+
 //        Optional<HotDealPostView> hotDealPostView = hotDealPostViewRepository.findByUserAndHotDealPost(user, hotDealPost);
 //
-//        // 조회한 게시글이 아닌 경우
+//        // 조회한 게시글이 아닌 경우 (아마 중복 확인으로 인한 조회수 증가 방지 목적인 듯)
 //        if (hotDealPostView.isEmpty()) {
 //            // 핫딜 게시글 조회 저장
 //            HotDealPostView newhotDealPostView = HotDealPostView.builder()
@@ -142,141 +156,5 @@ public class HotDealPostService {
 //            // 조회수 증가
 //            hotDealPost.increaseViewCount();
 //        }
-//
-//        return HotDealPostDto.fromEntity(hotDealPost);
-//    }
-
-    public HotDealCommentDto createHotDealComment(HotDealCommentDto hotDealCommentDto, User user) {
-        // 핫딜 댓글 초기화
-        HotDealComment repliedComment = null;
-
-        // 핫딜 게시글 조회
-        HotDealPost hotDealPost = hotDealPostRepository.findById(hotDealCommentDto.getHotDealPostId())
-                .orElseThrow();
-
-
-        // 핫딜 댓글 식별자가 있는 경우 핫딜 댓글 조회
-        if (hotDealCommentDto.getRepliedCommentId() != null) {
-            repliedComment = hotDealCommentRepository.findById(hotDealCommentDto.getRepliedCommentId())
-                    .orElseThrow();
-        }
-
-        // 핫딜 댓글 생성
-        HotDealComment hotDealComment = HotDealComment.builder()
-                .user(user)
-                .repliedComment(repliedComment)
-                .hotDealPost(hotDealPost)
-                .content(hotDealCommentDto.getContent())
-                .build();
-        hotDealCommentRepository.save(hotDealComment);
-
-        return hotDealCommentDto;
     }
-
-    @Transactional
-    public HotDealCommentDto updateHotDealComment(HotDealCommentDto hotDealCommentDto, User user) {
-        // 수정할 댓글 조회
-        HotDealComment hotDealComment = hotDealCommentRepository.findById(hotDealCommentDto.getId())
-                .orElseThrow();
-
-        // 댓글 작성자가 아닌 경우
-        if (!(hotDealComment.getUser().equals(user))) {
-            throw new CommunityControllerAdvice(ResponseCode._UNAUTHORIZED);
-        }
-
-        // 댓글 업데이트
-        hotDealComment.update(hotDealCommentDto);
-
-        return hotDealCommentDto;
-    }
-
-    @Transactional
-    public Long deleteHotDealComment(Long hotDealCommentId, User user) {
-        // 삭제 할 댓글 조회
-        HotDealComment hotDealComment = hotDealCommentRepository.findById(hotDealCommentId)
-                .orElseThrow();
-
-        // 댓글 작성자가 아닌 경우
-        if (!(hotDealComment.getUser().equals(user))) {
-            throw new CommunityControllerAdvice(ResponseCode._UNAUTHORIZED);
-        }
-
-        // 댓글 삭제 처리
-        hotDealComment.delete();
-
-        return hotDealCommentId;
-    }
-
-    public Page<HotDealCommentDto> searchHotDealComment(Long hotDealPostId, Pageable pageable) {
-        // 핫딜 게시글 조회
-        HotDealPost hotDealPost = hotDealPostRepository.findById(hotDealPostId)
-                .orElseThrow();
-
-        return hotDealCommentRepository.findByHotDealPostAndDeletedAtIsNull(hotDealPost, pageable).map(HotDealCommentDto::fromEntity);
-    }
-
-    public HotDealLikeDto likeHotDealPost(Long hotDealPostId, User user) {
-        // 핫딜 게시글 조회
-        HotDealPost hotDealPost = hotDealPostRepository.findById(hotDealPostId)
-                .orElseThrow();
-
-        // 좋아요가 되어있는지 조회
-        Optional<HotDealLike> hotDealLike = hotDealLikeRepository.findByHotDealPostAndUser(hotDealPost, user);
-
-        // 좋아요 여부 포함된 리턴용 dto 생성
-        HotDealLikeDto hotDealLikeDto = HotDealLikeDto.builder()
-                .hotDealPostId(hotDealPostId)
-                .likeChk(true)
-                .build();
-
-        // 있으면 좋아요 취소
-        if (hotDealLike.isPresent()) {
-            hotDealLikeRepository.delete(hotDealLike.get());
-
-            // 좋아요 수 감소
-            hotDealPost.decreaseLikeCount();
-
-            // 좋아요 여부 설정
-            hotDealLikeDto.setLikeChk(false);
-
-            return hotDealLikeDto;
-
-        }
-
-        // 좋아요 저장
-        HotDealLike newHotDealLike = HotDealLike.builder()
-                .hotDealPost(hotDealPost)
-                .user(user)
-                .build();
-        hotDealLikeRepository.save(newHotDealLike);
-
-        // 좋아요 수 증가
-        hotDealPost.increaseLikeCount();
-
-        return hotDealLikeDto;
-
-    }
-
-    public HotDealLikeDto likeHotDealPostChk(Long hotDealPostId, User user) {
-        // 핫딜 게시글 조회
-        HotDealPost hotDealPost = hotDealPostRepository.findById(hotDealPostId)
-                .orElseThrow();
-
-        // 좋아요가 되어있는지 조회
-        Optional<HotDealLike> hotDealLike = hotDealLikeRepository.findByHotDealPostAndUser(hotDealPost, user);
-
-        // 좋아요 여부 포함된 리턴용 dto 생성
-        HotDealLikeDto hotDealLikeDto = HotDealLikeDto.builder()
-                .hotDealPostId(hotDealPostId)
-                .likeChk(true)
-                .build();
-
-        // 좋아요가 안되어있는 경우
-        if (hotDealLike.isEmpty()) {
-            hotDealLikeDto.setLikeChk(false);
-        }
-
-        return hotDealLikeDto;
-    }
-
 }

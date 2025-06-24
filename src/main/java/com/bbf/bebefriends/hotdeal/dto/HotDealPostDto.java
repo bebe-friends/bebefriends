@@ -9,6 +9,7 @@ import java.util.List;
 
 public class HotDealPostDto {
 
+    // 게시글 등록
     @Data
     public static class CreateHotDealPostRequest {
         private Long hotDealId;             // 핫딜 식별자
@@ -36,6 +37,7 @@ public class HotDealPostDto {
         }
     }
 
+    // 게시글 수정
     @Data
     public static class UpdateHotDealPostRequest {
         @NonNull
@@ -63,19 +65,22 @@ public class HotDealPostDto {
         }
     }
 
+    // 게시글 삭제
     @Data
     public static class DeleteHotDealPostRequest {
         @NonNull
         private Long hotDealPostId;
     }
 
+    // 게시글 상세
     @Data
+    @Builder
     public static class HotDealPostDetailsResponse {
-        private Long id;                    // 핫딜 게시글 식별자
+        private Long postId;                    // 핫딜 게시글 식별자
 
         private Long userId;                // 회원 식별자
 
-        private Long hotDealPostId;             // 핫딜 식별자
+        private Long hotDealId;             // 핫딜 식별자
 
         private String title;               // 핫딜 게시글 제목
 
@@ -87,12 +92,11 @@ public class HotDealPostDto {
 
         private String status;              // 상태
 
-        private List<Integer> age;                // 나이
+        private List<String> age;                // 나이
 
         private int viewCount;              // 조회수
 
         private int likeCount;              // 좋아요 수
-
     }
     // Entity -> dto
 //    public static HotDealPostDto fromEntity(HotDealPost hotDealPost) {
