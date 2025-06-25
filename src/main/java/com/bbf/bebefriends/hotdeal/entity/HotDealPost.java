@@ -11,10 +11,11 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
-@Entity(name = "hot_deal_post")
+@Entity
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
+@Table(name = "hot_deal_post")
 @Builder
 public class HotDealPost extends BaseEntity {
 
@@ -47,6 +48,8 @@ public class HotDealPost extends BaseEntity {
     private int viewCount;                  // 조회수
 
     private int likeCount;                  // 좋아요 수
+
+    private int commentCount;
 
     private LocalDateTime deletedAt;        // 삭제일자
 
@@ -103,4 +106,13 @@ public class HotDealPost extends BaseEntity {
         this.deletedAt = LocalDateTime.now();
     }
 
+    // 댓글 수 증가
+    public void increaseCommentCount() {
+        this.commentCount++;
+    }
+
+    // 댓글 수 감소
+    public void decreaseCommentCount() {
+        this.commentCount--;
+    }
 }

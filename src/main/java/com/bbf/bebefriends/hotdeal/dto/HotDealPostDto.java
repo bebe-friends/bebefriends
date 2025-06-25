@@ -1,10 +1,15 @@
 package com.bbf.bebefriends.hotdeal.dto;
 
+import com.bbf.bebefriends.community.entity.CommunityImage;
 import com.bbf.bebefriends.community.entity.CommunityPost;
+import com.bbf.bebefriends.hotdeal.entity.HotDealCategory;
 import com.bbf.bebefriends.hotdeal.entity.HotDealPost;
+import com.bbf.bebefriends.member.entity.User;
+import com.google.firebase.database.annotations.Nullable;
 import lombok.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class HotDealPostDto {
@@ -115,4 +120,43 @@ public class HotDealPostDto {
 //                .build();
 //    }
 
+    @Data
+    @NoArgsConstructor
+    public static class HotDealListResponse {
+        private Long postId;
+        private String title;
+        private String authorName;
+        private String firstImageUrl;
+        private LocalDateTime createdAt;
+        private int viewCount;
+        private int likeCount;
+        private int commentCount;
+        private String category;
+        private String age;
+
+        public static HotDealListResponse of(HotDealPost hotDealPost, HotDealCategory hotDealCategory) {
+            HotDealListResponse response = new HotDealListResponse();
+
+            String[] paths = hotDealPost.getImgPath().split(",");
+            String firstImg = paths.length > 0 ? paths[0] : null;
+
+            response.postId = hotDealPost.getId();
+            response.title = hotDealPost.getTitle();
+            response.authorName = hotDealPost.getUser().getNickname();
+            response.firstImageUrl = firstImg;
+            response.createdAt = hotDealPost.getCreatedDate();
+            response.viewCount = hotDealPost.getViewCount();
+            response.likeCount = hotDealPost.getLikeCount();
+            response.commentCount = hotDealPost.getCommentCount();
+            if (hotDealCategory != null) {
+                response.category = hotDealCategory.getName();
+            } else {
+                response.category = "";
+            }
+
+            response.age = hotDealPost.getAge();
+
+            return response;
+        }
+    }
 }

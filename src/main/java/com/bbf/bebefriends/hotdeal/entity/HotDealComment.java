@@ -11,11 +11,12 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
-@Entity(name = "hot_deal_comment")
+@Entity
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Table(name = "hot_deal_comment")
 public class HotDealComment extends BaseEntity {
 
     @Id
