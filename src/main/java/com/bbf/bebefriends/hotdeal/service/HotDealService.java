@@ -32,6 +32,7 @@ public class HotDealService {
     public void createHotDeal(
             User user, HotDealDto.HotDealRequest request, List<MultipartFile> images
     ) {
+        // 새로 핫딜 추가할때는 무조건 기존에 등록되어 있는 대카테고리 항목에 매칭되어야 함
         HotDealCategory hotDealCategory =
                 hotDealCategoryService.findByHotDealCategory(request.hotDealCategoryId());
 

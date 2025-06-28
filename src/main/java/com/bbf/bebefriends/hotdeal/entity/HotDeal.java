@@ -23,21 +23,21 @@ public class HotDeal extends BaseEntity {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "hot_deal_category_id")
+    @JoinColumn(name = "hot_deal_category_id", unique = true, nullable = false)
     private HotDealCategory hotDealCategory;
+
+    @OneToOne
+    @JoinColumn(name = "detail_category_id", unique = true)
+    private HotDealCategory detailCategory;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
 
     private String name;
-
     private String content;
-
     private String imgPath;
-
     private String unit;
-
     private Boolean status;
 
     private int viewCount;
@@ -56,13 +56,14 @@ public class HotDeal extends BaseEntity {
 
         hotDeal.user = user;
         hotDeal.content = request.content();
+        hotDeal.hotDealCategory = category;
+        hotDeal.detailCategory = null;
+        hotDeal.name = request.name();
         hotDeal.viewCount = 0;
         hotDeal.likeCount = 0;
         hotDeal.commentCount = 0;
         hotDeal.deletedAt = null;
         hotDeal.status = false;
-        hotDeal.hotDealCategory = category;
-        hotDeal.name = request.name();
 
         // todo. 이미지 작업
 
