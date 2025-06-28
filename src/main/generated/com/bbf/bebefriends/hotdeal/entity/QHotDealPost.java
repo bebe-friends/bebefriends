@@ -24,7 +24,7 @@ public class QHotDealPost extends EntityPathBase<HotDealPost> {
 
     public final com.bbf.bebefriends.global.entity.QBaseEntity _super = new com.bbf.bebefriends.global.entity.QBaseEntity(this);
 
-    public final NumberPath<Integer> age = createNumber("age", Integer.class);
+    public final StringPath age = createString("age");
 
     public final StringPath content = createString("content");
 

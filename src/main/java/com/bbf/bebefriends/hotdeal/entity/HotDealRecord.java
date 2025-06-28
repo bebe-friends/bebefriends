@@ -34,4 +34,11 @@ public class HotDealRecord extends BaseEntity {
     @Column(name = "hot_deal_price")
     private Integer hotDealPrice;
 
+    public void update(LocalDateTime date, String note, Integer searchPrice, Integer hotDealPrice) {
+        this.date = date;
+        this.note = note;
+        this.searchPrice = searchPrice;
+        this.hotDealPrice = hotDealPrice;
+    }
+
 }

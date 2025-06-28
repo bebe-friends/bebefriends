@@ -1,7 +1,6 @@
 package com.bbf.bebefriends.hotdeal.entity;
 
 import com.bbf.bebefriends.global.entity.BaseEntity;
-import com.bbf.bebefriends.hotdeal.dto.HotDealCategoryDto;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -33,24 +32,23 @@ public class HotDealCategory extends BaseEntity {
 
     private Integer depth;
 
-    public void update(HotDealCategoryDto hotDealCategoryDto) {
-        this.name = hotDealCategoryDto.getName();
-        this.depth = hotDealCategoryDto.getDepth();
-    }
-
-    public void updateParentCategory(HotDealCategory hotDealCategory) {
-        this.parentCategory = hotDealCategory;
+    public void updateParentCategory(HotDealCategory newParent) {
+        this.parentCategory = newParent;
+        this.depth = (newParent == null) ? 1 : newParent.getDepth() + 1;
     }
 
     public void addSubCategory(HotDealCategory subCategory) {
+        if (subCategories.contains(subCategory)) {
+            return;
+        }
         this.subCategories.add(subCategory);
-        subCategory.updateParentCategory(this); // 하위 카테고리의 부모를 설정
+        subCategory.updateParentCategory(this);
     }
 
     public void removeSubCategory(HotDealCategory subCategory) {
-        this.subCategories.remove(subCategory);
-        subCategory.updateParentCategory(null); // 하위 카테고리의 부모를 해제
+        if (subCategories.remove(subCategory)) {
+            subCategory.updateParentCategory(null);
+        }
     }
-
 
 }
