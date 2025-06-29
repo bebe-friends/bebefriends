@@ -39,6 +39,9 @@ public class HotDealDto {
             @NotNull
             boolean age_6,
 
+            @NotNull
+            boolean age_7,
+
             @Schema(description = "핫딜 ID", example = "1")
             @NotNull Long hotDealId,
 
