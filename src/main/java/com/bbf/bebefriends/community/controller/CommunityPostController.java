@@ -63,14 +63,15 @@ public class CommunityPostController {
     @DeleteMapping("/post")
     @Operation(summary = "커뮤니티 게시글 삭제", description = "본인이 작성한 게시물을 삭제합니다.")
     public BaseResponse<String> deletePost(@Valid @RequestBody CommunityPostDTO.DeletePostRequest request,
-                                             @AuthenticationPrincipal UserDetailsImpl user) {
+                                           @AuthenticationPrincipal UserDetailsImpl user) {
         return BaseResponse.onSuccess(communityPostService.deletePost(request, user.getUser()), ResponseCode.OK);
     }
 
     // 게시글 상세 페이지
     @GetMapping("/post/detail")
     @Operation(summary = "커뮤니티 게시글 상세 페이지", description = "게시글 상세 페이지를 조회합니다.")
-    public BaseResponse<CommunityPostDTO.PostDetailsResponse> getPostDetails(@RequestParam Long postId) {
-        return BaseResponse.onSuccess(communityPostService.getPostDetail(postId), ResponseCode.OK);
+    public BaseResponse<CommunityPostDTO.PostDetailsResponse> getPostDetails(@RequestParam Long postId,
+                                                                             @AuthenticationPrincipal UserDetailsImpl user) {
+        return BaseResponse.onSuccess(communityPostService.getPostDetail(user.getUser(), postId), ResponseCode.OK);
     }
 }

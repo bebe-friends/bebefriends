@@ -98,11 +98,13 @@ public class CommunityPostDTO {
         private String title;
         private String author;
         private Long authorId;
+        private Long categoryId;
         private LocalDateTime createdAt;
         private int viewCount;
         private int likeCount;
         private int commentCount;
         private String content;
+        private Boolean isLiked;
         private List<String> imageUrls;
         private List<String> links;
 //        private List<CommunityCommentDTO.ParentCommentResponse> comments; // 댓글(대댓글 포함)
