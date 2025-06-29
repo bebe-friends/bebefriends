@@ -57,9 +57,18 @@ public class UserDTO {
 
     @Schema(description = "유저 정보 조회 결과")
     public record UserInfoResponse(
+
+            @NotNull
+            @Schema(description = "유저 ID", example = "1")
             Long userId,
 
-            String nickname
+            @NotNull
+            @Schema(description = "닉네임", example = "깜놀하마@f6dd")
+            String nickname,
+
+            @NotNull
+            @Schema(description = "이메일", example = "test@naver.com")
+            String email
     ) {}
 
     @Schema(description = "이용자 알림 설정")
