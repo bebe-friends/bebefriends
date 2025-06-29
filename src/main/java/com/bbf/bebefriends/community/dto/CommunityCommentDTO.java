@@ -18,6 +18,12 @@ public class CommunityCommentDTO {
         private String content;
     }
 
+    @Data
+    @AllArgsConstructor
+    public static class CreateCommentResponse {
+        private Long commentId;
+    }
+
     // 수정
     @Data
     public static class UpdateCommentRequest {

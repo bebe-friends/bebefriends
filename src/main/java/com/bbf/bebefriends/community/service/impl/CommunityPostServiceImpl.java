@@ -7,10 +7,7 @@ import com.bbf.bebefriends.community.entity.CommunityImage;
 import com.bbf.bebefriends.community.entity.CommunityLink;
 import com.bbf.bebefriends.community.entity.CommunityPost;
 import com.bbf.bebefriends.community.exception.CommunityControllerAdvice;
-import com.bbf.bebefriends.community.repository.CommunityCategoryRepository;
-import com.bbf.bebefriends.community.repository.CommunityImageRepository;
-import com.bbf.bebefriends.community.repository.CommunityLinkRepository;
-import com.bbf.bebefriends.community.repository.CommunityPostRepository;
+import com.bbf.bebefriends.community.repository.*;
 import com.bbf.bebefriends.community.service.CommunityCategoryService;
 import com.bbf.bebefriends.community.service.CommunityPostService;
 import com.bbf.bebefriends.global.exception.ResponseCode;
@@ -32,7 +29,7 @@ public class CommunityPostServiceImpl implements CommunityPostService {
     private final CommunityPostRepository communityPostRepository;
     private final CommunityCategoryRepository communityCategoryRepository;
     private final FireBaseService fireBaseService;
-    private final CommunityCommentServiceImpl communityCommentServiceImpl;
+    private final CommunityPostLikeRepository communityPostLikeRepository;
 
     // 게시물 생성 (게시물, 이미지, 링크)
     @Override
@@ -138,7 +135,7 @@ public class CommunityPostServiceImpl implements CommunityPostService {
     // 게시물 상세 페이지
     @Override
     @Transactional
-    public CommunityPostDTO.PostDetailsResponse getPostDetail(Long postId) {
+    public CommunityPostDTO.PostDetailsResponse getPostDetail(User user, Long postId) {
         CommunityPost post = communityPostRepository.findById(postId)
                 .orElseThrow(() -> new CommunityControllerAdvice(ResponseCode.COMMUNITY_POST_NOT_FOUND));
         post.increaseViewCount();
@@ -149,6 +146,7 @@ public class CommunityPostServiceImpl implements CommunityPostService {
         return CommunityPostDTO.PostDetailsResponse.builder()
                 .postId(post.getId())
                 .title(post.getTitle())
+                .categoryId(post.getCategory().getId())
                 .author(post.getUser().getNickname())
                 .authorId(post.getUser().getUid())
                 .createdAt(post.getCreatedDate())
@@ -158,6 +156,7 @@ public class CommunityPostServiceImpl implements CommunityPostService {
                 .content(post.getContent())
                 .imageUrls(post.getImages().stream().map(CommunityImage::getImgUrl).toList())
                 .links(post.getLinks().stream().map(CommunityLink::getLink).toList())
+                .isLiked(communityPostLikeRepository.existsByPostAndUser(post, user))
                 .build();
     }
 }
