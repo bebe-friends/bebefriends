@@ -57,9 +57,18 @@ public class UserDTO {
 
     @Schema(description = "유저 정보 조회 결과")
     public record UserInfoResponse(
+
+            @NotNull
+            @Schema(description = "유저 ID", example = "1")
             Long userId,
 
-            String nickname
+            @NotNull
+            @Schema(description = "닉네임", example = "깜놀하마@f6dd")
+            String nickname,
+
+            @NotNull
+            @Schema(description = "이메일", example = "test@naver.com")
+            String email
     ) {}
 
     @Schema(description = "이용자 알림 설정")
@@ -165,9 +174,12 @@ public class UserDTO {
             @NotNull
             boolean age_6,
 
-            @Schema(example = "[1, 2]", description = "핫딜 카테고리 설정 값 (미확정..)")
             @NotNull
-            List<Long> categorys // String : ["가구"], Long : [1]
+            boolean age_7,
+
+            @Schema(example = "[10, 11]", description = "핫딜 카테고리 설정 값 (미확정..)")
+            @NotNull
+            List<Long> categorys // String : [""여행 및 체험", "도서"], Long : [1]
     ) {
     }
 
@@ -194,7 +206,10 @@ public class UserDTO {
             @NotNull
             boolean age_6,
 
-            @Schema(example = "[\"가구\"]", description = "핫딜 카테고리 설정 값 (미확정..)")
+            @NotNull
+            boolean age_7,
+
+            @Schema(example = "[\"여행 및 체험\"]", description = "핫딜 카테고리 설정 값 (미확정..)")
             @NotNull
             List<String> categorys
     ) {

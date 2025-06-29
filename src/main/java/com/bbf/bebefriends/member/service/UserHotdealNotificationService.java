@@ -36,12 +36,13 @@ public class UserHotdealNotificationService {
         notification.setAge_4(request.age_4());
         notification.setAge_5(request.age_5());
         notification.setAge_6(request.age_6());
+        notification.setAge_7(request.age_7());
 
         notification.getPreferredCategories().clear();
 
         List<HotDealCategory> categories = request.categorys().stream()
                 .map(categoryId -> hotDealCategoryRepository.findById(categoryId)
-                        .orElseThrow(() -> new UserControllerAdvice(ResponseCode._BAD_REQUEST)))
+                        .orElseThrow(() -> new UserControllerAdvice(ResponseCode.HOTDEAL_CATEGORY_NOT_FOUND)))
                 .collect(Collectors.toList());
         notification.getPreferredCategories().addAll(categories);
 
@@ -64,6 +65,7 @@ public class UserHotdealNotificationService {
                 notification.isAge_4(),
                 notification.isAge_5(),
                 notification.isAge_6(),
+                notification.isAge_7(),
                 categoryNames
         );
     }
