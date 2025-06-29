@@ -7,7 +7,7 @@ import com.bbf.bebefriends.member.entity.User;
 public interface CommunityCommentService {
     BasePageResponse<CommunityCommentDTO.ParentCommentResponse> getParentComments(User user, Long postId, Long parentPage, int parentSize);
     BasePageResponse<CommunityCommentDTO.ChildCommentDTO> getChildComments(User user, Long parentId, Long cursorId, int pageSize);
-    String createComment(User user, CommunityCommentDTO.CreateCommentRequest request);
+    CommunityCommentDTO.CreateCommentResponse createComment(User user, CommunityCommentDTO.CreateCommentRequest request);
 
     String updateComment(User user, CommunityCommentDTO.UpdateCommentRequest request);
 

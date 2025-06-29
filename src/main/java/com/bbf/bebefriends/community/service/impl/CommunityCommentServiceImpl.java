@@ -195,7 +195,7 @@ public class CommunityCommentServiceImpl implements CommunityCommentService {
     // TODO: 대댓글의 댓글은 불가능. 깊이는 최대 2까지만 설정하도록
     @Override
     @Transactional
-    public String createComment(User user, CommunityCommentDTO.CreateCommentRequest request) {
+    public CommunityCommentDTO.CreateCommentResponse createComment(User user, CommunityCommentDTO.CreateCommentRequest request) {
         CommunityPost post = communityPostRepository.findById(request.getPostId())
                 .orElseThrow(() -> new CommunityControllerAdvice(ResponseCode.COMMUNITY_POST_NOT_FOUND));
         CommunityComment parent = null;
@@ -208,7 +208,7 @@ public class CommunityCommentServiceImpl implements CommunityCommentService {
         communityCommentRepository.save(comment);
 
         post.increaseCommentCount();
-        return "댓글을 작성하였습니다.";
+        return new CommunityCommentDTO.CreateCommentResponse(comment.getId());
     }
 
     @Override

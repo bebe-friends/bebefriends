@@ -27,8 +27,8 @@ public class CommunityCommentController {
 
     @PostMapping("/comment")
     @Operation(summary = "커뮤니티 댓글 생성", description = "게시물에 댓글을 게시합니다.")
-    public BaseResponse<String> createComment(@AuthenticationPrincipal UserDetailsImpl user,
-                                              @RequestBody CommunityCommentDTO.CreateCommentRequest request) {
+    public BaseResponse<CommunityCommentDTO.CreateCommentResponse> createComment(@AuthenticationPrincipal UserDetailsImpl user,
+                                                                                 @RequestBody CommunityCommentDTO.CreateCommentRequest request) {
         return BaseResponse.onSuccess(communityCommentService.createComment(user.getUser(), request), ResponseCode.OK);
     }
 
