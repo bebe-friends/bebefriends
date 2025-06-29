@@ -62,4 +62,38 @@ public class HotDealRecordService {
                 )
                 .toList();
     }
+
+    @Transactional(readOnly = true)
+    public HotDealRecordDto.HotDealRecordDetailResponse getHotDealRecordDetail(Long hotDealRecordId) {
+        HotDealRecord record = findByHotDealRecord(hotDealRecordId);
+        return new HotDealRecordDto.HotDealRecordDetailResponse(
+                record.getId(),
+                record.getHotDeal().getId(),
+                record.getDate(),
+                record.getNote(),
+                record.getSearchPrice(),
+                record.getHotDealPrice()
+        );
+    }
+
+    @Transactional
+    public void updateHotDealRecord(Long hotDealRecordId, HotDealRecordDto.HotDealRecordUpdateRequest request) {
+        HotDealRecord record = findByHotDealRecord(hotDealRecordId);
+
+        record.update(
+                request.date(),
+                request.note(),
+                request.searchPrice(),
+                request.hotDealPrice()
+        );
+
+        hotDealRecordRepository.save(record);
+    }
+
+    @Transactional
+    public void deleteHotDealRecord(Long hotDealRecordId) {
+        HotDealRecord record = findByHotDealRecord(hotDealRecordId);
+        hotDealRecordRepository.delete(record);
+    }
+
 }

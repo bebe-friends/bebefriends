@@ -33,6 +33,8 @@ public class QHotDeal extends EntityPathBase<HotDeal> {
 
     public final DateTimePath<java.time.LocalDateTime> deletedAt = createDateTime("deletedAt", java.time.LocalDateTime.class);
 
+    public final QHotDealCategory detailCategory;
+
     public final QHotDealCategory hotDealCategory;
 
     public final NumberPath<Long> id = createNumber("id", Long.class);
@@ -72,6 +74,7 @@ public class QHotDeal extends EntityPathBase<HotDeal> {
 
     public QHotDeal(Class<? extends HotDeal> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
+        this.detailCategory = inits.isInitialized("detailCategory") ? new QHotDealCategory(forProperty("detailCategory"), inits.get("detailCategory")) : null;
         this.hotDealCategory = inits.isInitialized("hotDealCategory") ? new QHotDealCategory(forProperty("hotDealCategory"), inits.get("hotDealCategory")) : null;
         this.user = inits.isInitialized("user") ? new com.bbf.bebefriends.member.entity.QUser(forProperty("user"), inits.get("user")) : null;
     }
