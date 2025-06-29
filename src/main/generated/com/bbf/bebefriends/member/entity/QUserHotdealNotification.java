@@ -38,6 +38,8 @@ public class QUserHotdealNotification extends EntityPathBase<UserHotdealNotifica
 
     public final BooleanPath age_6 = createBoolean("age_6");
 
+    public final BooleanPath age_7 = createBoolean("age_7");
+
     //inherited
     public final DateTimePath<java.time.LocalDateTime> createdDate = _super.createdDate;
 
