@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -47,7 +48,7 @@ public class UserHotdealNotification extends BaseEntity {
     @Column(nullable = false)
     private boolean age_6;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "user_hotdeal_categories",
             joinColumns = @JoinColumn(name = "user_hotdeal_notification_id"),
@@ -61,6 +62,7 @@ public class UserHotdealNotification extends BaseEntity {
     ) {
         UserHotdealNotification settings = new UserHotdealNotification();
         settings.setUser(user);
+        settings.setPreferredCategories(new ArrayList<>());
 
         if (ages.length > 0) settings.setAge_0(ages.length > 0 ? ages[0] : false);
         if (ages.length > 1) settings.setAge_1(ages.length > 1 ? ages[1] : false);

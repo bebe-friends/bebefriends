@@ -165,9 +165,9 @@ public class UserDTO {
             @NotNull
             boolean age_6,
 
-            @Schema(example = "[1, 2]", description = "핫딜 카테고리 설정 값 (미확정..)")
+            @Schema(example = "[10, 11]", description = "핫딜 카테고리 설정 값 (미확정..)")
             @NotNull
-            List<Long> categorys // String : ["가구"], Long : [1]
+            List<Long> categorys // String : [""여행 및 체험", "도서"], Long : [1]
     ) {
     }
 
@@ -194,7 +194,7 @@ public class UserDTO {
             @NotNull
             boolean age_6,
 
-            @Schema(example = "[\"가구\"]", description = "핫딜 카테고리 설정 값 (미확정..)")
+            @Schema(example = "[\"여행 및 체험\"]", description = "핫딜 카테고리 설정 값 (미확정..)")
             @NotNull
             List<String> categorys
     ) {

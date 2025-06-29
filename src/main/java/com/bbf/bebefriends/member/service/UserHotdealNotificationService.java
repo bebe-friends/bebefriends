@@ -41,7 +41,7 @@ public class UserHotdealNotificationService {
 
         List<HotDealCategory> categories = request.categorys().stream()
                 .map(categoryId -> hotDealCategoryRepository.findById(categoryId)
-                        .orElseThrow(() -> new UserControllerAdvice(ResponseCode._BAD_REQUEST)))
+                        .orElseThrow(() -> new UserControllerAdvice(ResponseCode.HOTDEAL_CATEGORY_NOT_FOUND)))
                 .collect(Collectors.toList());
         notification.getPreferredCategories().addAll(categories);
 
