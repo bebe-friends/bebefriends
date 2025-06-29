@@ -31,6 +31,10 @@ public class HotDealPost extends BaseEntity {
     @JoinColumn(name = "hot_deal_id")
     private HotDeal hotDeal;                // 핫딜 식별자
 
+    @ManyToOne
+    @JoinColumn(name = "hot_deal_category")
+    private HotDealCategory hotDealCategory;    // 대분류만
+
     private String title;                   // 제목
 
     @Column(columnDefinition = "TEXT")
@@ -58,7 +62,8 @@ public class HotDealPost extends BaseEntity {
                                                 HotDealPostDto.CreateHotDealPostRequest request,
                                                 String links,
                                                 String imgPaths,
-                                                String age) {
+                                                String age,
+                                                HotDealCategory category) {
         HotDealPost hotDealPost = new HotDealPost();
 
         hotDealPost.user = user;
@@ -69,6 +74,7 @@ public class HotDealPost extends BaseEntity {
         hotDealPost.imgPath = imgPaths;
         hotDealPost.status = request.getStatus();
         hotDealPost.age = age;
+        hotDealPost.hotDealCategory = category;
 
         return hotDealPost;
     }
@@ -91,11 +97,13 @@ public class HotDealPost extends BaseEntity {
     public void updatePost(HotDealPostDto.UpdateHotDealPostRequest request,
                            String links,
                            String imgPaths,
-                           String age) {
+                           String age,
+                           HotDealCategory category) {
         this.content = request.getContent();
         this.link = links;
         this.imgPath = imgPaths;
         this.age = age;
+        this.hotDealCategory = category;
     }
 
     public void updateHotDeal(HotDeal hotDeal) {

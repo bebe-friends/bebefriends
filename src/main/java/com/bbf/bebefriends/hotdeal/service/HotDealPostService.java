@@ -34,6 +34,7 @@ public class HotDealPostService {
     private final HotDealCommentRepository hotDealCommentRepository;
     private final HotDealPostViewRepository hotDealPostViewRepository;
     private final FireBaseService fireBaseService;
+    private final HotDealCategoryRepository hotDealCategoryRepository;
 
     // 핫딜 게시글 생성
     @Transactional
@@ -60,7 +61,9 @@ public class HotDealPostService {
         String ages = request.getAge().stream()
                         .map(String::valueOf)
                         .collect(Collectors.joining(","));
-        HotDealPost post = HotDealPost.createHotDealPost(user, hotDeal, request, links, img, ages);
+        HotDealCategory category = hotDealCategoryRepository.findById(request.getCategoryId())
+                .orElseThrow(() -> new HotDealControllerAdvice(ResponseCode.HOTDEAL_CATEGORY_NOT_FOUND));
+        HotDealPost post = HotDealPost.createHotDealPost(user, hotDeal, request, links, img, ages, category);
 
         hotDealPostRepository.save(post);
 
@@ -94,8 +97,10 @@ public class HotDealPostService {
         String ages = request.getAge().stream()
                 .map(String::valueOf)
                 .collect(Collectors.joining(","));
+        HotDealCategory category = hotDealCategoryRepository.findById(request.getCategoryId())
+                .orElseThrow(() -> new HotDealControllerAdvice(ResponseCode.HOTDEAL_CATEGORY_NOT_FOUND));
 
-        hotDealPost.updatePost(request, links, img, ages);
+        hotDealPost.updatePost(request, links, img, ages, category);
 
         return new HotDealPostDto.UpdateHotDealPostResponse(hotDealPost);
     }

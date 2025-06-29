@@ -14,7 +14,7 @@ import java.util.List;
 
 public class HotDealPostDto {
 
-    // 게시글 등록
+    // 게시글 등록 (필요한거: 카테고리(대분류), 핫딜 기록 체크)
     @Data
     public static class CreateHotDealPostRequest {
         private Long hotDealId;             // 핫딜 식별자
@@ -31,6 +31,11 @@ public class HotDealPostDto {
         private String status;              // 상태
 
         private List<Integer> age;                // 나이
+
+        @NonNull
+        private Long categoryId;        // 대분류
+
+        private Boolean isConnected;
     }
 
     @Data
@@ -57,6 +62,8 @@ public class HotDealPostDto {
         private List<String> imgPaths;
 
         private String status;
+
+        private Long categoryId;
 
         private List<Integer> age;
     }
