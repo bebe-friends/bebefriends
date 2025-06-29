@@ -47,7 +47,7 @@ public class HotDealService {
             throw new HotDealControllerAdvice(ResponseCode._UNAUTHORIZED);
         }
 
-        hotDeal.setStatus(request.status());
+//        hotDeal.setStatus(request.status());
         hotDealRepository.save(hotDeal);
     }
 

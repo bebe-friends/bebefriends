@@ -60,8 +60,12 @@ public class HotDealCategoryService {
 
     @Transactional
     public void createOrFindCategoriesByNames(CategoryRequest request) {
+        HotDealCategory mainCategory = hotDealRepository.findById(request.hotDealId())
+                .orElseThrow(() -> new HotDealControllerAdvice(ResponseCode.HOTDEAL_NOT_FOUND))
+                .getHotDealCategory();
+
         // 중분류 생성/탐색
-        HotDealCategory middleCategory = findOrCreateCategory(request.middleCategory(), null);
+        HotDealCategory middleCategory = findOrCreateCategory(request.middleCategory(), mainCategory);
 
         // 소분류 생성/탐색
         HotDealCategory smallCategory = findOrCreateCategory(request.smallCategory(), middleCategory);
@@ -85,12 +89,6 @@ public class HotDealCategoryService {
         if (parentCategory != null && !hotDealCategoryRepository.existsById(parentCategory.getId())) {
             log.error("부모 카테고리가 유효하지 않습니다.");
             throw new HotDealControllerAdvice(ResponseCode.HOTDEAL_CATEGORY_NOT_FOUND);
-        }
-
-        // 부모 카테고리가 없는 경우
-        if (parentCategory == null) {
-            return hotDealCategoryRepository.findByNameAndParentCategoryNull(name)
-                    .orElseGet(() -> createCategory(name, null));
         }
 
         // 부모 카테고리 아래에서 탐색
@@ -118,12 +116,12 @@ public class HotDealCategoryService {
         HotDeal hotDeal = hotDealRepository.findById(hotDealId)
                 .orElseThrow(() -> new HotDealControllerAdvice(ResponseCode.HOTDEAL_NOT_FOUND));
 
-        if (hotDeal.getHotDealCategory() != null) {
+        if (hotDeal.getDetailCategory() != null) {
             log.warn("핫딜 {}은 이미 카테고리 {}와 연결되어 있습니다.", hotDealId, hotDeal.getHotDealCategory().getId());
             throw new HotDealControllerAdvice(ResponseCode.HOTDEAL_ALREADY_MATCHED);
         }
 
-        hotDeal.setHotDealCategory(category);
+        hotDeal.setDetailCategory(category);
         hotDealRepository.save(hotDeal);
 
     }
