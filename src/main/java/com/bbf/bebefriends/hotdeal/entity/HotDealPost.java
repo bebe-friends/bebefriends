@@ -11,10 +11,11 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
-@Entity(name = "hot_deal_post")
+@Entity
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
+@Table(name = "hot_deal_post")
 @Builder
 public class HotDealPost extends BaseEntity {
 
@@ -29,6 +30,10 @@ public class HotDealPost extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "hot_deal_id")
     private HotDeal hotDeal;                // 핫딜 식별자
+
+    @ManyToOne
+    @JoinColumn(name = "hot_deal_category")
+    private HotDealCategory hotDealCategory;    // 대분류만
 
     private String title;                   // 제목
 
@@ -48,6 +53,8 @@ public class HotDealPost extends BaseEntity {
 
     private int likeCount;                  // 좋아요 수
 
+    private int commentCount;
+
     private LocalDateTime deletedAt;        // 삭제일자
 
     public static HotDealPost createHotDealPost(User user,
@@ -55,7 +62,8 @@ public class HotDealPost extends BaseEntity {
                                                 HotDealPostDto.CreateHotDealPostRequest request,
                                                 String links,
                                                 String imgPaths,
-                                                String age) {
+                                                String age,
+                                                HotDealCategory category) {
         HotDealPost hotDealPost = new HotDealPost();
 
         hotDealPost.user = user;
@@ -66,6 +74,7 @@ public class HotDealPost extends BaseEntity {
         hotDealPost.imgPath = imgPaths;
         hotDealPost.status = request.getStatus();
         hotDealPost.age = age;
+        hotDealPost.hotDealCategory = category;
 
         return hotDealPost;
     }
@@ -88,11 +97,13 @@ public class HotDealPost extends BaseEntity {
     public void updatePost(HotDealPostDto.UpdateHotDealPostRequest request,
                            String links,
                            String imgPaths,
-                           String age) {
+                           String age,
+                           HotDealCategory category) {
         this.content = request.getContent();
         this.link = links;
         this.imgPath = imgPaths;
         this.age = age;
+        this.hotDealCategory = category;
     }
 
     public void updateHotDeal(HotDeal hotDeal) {
@@ -103,4 +114,13 @@ public class HotDealPost extends BaseEntity {
         this.deletedAt = LocalDateTime.now();
     }
 
+    // 댓글 수 증가
+    public void increaseCommentCount() {
+        this.commentCount++;
+    }
+
+    // 댓글 수 감소
+    public void decreaseCommentCount() {
+        this.commentCount--;
+    }
 }

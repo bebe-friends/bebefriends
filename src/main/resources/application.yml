@@ -12,8 +12,11 @@ spring:
 
 logging:
   level:
+    root: DEBUG
+    org.springframework.web: DEBUG
     org.hibernate.SQL: debug
     org.hibernate.type.descriptor.sql: trace
+
 
 springdoc:
   swagger-ui:
