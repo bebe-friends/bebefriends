@@ -4,6 +4,7 @@ import com.bbf.bebefriends.global.entity.BasePageResponse;
 import com.bbf.bebefriends.global.entity.BaseResponse;
 import com.bbf.bebefriends.global.entity.UserDetailsImpl;
 import com.bbf.bebefriends.global.exception.ResponseCode;
+import com.bbf.bebefriends.global.swagger.hotDealPostList.HotDealPostListPageResponseSpec;
 import com.bbf.bebefriends.global.swagger.postList.CommunityPostListPageResponseSpec;
 import com.bbf.bebefriends.hotdeal.dto.HotDealPostDto;
 import com.bbf.bebefriends.hotdeal.exception.HotDealControllerAdvice;
@@ -39,7 +40,7 @@ public class HotDealPostListController {
             responses = @ApiResponse(
                     content = @Content(
                             schema = @Schema(
-                                    implementation = CommunityPostListPageResponseSpec.class
+                                    implementation = HotDealPostListPageResponseSpec.class
                             )
                     )
             )
