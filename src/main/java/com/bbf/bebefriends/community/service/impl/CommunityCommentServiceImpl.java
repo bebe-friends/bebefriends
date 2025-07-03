@@ -10,6 +10,7 @@ import com.bbf.bebefriends.community.repository.CommunityPostRepository;
 import com.bbf.bebefriends.community.repository.CommunityUserBlockRepository;
 import com.bbf.bebefriends.community.service.CommunityCommentService;
 import com.bbf.bebefriends.global.entity.BasePageResponse;
+import com.bbf.bebefriends.global.entity.BaseResponse;
 import com.bbf.bebefriends.global.exception.ResponseCode;
 import com.bbf.bebefriends.member.entity.User;
 import com.bbf.bebefriends.member.entity.UserRole;
@@ -44,6 +45,26 @@ public class CommunityCommentServiceImpl implements CommunityCommentService {
                 .existsByUserAndComment(currentUser, comment);
 
         return userBlocked || commentBlocked;
+    }
+
+    @Override
+    public CommunityCommentDTO.ParentOnlyResponse getParentOnly(User user, Long commentId) {
+        CommunityComment reply = communityCommentRepository.findById(commentId)
+                .orElseThrow(() -> new CommunityControllerAdvice(ResponseCode.COMMENT_NOT_FOUND));
+        if (reply.getParent() == null) {
+            throw new CommunityControllerAdvice(ResponseCode.COMMENT_NOT_FOUND);
+        }
+        CommunityComment parent = reply.getParent();
+
+        return CommunityCommentDTO.ParentOnlyResponse.builder()
+                .commentId(parent.getId())
+                .authorId(parent.getUser().getUid())
+                .authorName(parent.getUser().getNickname())
+                .content(parent.getContent())
+                .createdAt(parent.getCreatedDate())
+                .isDeleted(communityCommentRepository.existsByIdAndDeletedAtIsNotNull(parent.getId()))
+                .isBlocked(checkBlocked(user, parent))
+                .build();
     }
 
     // 부모 댓글과 각 댓글마다 최대 3개 대댓글 조회

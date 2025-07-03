@@ -88,6 +88,7 @@ public interface CommunityPostRepository extends JpaRepository<CommunityPost, Lo
       FROM CommunityPost p
       JOIN CommunityComment c ON c.post = p
       WHERE c.user = :user
+        AND c.deletedAt IS NULL
         AND p.deletedAt IS NULL
         AND p.isReported IS NULL
         AND ( :cursorId IS NULL OR p.id < :cursorId )
