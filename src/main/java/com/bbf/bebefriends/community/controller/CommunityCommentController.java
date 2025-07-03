@@ -75,7 +75,7 @@ public class CommunityCommentController {
     @Operation(
             summary = "대댓글 목록 페이지네이션",
             description = """
-            첫 페이지는 parentOffset, childOffset 둘 다 생략\n
+            첫 페이지는 cursorId 생략\n
 
             parentId     PathVariable – 대상 댓글 ID\n
             cursorId     QueryParam – “이전 요청에서 마지막으로 본 대댓글 id”\n
@@ -96,6 +96,15 @@ public class CommunityCommentController {
             @RequestParam(value = "pageSize", defaultValue = "20") int pageSize
     ) {
         return BaseResponse.onSuccess(communityCommentService.getChildComments(user.getUser(), parentId, cursorId, pageSize), ResponseCode.OK);
+    }
+
+    @Operation(summary = "커뮤니티 부모 댓글 조회", description = "대댓글의 부모 댓글을 조회합니다.")
+    @GetMapping("/comment/{commentId}/parent")
+    public BaseResponse<CommunityCommentDTO.ParentOnlyResponse> getParentComment(
+            @AuthenticationPrincipal UserDetailsImpl user,
+            @PathVariable Long commentId
+    ) {
+        return BaseResponse.onSuccess(communityCommentService.getParentOnly(user.getUser(), commentId), ResponseCode.OK);
     }
 
 //    @GetMapping("/post/{postId}/comment-details")

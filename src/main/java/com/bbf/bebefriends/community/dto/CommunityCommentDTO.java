@@ -1,5 +1,6 @@
 package com.bbf.bebefriends.community.dto;
 
+import com.bbf.bebefriends.community.entity.CommunityComment;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -97,28 +98,15 @@ public class CommunityCommentDTO {
         }
     }
 
-    /**
-     * 커서를 한 쌍으로 묶는 간단한 DTO
-     */
-    @Getter
-    public static class CommentCursor {
-        private final Long parentOffset;
-        private final Long childOffset;
-
-        public CommentCursor(Long parentOffset, Long childOffset) {
-            this.parentOffset = parentOffset;
-            this.childOffset  = childOffset;
-        }
-    }
-
-    @Getter
-    public static class CommentDetailsResponse {
-        private final List<CommentCursorProjection> items;
-        private final CommentCursor nextCommentCursor;
-
-        public CommentDetailsResponse(List<CommentCursorProjection> items, CommentCursor nextCommentCursor) {
-            this.items = items;
-            this.nextCommentCursor = nextCommentCursor;
-        }
+    @Data
+    @Builder
+    public static class ParentOnlyResponse {
+        private Long commentId;
+        private Long authorId;
+        private String authorName;
+        private String content;
+        private LocalDateTime createdAt;
+        private Boolean isDeleted;
+        private Boolean isBlocked;
     }
 }

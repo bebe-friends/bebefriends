@@ -19,7 +19,7 @@ public interface CommunityCommentRepository extends JpaRepository<CommunityComme
       WHERE c.post = :post
         AND c.parent IS NULL
         AND c.deletedAt IS NULL
-        AND ( :cursorId IS NULL OR c.id < :cursorId )
+        AND ( :cursorId IS NULL OR c.id > :cursorId )
       ORDER BY c.id DESC
     """)
     List<CommunityComment> findParentCommentsWithCursor(
@@ -33,7 +33,7 @@ public interface CommunityCommentRepository extends JpaRepository<CommunityComme
       FROM CommunityComment c
       WHERE c.parent = :parent
         AND c.deletedAt IS NULL
-        AND ( :cursorId IS NULL OR c.id < :cursorId )
+        AND ( :cursorId IS NULL OR c.id > :cursorId )
       ORDER BY c.id ASC
     """)
     List<CommunityComment> findChildCommentsWithCursor(
