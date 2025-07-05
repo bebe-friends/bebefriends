@@ -31,10 +31,30 @@ public class HotDealPostService {
 
     private final HotDealRepository hotDealRepository;
     private final HotDealPostRepository hotDealPostRepository;
-    private final HotDealCommentRepository hotDealCommentRepository;
-    private final HotDealPostViewRepository hotDealPostViewRepository;
     private final FireBaseService fireBaseService;
     private final HotDealCategoryRepository hotDealCategoryRepository;
+
+    // 핫딜 게시글 상태 조회
+    public Boolean getHotDealPostStatus(Long postId) {
+        HotDealPost hotDealPost = hotDealPostRepository.findById(postId)
+                .orElseThrow(() -> new HotDealControllerAdvice(ResponseCode.HOTDEAL_NOT_FOUND));
+
+        return hotDealPost.getStatus();
+    }
+
+    // 핫딜 게시글 상태 변경
+    public String changeStatus(HotDealPostDto.ChangeStatusRequest request) {
+        HotDealPost hotDealPost = hotDealPostRepository.findById(request.getHotDealPostId())
+                .orElseThrow(() -> new HotDealControllerAdvice(ResponseCode.HOTDEAL_NOT_FOUND));
+        if (hotDealPost.getStatus()) {
+            hotDealPost.closeStatus();
+
+            return "핫딜의 상태가 마감처리 되었습니다.";
+        }
+        hotDealPost.openStatus();
+
+        return "핫딜의 상태가 진행 중으로 변경되었습니다.";
+    }
 
     // 핫딜 게시글 생성
     @Transactional
@@ -162,4 +182,6 @@ public class HotDealPostService {
 //            hotDealPost.increaseViewCount();
 //        }
     }
+
+
 }

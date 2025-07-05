@@ -14,6 +14,11 @@ import java.util.List;
 
 public class HotDealPostDto {
 
+    @Data
+    public static class ChangeStatusRequest {
+        private Long hotDealPostId;
+    }
+
     // 게시글 등록 (필요한거: 카테고리(대분류), 핫딜 기록 체크)
     @Data
     public static class CreateHotDealPostRequest {
@@ -28,7 +33,7 @@ public class HotDealPostDto {
         private List<String> links;                // 링크
 
         @NonNull
-        private String status;              // 상태
+        private Boolean status;              // 상태
 
         private List<Integer> age;                // 나이
 
@@ -102,7 +107,7 @@ public class HotDealPostDto {
 
         private List<String> imgPath;             // 이미지 경로
 
-        private String status;              // 상태
+        private Boolean status;              // 상태
 
         private List<String> age;                // 나이
 
