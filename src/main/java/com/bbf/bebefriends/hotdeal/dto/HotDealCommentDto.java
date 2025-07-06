@@ -5,44 +5,65 @@ import lombok.*;
 
 import java.time.LocalDateTime;
 
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder(toBuilder = true)
+//@Data
+//@NoArgsConstructor
+//@AllArgsConstructor
+//@Builder(toBuilder = true)
 public class HotDealCommentDto {
 
-    private Long id;                        // 핫딜 댓글 식별자
+    @Data
+    public static class CreateCommentRequest {
+        @NonNull
+        private Long hotDealPostId;             // 핫딜 게시글 식별자
 
-    private Long userId;                    // 회원 식별자
+        private Long parentId;
 
-    private Long repliedCommentId;          // 핫딜 대댓글 식별자
+        @NonNull
+        private String content;                 // 내용
+    }
 
-    private Long hotDealPostId;             // 핫딜 게시글 식별자
+    @Data
+    @AllArgsConstructor
+    public static class CreateCommentResponse {
+        private Long commentId;
+    }
 
-    private String content;                 // 내용
+    @Data
+    public static class UpdateCommentRequest {
+        @NonNull
+        private Long commentId;
 
-    private LocalDateTime deletedAt;        // 삭제일자
+        @NonNull
+        private String content;
+    }
 
-    // Entity -> dto
-    public static HotDealCommentDto fromEntity(HotDealComment hotDealComment) {
-        HotDealCommentDto commentDto = HotDealCommentDto.builder()
-                .id(hotDealComment.getId())
-                .userId(hotDealComment.getUser().getUid())
-                .hotDealPostId(hotDealComment.getHotDealPost().getId())
-                .content(hotDealComment.getContent())
-                .deletedAt(hotDealComment.getDeletedAt())
-                .build();
+    @Data
+    @AllArgsConstructor
+    public static class UpdateCommentResponse {
+        private Long commentId;
+    }
 
-        // 대댓글이 있는 경우
-        if (hotDealComment.getRepliedComment() != null) {
-            commentDto = commentDto.toBuilder()
-                    .repliedCommentId(hotDealComment.getRepliedComment().getId())
-                    .build();
-        }
+    @Data
+    public static class DeleteCommentRequest {
+        private Long commentId;
+    }
 
-        return commentDto;
+    @Data
+    @AllArgsConstructor
+    public static class DeleteCommentResponse {
+        private Long commentId;
     }
 
 
+    // Entity -> dto
+//    public static HotDealCommentDto fromEntity(HotDealComment hotDealComment) {
+//
+//        return HotDealCommentDto.builder()
+//                .id(hotDealComment.getId())
+//                .userId(hotDealComment.getUser().getUid())
+//                .hotDealPostId(hotDealComment.getHotDealPost().getId())
+//                .content(hotDealComment.getContent())
+//                .deletedAt(hotDealComment.getDeletedAt())
+//                .build();
+//    }
 }

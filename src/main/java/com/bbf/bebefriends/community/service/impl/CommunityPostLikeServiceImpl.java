@@ -60,7 +60,7 @@ public class CommunityPostLikeServiceImpl implements CommunityPostLikeService {
 //                userRepository.findById(request.getUserUid()).orElseThrow())
 //                .orElseThrow(() -> new CommunityControllerAdvice(ResponseCode.COMMUNITY_POST_LIKE_NOT_FOUND));
 //
-//        communityPostLikeRepository.delete(communityPostLike);
+//        communityPostLikeRepository.setDeletedAt(communityPostLike);
 //        communityPost.decreaseLikeCount();
 //
 //        return "게시물에 좋아요를 취소했습니다.";
