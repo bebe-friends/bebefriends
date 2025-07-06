@@ -9,11 +9,14 @@ import com.bbf.bebefriends.hotdeal.repository.HotDealRepository;
 import com.bbf.bebefriends.member.entity.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -40,15 +43,47 @@ public class HotDealService {
         hotDealRepository.save(hotDeal);
     }
 
-    @Transactional
-    public void updateHotDealStatus(User user, HotDealDto.HotDealStatusRequest request) {
-        HotDeal hotDeal = findByHotDeal(request.id());
-        if (!hotDeal.getUser().getUid().equals(user.getUid())) {
-            throw new HotDealControllerAdvice(ResponseCode._UNAUTHORIZED);
-        }
+    @Transactional(readOnly = true)
+    public List<HotDealDto.HotDealSearchResponse> searchByDetailCategory(String categoryName, int page, int size) {
+        PageRequest pageRequest = PageRequest.of(page, size, Sort.by("createdDate").descending());
 
-//        hotDeal.setStatus(request.status());
-        hotDealRepository.save(hotDeal);
+        List<HotDeal> hotDeals = hotDealRepository.findByDetailCategoryNameContaining(
+                categoryName, pageRequest);
+
+        return hotDeals.stream()
+                .map(hotDeal -> new HotDealDto.HotDealSearchResponse(
+                        hotDeal.getId(),
+                        hotDeal.getName(),
+                        hotDeal.getContent(),
+                        new HotDealDto.HotDealSearchResponse.CategoryInfo(
+                                hotDeal.getDetailCategory().getId(),
+                                hotDeal.getDetailCategory().getName(),
+                                hotDeal.getDetailCategory().getDepth()
+                        ),
+                        hotDeal.getCreatedDate()
+                ))
+                .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public List<HotDealDto.HotDealSearchResponse> searchByDetailCategoryId(Long categoryId, int page, int size) {
+        PageRequest pageRequest = PageRequest.of(page, size, Sort.by("createdDate").descending());
+
+        List<HotDeal> hotDeals = hotDealRepository.findByDetailCategoryId(categoryId, pageRequest);
+
+        return hotDeals.stream()
+                .map(hotDeal -> new HotDealDto.HotDealSearchResponse(
+                        hotDeal.getId(),
+                        hotDeal.getName(),
+                        hotDeal.getContent(),
+                        new HotDealDto.HotDealSearchResponse.CategoryInfo(
+                                hotDeal.getDetailCategory().getId(),
+                                hotDeal.getDetailCategory().getName(),
+                                hotDeal.getDetailCategory().getDepth()
+                        ),
+                        hotDeal.getCreatedDate()
+                ))
+                .collect(Collectors.toList());
     }
 
 }

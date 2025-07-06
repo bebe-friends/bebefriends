@@ -2,16 +2,14 @@ package com.bbf.bebefriends.hotdeal.entity;
 
 import com.bbf.bebefriends.global.entity.BaseEntity;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity(name = "hot_deal_category")
 @Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder

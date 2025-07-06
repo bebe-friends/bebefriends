@@ -1,6 +1,7 @@
 package com.bbf.bebefriends.hotdeal.service;
 
 import com.bbf.bebefriends.global.exception.ResponseCode;
+import com.bbf.bebefriends.hotdeal.dto.HotDealCategoryDto;
 import com.bbf.bebefriends.hotdeal.dto.HotDealCategoryDto.CategoryRequest;
 import com.bbf.bebefriends.hotdeal.dto.HotDealCategoryDto.HotDealResponse;
 import com.bbf.bebefriends.hotdeal.entity.HotDeal;
@@ -11,7 +12,6 @@ import com.bbf.bebefriends.hotdeal.repository.HotDealRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -59,28 +59,28 @@ public class HotDealCategoryService {
     }
 
     @Transactional
-    public void createOrFindCategoriesByNames(CategoryRequest request) {
+    public void matchCategoriesWithHotDeal(CategoryRequest request) {
         HotDealCategory mainCategory = hotDealRepository.findById(request.hotDealId())
                 .orElseThrow(() -> new HotDealControllerAdvice(ResponseCode.HOTDEAL_NOT_FOUND))
                 .getHotDealCategory();
 
-        // 중분류 생성/탐색
-        HotDealCategory middleCategory = findOrCreateCategory(request.middleCategory(), mainCategory);
+        // 중분류 탐색
+        HotDealCategory middleCategory = findCategory(request.middleCategory(), mainCategory);
 
-        // 소분류 생성/탐색
-        HotDealCategory smallCategory = findOrCreateCategory(request.smallCategory(), middleCategory);
+        // 소분류 탐색
+        HotDealCategory smallCategory = findCategory(request.smallCategory(), middleCategory);
 
-        // 세분류 생성/탐색
-        HotDealCategory detailedCategory = findOrCreateCategory(request.detailedCategory(), smallCategory);
+        // 세분류 탐색
+        HotDealCategory detailedCategory = findCategory(request.detailedCategory(), smallCategory);
 
         // 핫딜과 매칭
         matchHotDealToCategory(request.hotDealId(), detailedCategory);
     }
 
     /**
-     * 이름과 부모 카테고리를 기준으로 카테고리를 찾거나 생성
+     * 이름과 부모 카테고리를 기준으로 카테고리를 찾음
      */
-    private HotDealCategory findOrCreateCategory(String name, HotDealCategory parentCategory) {
+    private HotDealCategory findCategory(String name, HotDealCategory parentCategory) {
         if (name == null || name.trim().isEmpty()) {
             log.error("카테고리 이름을 입력하세요.");
             throw new HotDealControllerAdvice(ResponseCode._BAD_REQUEST);
@@ -91,25 +91,12 @@ public class HotDealCategoryService {
             throw new HotDealControllerAdvice(ResponseCode.HOTDEAL_CATEGORY_NOT_FOUND);
         }
 
-        // 부모 카테고리 아래에서 탐색
+        // 부모 카테고리 아래에서 탐색하고 없으면 예외 발생
         return hotDealCategoryRepository.findByNameAndParentCategory(name, parentCategory)
-                .orElseGet(() -> createCategory(name, parentCategory));
-    }
-
-    /**
-     * 새 카테고리 생성
-     */
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
-    protected HotDealCategory createCategory(String name, HotDealCategory parentCategory) {
-        int depth = (parentCategory == null) ? 1 : parentCategory.getDepth() + 1;
-
-        return hotDealCategoryRepository.save(
-                HotDealCategory.builder()
-                        .name(name)
-                        .parentCategory(parentCategory)
-                        .depth(depth)
-                        .build()
-        );
+                .orElseThrow(() -> {
+                    log.error("카테고리를 찾을 수 없습니다: {}", name);
+                    return new HotDealControllerAdvice(ResponseCode.HOTDEAL_CATEGORY_NOT_FOUND);
+                });
     }
 
     private void matchHotDealToCategory(Long hotDealId, HotDealCategory category) {
@@ -124,6 +111,79 @@ public class HotDealCategoryService {
         hotDeal.setDetailCategory(category);
         hotDealRepository.save(hotDeal);
 
+    }
+
+    @Transactional
+    public void createNewCategory(HotDealCategoryDto.HotDealCategoryRequest request) {
+        // 상위 카테고리 조회
+        HotDealCategory parentCategory = null;
+        if (request.parentCategoryId() != null) {
+            parentCategory = hotDealCategoryRepository.findById(Long.parseLong(request.parentCategoryId()))
+                    .orElseThrow(() -> new HotDealControllerAdvice(ResponseCode.HOTDEAL_CATEGORY_NOT_FOUND));
+        }
+
+        // 동일한 이름의 카테고리가 이미 존재하는지 확인
+        if (hotDealCategoryRepository.findByNameAndParentCategory(
+                request.targetCategory(), parentCategory).isPresent()) {
+            throw new HotDealControllerAdvice(ResponseCode.HOTDEAL_CATEGORY_ALREADY_EXISTS);
+        }
+
+        // 새 카테고리의 depth 계산
+        int depth = (parentCategory == null) ? 1 : parentCategory.getDepth() + 1;
+
+        // depth 유효성 검사 (1~4 범위)
+        if (depth < 1 || depth > 4) {
+            throw new HotDealControllerAdvice(ResponseCode.HOTDEAL_INVALID_CATEGORY_DEPTH);
+        }
+
+        // 새 카테고리 생성
+        HotDealCategory newCategory = HotDealCategory.builder()
+                .name(request.targetCategory())
+                .parentCategory(parentCategory)
+                .depth(depth)
+                .build();
+
+        hotDealCategoryRepository.save(newCategory);
+    }
+
+    /**
+     * 카테고리 수정
+     */
+    @Transactional
+    public void updateCategory(HotDealCategoryDto.CategoryUpdateRequest request) {
+        HotDealCategory category = hotDealCategoryRepository.findById(request.categoryId())
+                .orElseThrow(() -> new HotDealControllerAdvice(ResponseCode.HOTDEAL_CATEGORY_NOT_FOUND));
+
+        // 같은 부모 카테고리 내에 동일한 이름이 있는지 확인
+        if (hotDealCategoryRepository.findByNameAndParentCategory(
+                request.newName(), category.getParentCategory()).isPresent()) {
+            throw new HotDealControllerAdvice(ResponseCode.HOTDEAL_CATEGORY_ALREADY_EXISTS);
+        }
+
+        category.setName(request.newName());
+        hotDealCategoryRepository.save(category);
+    }
+
+    /**
+     * 카테고리 삭제
+     * 하위 카테고리가 있거나 연결된 핫딜이 있는 경우 삭제 불가
+     */
+    @Transactional
+    public void deleteCategory(Long categoryId) {
+        HotDealCategory category = hotDealCategoryRepository.findById(categoryId)
+                .orElseThrow(() -> new HotDealControllerAdvice(ResponseCode.HOTDEAL_CATEGORY_NOT_FOUND));
+
+        // 하위 카테고리 존재 여부 확인
+        if (hotDealCategoryRepository.existsByParentCategory(category)) {
+            throw new HotDealControllerAdvice(ResponseCode.HOTDEAL_CATEGORY_HAS_SUBCATEGORIES);
+        }
+
+        // 연결된 핫딜 존재 여부 확인
+        if (hotDealRepository.existsByHotDealCategoryOrDetailCategory(category, category)) {
+            throw new HotDealControllerAdvice(ResponseCode.HOTDEAL_CATEGORY_IN_USE);
+        }
+
+        hotDealCategoryRepository.delete(category);
     }
 
 }

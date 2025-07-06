@@ -8,6 +8,8 @@ import com.bbf.bebefriends.hotdeal.exception.HotDealControllerAdvice;
 import com.bbf.bebefriends.hotdeal.service.HotDealCategoryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -49,16 +51,56 @@ public class HotDealCategoryController {
         return BaseResponse.onSuccess(mainCategories, ResponseCode.OK);
     }
 
-    @Operation(summary = "세분류 카테고리 생성 및 핫딜 매칭", description = "세분류 카테고리를 생성하거나 찾고, 해당 카테고리를 핫딜에 매칭합니다.")
+    @Operation(summary = "카테고리 생성", description = "중/소/세 분류 카테고리를 생성합니다.")
+    @PostMapping("/create")
+    public BaseResponse<Void> createOrFindCategoryWithHotDeal(
+            @RequestBody HotDealCategoryDto.HotDealCategoryRequest request,
+            @AuthenticationPrincipal UserDetailsImpl userDetails
+    ) {
+        if (!userDetails.getRole().equals(ADMIN.name())) {
+            throw new HotDealControllerAdvice(ResponseCode._UNAUTHORIZED);
+        }
+
+        hotDealCategoryService.createNewCategory(request);
+        return BaseResponse.onSuccess(null, ResponseCode.OK);
+    }
+
+    @Operation(summary = "카테고리 매칭", description = "세분류 카테고리를 찾고, 해당 카테고리를 핫딜에 매칭합니다.")
     @PostMapping("/detailed-category/match")
-    public BaseResponse<Void> createOrMatchCategoryWithHotDeal(
+    public BaseResponse<Void> matchCategoryWithHotDeal(
             @RequestBody HotDealCategoryDto.CategoryRequest categoryRequest,
             @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
         if (!userDetails.getRole().equals(ADMIN.name())) {
             throw new HotDealControllerAdvice(ResponseCode._UNAUTHORIZED);
         }
-        hotDealCategoryService.createOrFindCategoriesByNames(categoryRequest);
+        hotDealCategoryService.matchCategoriesWithHotDeal(categoryRequest);
+        return BaseResponse.onSuccess(null, ResponseCode.OK);
+    }
+
+    @Operation(summary = "카테고리 수정", description = "카테고리 이름을 수정합니다.")
+    @PutMapping("/update")
+    public BaseResponse<Void> updateCategory(
+            @RequestBody @Valid HotDealCategoryDto.CategoryUpdateRequest request,
+            @AuthenticationPrincipal UserDetailsImpl userDetails
+    ) {
+        if (!userDetails.getRole().equals(ADMIN.name())) {
+            throw new HotDealControllerAdvice(ResponseCode._UNAUTHORIZED);
+        }
+        hotDealCategoryService.updateCategory(request);
+        return BaseResponse.onSuccess(null, ResponseCode.OK);
+    }
+
+    @Operation(summary = "카테고리 삭제", description = "카테고리를 삭제합니다. 하위 카테고리나 연결된 핫딜이 있으면 삭제할 수 없습니다.")
+    @DeleteMapping("/{categoryId}")
+    public BaseResponse<Void> deleteCategory(
+            @PathVariable @Positive Long categoryId,
+            @AuthenticationPrincipal UserDetailsImpl userDetails
+    ) {
+        if (!userDetails.getRole().equals(ADMIN.name())) {
+            throw new HotDealControllerAdvice(ResponseCode._UNAUTHORIZED);
+        }
+        hotDealCategoryService.deleteCategory(categoryId);
         return BaseResponse.onSuccess(null, ResponseCode.OK);
     }
 

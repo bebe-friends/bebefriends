@@ -20,4 +20,6 @@ public interface HotDealCategoryRepository extends JpaRepository<HotDealCategory
     @Query("SELECT c FROM hot_deal_category c WHERE c.name = :name AND c.parentCategory = :parentCategory")
     Optional<HotDealCategory> findByNameAndParentCategory(String name, HotDealCategory parentCategory);
 
+    boolean existsByParentCategory(HotDealCategory parentCategory);
+
 }
