@@ -68,4 +68,26 @@ public class HotDealDto {
             @NotNull boolean status
     ) {}
 
+    public record HotDealSearchResponse(
+            @Schema(description = "핫딜 ID", example = "1")
+            Long id,
+
+            @Schema(description = "핫딜 제목", example = "유아 장난감 특가")
+            String name,
+
+            @Schema(description = "핫딜 내용", example = "인기 장난감 특가 상품입니다.")
+            String content,
+
+            @Schema(description = "세분류 카테고리 정보")
+            CategoryInfo detailCategory,
+
+            @Schema(description = "등록 날짜")
+            LocalDateTime createdDate
+    ) {
+        public record CategoryInfo(
+                Long id,
+                String name,
+                Integer depth
+        ) {}
+    }
 }

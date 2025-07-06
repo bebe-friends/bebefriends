@@ -25,18 +25,6 @@ public class HotDealController {
 
     private final HotDealService hotDealService;
 
-    @Operation(summary = "핫딜 상품 상태 변경", description = "등록되어 있는 핫딜 상품의 상태를 변경 합니다.")
-    @PostMapping("/status")
-    public BaseResponse<Void> changeHotDealStatus(@RequestBody HotDealDto.HotDealStatusRequest request,
-                                                  @AuthenticationPrincipal UserDetailsImpl userDetails
-    ) {
-        if (!userDetails.getRole().equals(ADMIN.name())) {
-            throw new HotDealControllerAdvice(ResponseCode._UNAUTHORIZED);
-        }
-        hotDealService.updateHotDealStatus(userDetails.getUser(), request);
-        return BaseResponse.onSuccess(null, ResponseCode.NO_CONTENT);
-    }
-
     @Operation(summary = "핫딜 상품 등록", description = "핫딜 상품을 등록합니다.")
     @PostMapping("/create")
     public BaseResponse<Void> createHotDeal(@RequestBody HotDealDto.HotDealRequest request,
@@ -48,6 +36,30 @@ public class HotDealController {
         }
         hotDealService.createHotDeal(userDetails.getUser(), request, images);
         return BaseResponse.onSuccess(null, ResponseCode.CREATED);
+    }
+
+    @Operation(summary = "핫딜 검색 (카테고리 이름)", description = "세분류 카테고리 이름으로 핫딜을 검색합니다.")
+    @GetMapping("/search")
+    public BaseResponse<List<HotDealDto.HotDealSearchResponse>> searchHotDeals(
+            @RequestParam String categoryName,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size
+    ) {
+        List<HotDealDto.HotDealSearchResponse> results = hotDealService.searchByDetailCategory(
+                categoryName, page, size);
+        return BaseResponse.onSuccess(results, ResponseCode.OK);
+    }
+
+    @Operation(summary = "핫딜 검색 (카테고리 ID)", description = "세분류 카테고리 ID로 핫딜을 검색합니다.")
+    @GetMapping("/search/category/{categoryId}")
+    public BaseResponse<List<HotDealDto.HotDealSearchResponse>> searchHotDealsByCategory(
+            @PathVariable Long categoryId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size
+    ) {
+        List<HotDealDto.HotDealSearchResponse> results = hotDealService.searchByDetailCategoryId(
+                categoryId, page, size);
+        return BaseResponse.onSuccess(results, ResponseCode.OK);
     }
 
 }
