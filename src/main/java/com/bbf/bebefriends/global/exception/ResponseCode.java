@@ -34,7 +34,7 @@ public enum ResponseCode {
     // Community Error
     COMMUNITY_POST_NOT_FOUND(HttpStatus.NOT_FOUND, "COMMUNITY_POST4001", "게시물을 찾을 수 없습니다."),
     COMMUNITY_CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, "COMMUNITY_CATEGORY4002", "카테고리를 찾을 수 없습니다."),
-    COMMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "COMMUNITY_COMMENT4003", "댓글을 찾을 수 없습니다."),
+    COMMUNITY_COMMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "COMMUNITY_COMMENT4003", "댓글을 찾을 수 없습니다."),
 
     // PostLike Error
     COMMUNITY_POST_LIKE_NOT_FOUND(HttpStatus.BAD_REQUEST, "POST_LIKE4001", "해당 게시물에 좋아요를 누르지 않았습니다."),
@@ -61,10 +61,11 @@ public enum ResponseCode {
     HOTDEAL_POST_NOT_FOUND(HttpStatus.NOT_FOUND, "TOKEN5004", "핫딜 게시글을 찾을 수 없습니다."),
     HOTDEAL_SUB_CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, "TOKEN5005", "하위 카테고리를 찾을 수 없습니다."),
     HOTDEAL_ALREADY_MATCHED(HttpStatus.BAD_REQUEST, "TOKEN5006", "이미 등록된 핫딜 상품입니다."),
-    HOTDEAL_CATEGORY_ALREADY_EXISTS(HttpStatus.BAD_REQUEST, "TOKEN5007", "이미 존재하는 카테고리입니다."),
-    HOTDEAL_INVALID_CATEGORY_DEPTH(HttpStatus.BAD_REQUEST, "TOKEN5008", "유효하지 않은 카테고리 깊이입니다."),
-    HOTDEAL_CATEGORY_HAS_SUBCATEGORIES(HttpStatus.BAD_REQUEST, "TOKEN5009", "하위 카테고리가 존재하여 삭제할 수 없습니다."),
-    HOTDEAL_CATEGORY_IN_USE(HttpStatus.BAD_REQUEST, "TOKEN5010", "카테고리에 연결된 핫딜이 존재하여 삭제할 수 없습니다."),
+    HOTDEAL_COMMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "TOKEN5007", "댓글을 찾을 수 없습니다."),
+    HOTDEAL_CATEGORY_ALREADY_EXISTS(HttpStatus.BAD_REQUEST, "TOKEN5008", "이미 존재하는 카테고리입니다."),
+    HOTDEAL_INVALID_CATEGORY_DEPTH(HttpStatus.BAD_REQUEST, "TOKEN5009", "유효하지 않은 카테고리 깊이입니다."),
+    HOTDEAL_CATEGORY_HAS_SUBCATEGORIES(HttpStatus.BAD_REQUEST, "TOKEN5010", "하위 카테고리가 존재하여 삭제할 수 없습니다."),
+    HOTDEAL_CATEGORY_IN_USE(HttpStatus.BAD_REQUEST, "TOKEN5011", "카테고리에 연결된 핫딜이 존재하여 삭제할 수 없습니다."),
 
     // AWS S3 Error
     S3_UPLOAD_FAIL(HttpStatus.BAD_REQUEST, "S34001", "파일 업로드에 실패했습니다."),
