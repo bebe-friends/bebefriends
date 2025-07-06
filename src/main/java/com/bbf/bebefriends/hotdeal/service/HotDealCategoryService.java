@@ -12,7 +12,6 @@ import com.bbf.bebefriends.hotdeal.repository.HotDealRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -100,22 +99,6 @@ public class HotDealCategoryService {
                 });
     }
 
-    /**
-     * 새 카테고리 생성
-     */
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
-    protected HotDealCategory createCategory(String name, HotDealCategory parentCategory) {
-        int depth = (parentCategory == null) ? 1 : parentCategory.getDepth() + 1;
-
-        return hotDealCategoryRepository.save(
-                HotDealCategory.builder()
-                        .name(name)
-                        .parentCategory(parentCategory)
-                        .depth(depth)
-                        .build()
-        );
-    }
-
     private void matchHotDealToCategory(Long hotDealId, HotDealCategory category) {
         HotDeal hotDeal = hotDealRepository.findById(hotDealId)
                 .orElseThrow(() -> new HotDealControllerAdvice(ResponseCode.HOTDEAL_NOT_FOUND));
@@ -161,6 +144,46 @@ public class HotDealCategoryService {
                 .build();
 
         hotDealCategoryRepository.save(newCategory);
+    }
+
+    /**
+     * 카테고리 수정
+     */
+    @Transactional
+    public void updateCategory(HotDealCategoryDto.CategoryUpdateRequest request) {
+        HotDealCategory category = hotDealCategoryRepository.findById(request.categoryId())
+                .orElseThrow(() -> new HotDealControllerAdvice(ResponseCode.HOTDEAL_CATEGORY_NOT_FOUND));
+
+        // 같은 부모 카테고리 내에 동일한 이름이 있는지 확인
+        if (hotDealCategoryRepository.findByNameAndParentCategory(
+                request.newName(), category.getParentCategory()).isPresent()) {
+            throw new HotDealControllerAdvice(ResponseCode.HOTDEAL_CATEGORY_ALREADY_EXISTS);
+        }
+
+        category.setName(request.newName());
+        hotDealCategoryRepository.save(category);
+    }
+
+    /**
+     * 카테고리 삭제
+     * 하위 카테고리가 있거나 연결된 핫딜이 있는 경우 삭제 불가
+     */
+    @Transactional
+    public void deleteCategory(Long categoryId) {
+        HotDealCategory category = hotDealCategoryRepository.findById(categoryId)
+                .orElseThrow(() -> new HotDealControllerAdvice(ResponseCode.HOTDEAL_CATEGORY_NOT_FOUND));
+
+        // 하위 카테고리 존재 여부 확인
+        if (hotDealCategoryRepository.existsByParentCategory(category)) {
+            throw new HotDealControllerAdvice(ResponseCode.HOTDEAL_CATEGORY_HAS_SUBCATEGORIES);
+        }
+
+        // 연결된 핫딜 존재 여부 확인
+        if (hotDealRepository.existsByHotDealCategoryOrDetailCategory(category, category)) {
+            throw new HotDealControllerAdvice(ResponseCode.HOTDEAL_CATEGORY_IN_USE);
+        }
+
+        hotDealCategoryRepository.delete(category);
     }
 
 }

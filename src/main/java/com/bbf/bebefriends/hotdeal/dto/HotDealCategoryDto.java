@@ -30,6 +30,14 @@ public class HotDealCategoryDto {
             @NotBlank String targetCategory
     ) {}
 
+    public record CategoryUpdateRequest(
+            @Schema(description = "수정할 카테고리 ID", example = "1")
+            @NotNull @Positive Long categoryId,
+
+            @Schema(description = "변경할 카테고리 이름", example = "디지털/가전")
+            @NotBlank String newName
+    ) {}
+
     public record CategoryRequest (
             @Schema(description = "핫딜 상품의 ID", example = "10")
             @NotNull @Positive Long hotDealId,
