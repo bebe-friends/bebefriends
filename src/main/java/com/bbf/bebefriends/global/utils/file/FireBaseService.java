@@ -42,7 +42,7 @@ public class FireBaseService {
 //    public void deleteFirebaseBucket(String key) {
 //        Bucket bucket = StorageClient.getInstance().bucket(firebaseStorageUrl);
 //
-//        bucket.get(key).delete();
+//        bucket.get(key).setDeletedAt();
 //    }
 
     public void deleteFirebaseFile(String imageUrl) {
