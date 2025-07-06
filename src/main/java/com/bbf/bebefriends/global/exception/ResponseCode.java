@@ -62,7 +62,7 @@ public enum ResponseCode {
     HOTDEAL_SUB_CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, "TOKEN5005", "하위 카테고리를 찾을 수 없습니다."),
     HOTDEAL_ALREADY_MATCHED(HttpStatus.BAD_REQUEST, "TOKEN5006", "이미 등록된 핫딜 상품입니다."),
     HOTDEAL_CATEGORY_ALREADY_EXISTS(HttpStatus.BAD_REQUEST, "TOKEN5007", "이미 존재하는 카테고리입니다."),
-    HOTDEAL_INVALID_CATEGORY_DEPTH(HttpStatus.BAD_REQUEST, "TOKEN5006", "유효하지 않은 카테고리 깊이입니다.");
+    HOTDEAL_INVALID_CATEGORY_DEPTH(HttpStatus.BAD_REQUEST, "TOKEN5006", "유효하지 않은 카테고리 깊이입니다."),
 
     // AWS S3 Error
     S3_UPLOAD_FAIL(HttpStatus.BAD_REQUEST, "S34001", "파일 업로드에 실패했습니다."),
