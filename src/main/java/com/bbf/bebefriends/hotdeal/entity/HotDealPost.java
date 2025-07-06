@@ -45,7 +45,7 @@ public class HotDealPost extends BaseEntity {
     @Lob
     private String imgPath;                 // 이미지 경로
 
-    private String status;                  // 핫딜 상태
+    private Boolean status;                  // 핫딜 상태
 
     private String age;                    // 나이
 
@@ -122,5 +122,15 @@ public class HotDealPost extends BaseEntity {
     // 댓글 수 감소
     public void decreaseCommentCount() {
         this.commentCount--;
+    }
+
+    // 핫딜 마감
+    public void closeStatus() {
+        this.status = false;
+    }
+
+    // 핫딜 진행중
+    public void openStatus() {
+        this.status = true;
     }
 }

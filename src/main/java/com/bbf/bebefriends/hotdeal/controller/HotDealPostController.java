@@ -70,4 +70,24 @@ public class HotDealPostController {
     public BaseResponse<HotDealPostDto.HotDealPostDetailsResponse> searchHotDealPostDetail(@RequestParam Long hotDealPostId, @AuthenticationPrincipal UserDetailsImpl user) {
         return BaseResponse.onSuccess(hotDealPostService.searchHotDealPostDetail(hotDealPostId, user.getUser()), ResponseCode.OK);
     }
+
+    // 현재 핫딜의 상태 조회
+    @Operation(summary = "핫딜 게시글 상태 조회", description = "핫딜 게시글의 상태를 변경합니다.")
+    @GetMapping("/{postId}/status")
+    public BaseResponse<Boolean> getHotDealPostStatus(@PathVariable Long postId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        if (!userDetails.getRole().equals("ADMIN")) {
+            throw new CommunityControllerAdvice(ResponseCode._UNAUTHORIZED);
+        }
+        return BaseResponse.onSuccess(hotDealPostService.getHotDealPostStatus(postId), ResponseCode.OK);
+    }
+
+    // 핫딜 게시글 상태 변경
+    @Operation(summary = "핫딜 게시글 상태 변경", description = "핫딜 게시글의 상태를 변경합니다.")
+    @PatchMapping("/status")
+    public BaseResponse<String> changeHotDealPostStatus(@RequestBody HotDealPostDto.ChangeStatusRequest request, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        if (!userDetails.getRole().equals("ADMIN")) {
+            throw new CommunityControllerAdvice(ResponseCode._UNAUTHORIZED);
+        }
+        return BaseResponse.onSuccess(hotDealPostService.changeStatus(request), ResponseCode.OK);
+    }
 }

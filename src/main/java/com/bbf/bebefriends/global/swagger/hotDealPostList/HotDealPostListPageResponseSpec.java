@@ -1,4 +1,4 @@
-package com.bbf.bebefriends.global.swagger.postComment;
+package com.bbf.bebefriends.global.swagger.hotDealPostList;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -6,11 +6,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 
 @JsonIgnoreProperties({"success"})
-@Schema(
-        description = "BaseResponse<CursorPageResponse<T>> 전용 스펙"
-)
 @Getter
-public class CommunityChildCommentsPageResponseSpec {
+public class HotDealPostListPageResponseSpec {
     @JsonProperty("isSuccess")
     @Schema(description = "성공 여부", example = "true")
     private boolean isSuccess;
@@ -23,7 +20,7 @@ public class CommunityChildCommentsPageResponseSpec {
 
     @Schema(
             description = "페이징 결과",
-            implementation = CursorPageResponseOfChildComments.class
+            implementation = CursorPageResponseOfHotDealPostList.class
     )
-    private CursorPageResponseOfChildComments result;
+    private CursorPageResponseOfHotDealPostList result;
 }

@@ -40,7 +40,7 @@ public interface HotDealPostRepository extends BaseDeleteRepository<HotDealPost,
               ON u.user = :user
             JOIN u.preferredCategories c
             WHERE p.deletedAt IS NULL
-              AND p.hotDeal.hotDealCategory = c
+              AND p.hotDealCategory = c
               AND ( :cursorId IS NULL OR p.id < :cursorId )
             ORDER BY p.id DESC
             """)
