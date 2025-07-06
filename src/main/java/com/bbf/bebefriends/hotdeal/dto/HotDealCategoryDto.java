@@ -21,6 +21,15 @@ public class HotDealCategoryDto {
             @NotNull @Min(1) @Max(4) Integer depth
     ) {}
 
+    public record HotDealCategoryRequest(
+
+            @Schema(description = "등록할 핫딜 카테고리의 상위 카테고리 ID", example = "10")
+            @NotBlank String parentCategoryId,
+
+            @Schema(description = "등록할 핫딜 카테고리 명", example = "레고랜드")
+            @NotBlank String targetCategory
+    ) {}
+
     public record CategoryRequest (
             @Schema(description = "핫딜 상품의 ID", example = "10")
             @NotNull @Positive Long hotDealId,
