@@ -10,7 +10,6 @@ import com.bbf.bebefriends.community.repository.CommunityPostRepository;
 import com.bbf.bebefriends.community.repository.CommunityUserBlockRepository;
 import com.bbf.bebefriends.community.service.CommunityCommentService;
 import com.bbf.bebefriends.global.entity.BasePageResponse;
-import com.bbf.bebefriends.global.entity.BaseResponse;
 import com.bbf.bebefriends.global.exception.ResponseCode;
 import com.bbf.bebefriends.member.entity.User;
 import com.bbf.bebefriends.member.entity.UserRole;
@@ -50,9 +49,9 @@ public class CommunityCommentServiceImpl implements CommunityCommentService {
     @Override
     public CommunityCommentDTO.ParentOnlyResponse getParentOnly(User user, Long commentId) {
         CommunityComment reply = communityCommentRepository.findById(commentId)
-                .orElseThrow(() -> new CommunityControllerAdvice(ResponseCode.COMMENT_NOT_FOUND));
+                .orElseThrow(() -> new CommunityControllerAdvice(ResponseCode.COMMUNITY_COMMENT_NOT_FOUND));
         if (reply.getParent() == null) {
-            throw new CommunityControllerAdvice(ResponseCode.COMMENT_NOT_FOUND);
+            throw new CommunityControllerAdvice(ResponseCode.COMMUNITY_COMMENT_NOT_FOUND);
         }
         CommunityComment parent = reply.getParent();
 
@@ -120,7 +119,7 @@ public class CommunityCommentServiceImpl implements CommunityCommentService {
     @Override
     public BasePageResponse<CommunityCommentDTO.ChildCommentDTO> getChildComments(User user, Long parentId, Long cursorId, int pageSize) {
         CommunityComment parent = communityCommentRepository.findById(parentId)
-                .orElseThrow(() -> new CommunityControllerAdvice(ResponseCode.COMMENT_NOT_FOUND));
+                .orElseThrow(() -> new CommunityControllerAdvice(ResponseCode.COMMUNITY_COMMENT_NOT_FOUND));
 
         Pageable Limit = PageRequest.of(0, pageSize);
 
@@ -222,7 +221,7 @@ public class CommunityCommentServiceImpl implements CommunityCommentService {
         CommunityComment parent = null;
         if (request.getParentId() != null) {
             parent = communityCommentRepository.findById(request.getParentId())
-                    .orElseThrow(() -> new CommunityControllerAdvice(ResponseCode.COMMENT_NOT_FOUND));
+                    .orElseThrow(() -> new CommunityControllerAdvice(ResponseCode.COMMUNITY_COMMENT_NOT_FOUND));
         }
 
         CommunityComment comment = CommunityComment.createComment(post, user, parent, request);
@@ -236,7 +235,7 @@ public class CommunityCommentServiceImpl implements CommunityCommentService {
     @Transactional
     public String updateComment(User user, CommunityCommentDTO.UpdateCommentRequest request) {
         CommunityComment comment = communityCommentRepository.findById(request.getCommentId())
-                .orElseThrow(() -> new CommunityControllerAdvice(ResponseCode.COMMENT_NOT_FOUND));
+                .orElseThrow(() -> new CommunityControllerAdvice(ResponseCode.COMMUNITY_COMMENT_NOT_FOUND));
         if (!(comment.getUser().getUid().equals(user.getUid()))) {
             throw new CommunityControllerAdvice(ResponseCode._UNAUTHORIZED);
         }
@@ -249,7 +248,7 @@ public class CommunityCommentServiceImpl implements CommunityCommentService {
     @Transactional
     public String deleteComment(User user, CommunityCommentDTO.DeleteCommentRequest request) {
         CommunityComment comment = communityCommentRepository.findById(request.getCommentId())
-                .orElseThrow(() -> new CommunityControllerAdvice(ResponseCode.COMMENT_NOT_FOUND));
+                .orElseThrow(() -> new CommunityControllerAdvice(ResponseCode.COMMUNITY_COMMENT_NOT_FOUND));
         if (!(comment.getUser().getUid().equals(user.getUid()))) {
             throw new CommunityControllerAdvice(ResponseCode._UNAUTHORIZED);
         }

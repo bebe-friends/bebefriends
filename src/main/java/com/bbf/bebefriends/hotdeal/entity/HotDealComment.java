@@ -13,9 +13,6 @@ import java.time.LocalDateTime;
 
 @Entity
 @Getter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
 @Table(name = "hot_deal_comment")
 public class HotDealComment extends BaseEntity {
 
@@ -28,8 +25,8 @@ public class HotDealComment extends BaseEntity {
     private User user;                              // 회원 식별자
 
     @ManyToOne
-    @JoinColumn(name = "replied_comment_id")
-    private HotDealComment repliedComment;          // 핫딜 대댓글 식별자
+    @JoinColumn(name = "parent_comment_id")
+    private HotDealComment parentComment;          // 핫딜 대댓글 식별자
 
     @ManyToOne
     @JoinColumn(name = "hot_deal_post_id")
@@ -39,12 +36,23 @@ public class HotDealComment extends BaseEntity {
 
     private LocalDateTime deletedAt;                // 삭제일자
 
-    public void update(HotDealCommentDto hotDealCommentDto) {
+    public static HotDealComment createComment(HotDealPost hotDealPost, User user, HotDealComment parentComment, HotDealCommentDto.CreateCommentRequest request) {
+        HotDealComment comment = new HotDealComment();
+
+        comment.user = user;
+        comment.parentComment = parentComment;
+        comment.hotDealPost = hotDealPost;
+        comment.content = request.getContent();
+
+        return comment;
+    }
+
+    public void update(HotDealCommentDto.UpdateCommentRequest hotDealCommentDto) {
         this.content = hotDealCommentDto.getContent();
 
     }
 
-    public void delete() {
+    public void setDeletedAt() {
         this.deletedAt = LocalDateTime.now();
 
     }
