@@ -1,9 +1,11 @@
 package com.bbf.bebefriends.hotdeal.dto;
 
+import com.bbf.bebefriends.community.dto.CommunityCommentDTO;
 import com.bbf.bebefriends.hotdeal.entity.HotDealComment;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 //@Data
 //@NoArgsConstructor
@@ -54,6 +56,45 @@ public class HotDealCommentDto {
         private Long commentId;
     }
 
+    @Data
+    @Builder
+    public static class ParentCommentResponse {
+        private Long commentId;
+        private Long authorId;
+        private String authorName;
+        private String content;
+        private LocalDateTime createdAt;
+        private long totalReplyCount;
+        private Boolean hasMoreComment;
+        private Boolean isDeleted;
+        private Boolean isBlocked;
+        private List<HotDealCommentDto.ChildCommentDTO> replyComments;
+    }
+
+    @Data
+    @Builder
+    @AllArgsConstructor
+    public static class ChildCommentDTO {
+        private Long parentId;
+        private Long commentId;
+        private String authorName;
+        private String content;
+        private LocalDateTime createdAt;
+        private Boolean isDeleted;
+        private Boolean isBlocked;
+    }
+
+    @Data
+    @Builder
+    public static class ParentOnlyResponse {
+        private Long commentId;
+        private Long authorId;
+        private String authorName;
+        private String content;
+        private LocalDateTime createdAt;
+        private Boolean isDeleted;
+        private Boolean isBlocked;
+    }
 
     // Entity -> dto
 //    public static HotDealCommentDto fromEntity(HotDealComment hotDealComment) {
