@@ -178,7 +178,6 @@ public class UserDTO {
             boolean age_7,
 
             @Schema(example = "[10, 11]", description = "핫딜 카테고리 설정 값 (미확정..)")
-            @NotNull
             List<Long> categorys // String : [""여행 및 체험", "도서"], Long : [1]
     ) {
     }
@@ -210,7 +209,6 @@ public class UserDTO {
             boolean age_7,
 
             @Schema(example = "[\"여행 및 체험\"]", description = "핫딜 카테고리 설정 값 (미확정..)")
-            @NotNull
             List<String> categorys
     ) {
     }
