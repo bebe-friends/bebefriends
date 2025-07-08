@@ -92,6 +92,7 @@ public class HotdealNotificationService {
                 case 4 -> ageBuilder.or(hotdeal.age_4.isTrue());
                 case 5 -> ageBuilder.or(hotdeal.age_5.isTrue());
                 case 6 -> ageBuilder.or(hotdeal.age_6.isTrue());
+                case 7 -> ageBuilder.or(hotdeal.age_7.isTrue());
             }
         }
         builder.and(ageBuilder);
