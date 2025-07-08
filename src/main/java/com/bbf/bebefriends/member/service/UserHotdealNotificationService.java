@@ -51,11 +51,13 @@ public class UserHotdealNotificationService {
 
     public UserDTO.UserHotdealNotificationResponse getHotdealNotificationSettings(User user) {
         UserHotdealNotification notification = hotdealNotificationRepository.findByUserWithCategories(user)
-                .orElseThrow(() -> new UserControllerAdvice(ResponseCode._INTERNAL_SERVER_ERROR));
+                .orElse(UserHotdealNotification.of(user));
 
-        List<String> categoryNames = notification.getPreferredCategories().stream()
-                .map(HotDealCategory::getName)
-                .collect(Collectors.toList());
+        List<String> categoryNames = notification.getPreferredCategories() != null ?
+                notification.getPreferredCategories().stream()
+                        .map(HotDealCategory::getName)
+                        .collect(Collectors.toList()) :
+                List.of();
 
         return new UserDTO.UserHotdealNotificationResponse(
                 notification.isAge_0(),
