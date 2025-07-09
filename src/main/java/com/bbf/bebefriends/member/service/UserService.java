@@ -1,6 +1,8 @@
 package com.bbf.bebefriends.member.service;
 
 import com.bbf.bebefriends.global.exception.ResponseCode;
+import com.bbf.bebefriends.hotdeal.entity.HotDealCategory;
+import com.bbf.bebefriends.hotdeal.repository.HotDealCategoryRepository;
 import com.bbf.bebefriends.member.dto.AuthDTO;
 import com.bbf.bebefriends.member.dto.JwtPayload;
 import com.bbf.bebefriends.member.dto.KakaoUserInfo;
@@ -16,12 +18,14 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class UserService {
 
     private final UserRepository userRepository;
+    private final HotDealCategoryRepository hotDealCategoryRepository;
     private final KakaoOAuthService kakaoOAuthService;
 
     public User findByUid(Long uid) {
@@ -128,7 +132,8 @@ public class UserService {
         );
         user.setTermsAgreements(termsAgreements);
 
-        UserHotdealNotification userHotdealNotification = UserHotdealNotification.of(user);
+        List<HotDealCategory> mainCategories = hotDealCategoryRepository.findByDepth(1);
+        UserHotdealNotification userHotdealNotification = UserHotdealNotification.of(user, mainCategories);
         user.setNotification(userHotdealNotification);
 
         User createdUser = userRepository.save(user);
