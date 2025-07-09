@@ -61,11 +61,12 @@ public class UserHotdealNotification extends BaseEntity {
 
     public static UserHotdealNotification of(
             User user,
+            List<HotDealCategory> preferredCategories,
             boolean... ages
     ) {
         UserHotdealNotification settings = new UserHotdealNotification();
         settings.setUser(user);
-        settings.setPreferredCategories(new ArrayList<>());
+        settings.setPreferredCategories(preferredCategories);
 
         if (ages.length > 0) settings.setAge_0(ages.length > 0 ? ages[0] : false);
         if (ages.length > 1) settings.setAge_1(ages.length > 1 ? ages[1] : false);
@@ -82,7 +83,7 @@ public class UserHotdealNotification extends BaseEntity {
     public static UserHotdealNotification of(
             User user
     ) {
-        return of(user, false, false, false, false, false, false, false, false);
+        return of(user, new ArrayList<>(), false, false, false, false, false, false, false, false);
     }
 
 }
