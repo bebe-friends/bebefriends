@@ -15,8 +15,11 @@ public class HotDealDto {
             @Schema(description = "핫딜 내용", example = "핫딜을 알려드립니다.")
             @NotNull String content,
 
-            @Schema(description = "핫딜 대 카테고리 ID", example = "1")
+            @Schema(description = "핫딜 대 카테고리 ID", example = "10")
             @NotNull Long hotDealCategoryId,
+
+            @Schema(description = "세분류 카테고리 Id", example = "41")
+            @NotNull Long detailCategoryId,
 
             @NotNull
             boolean age_0,
@@ -42,8 +45,8 @@ public class HotDealDto {
             @NotNull
             boolean age_7,
 
-            @Schema(description = "핫딜 ID", example = "1")
-            @NotNull Long hotDealId,
+            @Schema(description = "핫딜 단위", example = "개")
+            @NotNull String unit,
 
             @Schema(description = "검색 최저가", example = "20000")
             @NotNull Integer searchPrice,

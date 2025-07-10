@@ -40,15 +40,17 @@ public class HotDeal extends BaseEntity {
 
     public static HotDeal createHotDeal(User user,
                                         HotDealCategory category,
+                                        HotDealCategory detailCategory,
                                         HotDealDto.HotDealRequest request,
                                         List<MultipartFile> imgPath
     ) {
         HotDeal hotDeal = new HotDeal();
-
         hotDeal.user = user;
         hotDeal.content = request.content();
         hotDeal.hotDealCategory = category;
-        hotDeal.detailCategory = null;
+        hotDeal.detailCategory = detailCategory;
+        hotDeal.unit = request.unit();
+
         hotDeal.name = request.name();
         // todo. 이미지 작업
 
