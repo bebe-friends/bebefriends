@@ -53,16 +53,14 @@ public class HotDealCategoryController {
 
     @Operation(summary = "카테고리 생성", description = "중/소/세 분류 카테고리를 생성합니다.")
     @PostMapping("/create")
-    public BaseResponse<Void> createOrFindCategoryWithHotDeal(
+    public BaseResponse<Long> createOrFindCategoryWithHotDeal(
             @RequestBody HotDealCategoryDto.HotDealCategoryRequest request,
             @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
         if (!userDetails.getRole().equals(ADMIN.name())) {
             throw new HotDealControllerAdvice(ResponseCode._UNAUTHORIZED);
         }
-
-        hotDealCategoryService.createNewCategory(request);
-        return BaseResponse.onSuccess(null, ResponseCode.OK);
+        return BaseResponse.onSuccess(hotDealCategoryService.createNewCategory(request), ResponseCode.OK);
     }
 
     @Operation(summary = "카테고리 매칭", description = "세분류 카테고리를 찾고, 해당 카테고리를 핫딜에 매칭합니다.")
