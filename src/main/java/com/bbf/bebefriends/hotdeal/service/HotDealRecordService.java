@@ -37,7 +37,6 @@ public class HotDealRecordService {
 
         HotDealRecord hotDealRecord = HotDealRecord.createHotDealRecord(
                 hotDeal,
-                request.date(),
                 request.note(),
                 request.searchPrice(),
                 request.hotDealPrice()
@@ -57,7 +56,7 @@ public class HotDealRecordService {
                                 record.getSearchPrice(),
                                 record.getHotDealPrice(),
                                 record.getNote(),
-                                record.getDate()
+                                record.getCreatedDate()
                         )
                 )
                 .toList();
@@ -69,7 +68,7 @@ public class HotDealRecordService {
         return new HotDealRecordDto.HotDealRecordDetailResponse(
                 record.getId(),
                 record.getHotDeal().getId(),
-                record.getDate(),
+                record.getCreatedDate(),
                 record.getNote(),
                 record.getSearchPrice(),
                 record.getHotDealPrice()
@@ -81,7 +80,6 @@ public class HotDealRecordService {
         HotDealRecord record = findByHotDealRecord(hotDealRecordId);
 
         record.update(
-                request.date(),
                 request.note(),
                 request.searchPrice(),
                 request.hotDealPrice()

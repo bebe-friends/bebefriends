@@ -55,10 +55,7 @@ public class HotDealDto {
             @NotNull Integer hotDealPrice,
 
             @Schema(description = "비고", example = "토스페이")
-            @NotNull String note,
-
-            @Schema(description = "핫딜 기록 등록 날짜", example = "2025-06-18")
-            @NotNull LocalDateTime date
+            @NotNull String note
 
     ) {}
 

@@ -11,7 +11,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -28,13 +27,13 @@ public class HotDealController {
     @Operation(summary = "핫딜 상품 등록", description = "핫딜 상품을 등록합니다.")
     @PostMapping("/create")
     public BaseResponse<Void> createHotDeal(@RequestBody HotDealDto.HotDealRequest request,
-                                            @RequestPart(value = "images", required = false) List<MultipartFile> images,
+//                                            @RequestPart(value = "images", required = false) List<MultipartFile> images,
                                             @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
         if (!userDetails.getRole().equals(ADMIN.name())) {
             throw new HotDealControllerAdvice(ResponseCode._UNAUTHORIZED);
         }
-        hotDealService.createHotDeal(userDetails.getUser(), request, images);
+        hotDealService.createHotDeal(userDetails.getUser(), request, null);
         return BaseResponse.onSuccess(null, ResponseCode.CREATED);
     }
 

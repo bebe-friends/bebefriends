@@ -46,18 +46,16 @@ public class HotDealService {
                 hotDealCategoryService.findByHotDealCategory(request.detailCategoryId());
 
         HotDeal hotDeal = HotDeal.createHotDeal(user, hotDealCategory, detailCategory, request, images);
+        hotDealRepository.save(hotDeal);
 
-        // 핫딜 기록 같이 추가
+// 핫딜 기록 같이 추가
         HotDealRecord hotDealRecord = HotDealRecord.createHotDealRecord(
                 hotDeal,
-                request.date(),
                 request.note(),
                 request.searchPrice(),
                 request.hotDealPrice()
         );
-
         hotDealRecordRepository.save(hotDealRecord);
-        hotDealRepository.save(hotDeal);
     }
 
     @Transactional(readOnly = true)

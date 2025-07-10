@@ -7,8 +7,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
-
 @Entity(name = "hot_deal_record")
 @Getter
 @NoArgsConstructor
@@ -24,8 +22,6 @@ public class HotDealRecord extends BaseEntity {
     @JoinColumn(name = "hot_deal_id")
     private HotDeal hotDeal;
 
-    private LocalDateTime date;
-
     private String note;
 
     @Column(name = "search_price")
@@ -34,8 +30,7 @@ public class HotDealRecord extends BaseEntity {
     @Column(name = "hot_deal_price")
     private Integer hotDealPrice;
 
-    public void update(LocalDateTime date, String note, Integer searchPrice, Integer hotDealPrice) {
-        this.date = date;
+    public void update(String note, Integer searchPrice, Integer hotDealPrice) {
         this.note = note;
         this.searchPrice = searchPrice;
         this.hotDealPrice = hotDealPrice;
@@ -43,14 +38,12 @@ public class HotDealRecord extends BaseEntity {
 
     public static HotDealRecord createHotDealRecord(
             HotDeal hotDeal,
-            LocalDateTime date,
             String note,
             Integer searchPrice,
             Integer hotDealPrice
     ) {
         return HotDealRecord.builder()
                 .hotDeal(hotDeal)
-                .date(date)
                 .note(note)
                 .searchPrice(searchPrice)
                 .hotDealPrice(hotDealPrice)
