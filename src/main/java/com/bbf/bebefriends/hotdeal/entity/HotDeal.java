@@ -25,30 +25,40 @@ public class HotDeal extends BaseEntity {
     @JoinColumn(name = "hot_deal_category_id", unique = true, nullable = false)
     private HotDealCategory hotDealCategory;
 
-    @OneToOne
-    @JoinColumn(name = "detail_category_id", unique = true)
+    @ManyToOne
+    @JoinColumn(name = "detail_category_id", unique = true, nullable = false)
     private HotDealCategory detailCategory;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
+    @Column(nullable = false)
     private String name;
+
+    @Column(nullable = false)
     private String content;
     private String imgPath;
     private String unit;
 
     public static HotDeal createHotDeal(User user,
                                         HotDealCategory category,
+                                        HotDealCategory detailCategory,
                                         HotDealDto.HotDealRequest request,
                                         List<MultipartFile> imgPath
     ) {
-        HotDeal hotDeal = new HotDeal();
+        if (user == null || category == null || request.name() == null ||
+                request.content() == null || request.unit() == null) {
+            throw new IllegalArgumentException("필수 필드가 누락되었습니다.");
+        }
 
+        HotDeal hotDeal = new HotDeal();
         hotDeal.user = user;
         hotDeal.content = request.content();
         hotDeal.hotDealCategory = category;
-        hotDeal.detailCategory = null;
+        hotDeal.detailCategory = detailCategory;
+        hotDeal.unit = request.unit();
+
         hotDeal.name = request.name();
         // todo. 이미지 작업
 

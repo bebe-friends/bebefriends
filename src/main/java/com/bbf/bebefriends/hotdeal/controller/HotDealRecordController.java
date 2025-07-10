@@ -26,8 +26,8 @@ public class HotDealRecordController {
 
     @Operation(summary = "핫딜 기록 조회", description = "핫딜 상품의 기록을 조회 합니다.")
     @GetMapping
-    public BaseResponse<List<HotDealRecordDto.HotDealRecordResponse>> getHotDealRecordTopList(@RequestParam Long hotDealPostId) {
-        return BaseResponse.onSuccess(hotDealRecordService.getHotDealRecordTopList(hotDealPostId), ResponseCode.OK);
+    public BaseResponse<List<HotDealRecordDto.HotDealRecordResponse>> getHotDealRecordTopList(@RequestParam Long hotDealId) {
+        return BaseResponse.onSuccess(hotDealRecordService.getHotDealRecordTopList(hotDealId), ResponseCode.OK);
     }
 
     @Operation(summary = "핫딜 기록 상세 조회", description = "핫딜 상품의 상세 기록을 조회 합니다.")

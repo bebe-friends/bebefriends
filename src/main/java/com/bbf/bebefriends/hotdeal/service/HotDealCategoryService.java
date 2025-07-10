@@ -114,7 +114,7 @@ public class HotDealCategoryService {
     }
 
     @Transactional
-    public void createNewCategory(HotDealCategoryDto.HotDealCategoryRequest request) {
+    public Long createNewCategory(HotDealCategoryDto.HotDealCategoryRequest request) {
         // 상위 카테고리 조회
         HotDealCategory parentCategory = null;
         if (request.parentCategoryId() != null) {
@@ -144,6 +144,7 @@ public class HotDealCategoryService {
                 .build();
 
         hotDealCategoryRepository.save(newCategory);
+        return newCategory.getId();
     }
 
     /**

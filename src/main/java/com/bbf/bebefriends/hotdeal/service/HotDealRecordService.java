@@ -35,13 +35,12 @@ public class HotDealRecordService {
     public void createHotDealRecord(HotDealRecordDto.HotDealRecordRequest request) {
         HotDeal hotDeal = hotDealService.findByHotDeal(request.hotDealId());
 
-        HotDealRecord hotDealRecord = HotDealRecord.builder()
-                .hotDeal(hotDeal)
-                .date(request.date())
-                .note(request.note())
-                .searchPrice(request.searchPrice())
-                .hotDealPrice(request.hotDealPrice())
-                .build();
+        HotDealRecord hotDealRecord = HotDealRecord.createHotDealRecord(
+                hotDeal,
+                request.note(),
+                request.searchPrice(),
+                request.hotDealPrice()
+        );
 
         hotDealRecordRepository.save(hotDealRecord);
     }
@@ -57,7 +56,7 @@ public class HotDealRecordService {
                                 record.getSearchPrice(),
                                 record.getHotDealPrice(),
                                 record.getNote(),
-                                record.getDate()
+                                record.getCreatedDate()
                         )
                 )
                 .toList();
@@ -69,7 +68,7 @@ public class HotDealRecordService {
         return new HotDealRecordDto.HotDealRecordDetailResponse(
                 record.getId(),
                 record.getHotDeal().getId(),
-                record.getDate(),
+                record.getCreatedDate(),
                 record.getNote(),
                 record.getSearchPrice(),
                 record.getHotDealPrice()
@@ -81,7 +80,6 @@ public class HotDealRecordService {
         HotDealRecord record = findByHotDealRecord(hotDealRecordId);
 
         record.update(
-                request.date(),
                 request.note(),
                 request.searchPrice(),
                 request.hotDealPrice()

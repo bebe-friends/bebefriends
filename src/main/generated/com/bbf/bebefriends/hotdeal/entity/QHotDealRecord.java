@@ -27,8 +27,6 @@ public class QHotDealRecord extends EntityPathBase<HotDealRecord> {
     //inherited
     public final DateTimePath<java.time.LocalDateTime> createdDate = _super.createdDate;
 
-    public final DateTimePath<java.time.LocalDateTime> date = createDateTime("date", java.time.LocalDateTime.class);
-
     public final QHotDeal hotDeal;
 
     public final NumberPath<Integer> hotDealPrice = createNumber("hotDealPrice", Integer.class);
