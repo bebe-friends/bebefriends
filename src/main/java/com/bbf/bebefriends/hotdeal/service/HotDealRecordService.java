@@ -35,13 +35,13 @@ public class HotDealRecordService {
     public void createHotDealRecord(HotDealRecordDto.HotDealRecordRequest request) {
         HotDeal hotDeal = hotDealService.findByHotDeal(request.hotDealId());
 
-        HotDealRecord hotDealRecord = HotDealRecord.builder()
-                .hotDeal(hotDeal)
-                .date(request.date())
-                .note(request.note())
-                .searchPrice(request.searchPrice())
-                .hotDealPrice(request.hotDealPrice())
-                .build();
+        HotDealRecord hotDealRecord = HotDealRecord.createHotDealRecord(
+                hotDeal,
+                request.date(),
+                request.note(),
+                request.searchPrice(),
+                request.hotDealPrice()
+        );
 
         hotDealRecordRepository.save(hotDealRecord);
     }

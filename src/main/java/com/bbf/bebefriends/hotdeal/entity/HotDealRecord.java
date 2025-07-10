@@ -41,4 +41,21 @@ public class HotDealRecord extends BaseEntity {
         this.hotDealPrice = hotDealPrice;
     }
 
+    public static HotDealRecord createHotDealRecord(
+            HotDeal hotDeal,
+            LocalDateTime date,
+            String note,
+            Integer searchPrice,
+            Integer hotDealPrice
+    ) {
+        return HotDealRecord.builder()
+                .hotDeal(hotDeal)
+                .date(date)
+                .note(note)
+                .searchPrice(searchPrice)
+                .hotDealPrice(hotDealPrice)
+                .build();
+    }
+
+
 }
