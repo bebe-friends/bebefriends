@@ -11,12 +11,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -47,19 +47,20 @@ public class HotDealRecordService {
 
     @Transactional(readOnly = true)
     public List<HotDealRecordDto.HotDealRecordResponse> getHotDealRecordTopList(Long hotDealId) {
-        Pageable pageable = PageRequest.of(0, 20, Sort.by(Sort.Direction.ASC, "date"));
-        Page<HotDealRecord> records = hotDealRecordRepository.findByHotDeal_Id(hotDealId, pageable);
+        HotDeal hotDeal = hotDealService.findByHotDeal(hotDealId);
 
-        return records.stream()
-                .map(record ->
-                        new HotDealRecordDto.HotDealRecordResponse(
-                                record.getSearchPrice(),
-                                record.getHotDealPrice(),
-                                record.getNote(),
-                                record.getCreatedDate()
-                        )
-                )
-                .toList();
+        PageRequest pageRequest = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "createdDate"));
+        Page<HotDealRecord> records = hotDealRecordRepository.findAllByHotDealId(hotDeal.getId(), pageRequest);
+
+        return records.getContent().stream()
+                .map(record -> new HotDealRecordDto.HotDealRecordResponse(
+                        record.getId(),
+                        record.getSearchPrice(),
+                        record.getHotDealPrice(),
+                        record.getNote(),
+                        record.getCreatedDate()
+                ))
+                .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)

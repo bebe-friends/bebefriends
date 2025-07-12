@@ -90,4 +90,28 @@ public class HotDealDto {
                 Integer depth
         ) {}
     }
+
+    public record HotDealDetailResponse(
+            Long id,
+            String name,
+            String content,
+            String unit,
+            String imgPath,
+            CategoryInfo hotDealCategory,
+            CategoryInfo detailCategory,
+            UserInfo user,
+            LocalDateTime createdDate
+    ) {
+        public record CategoryInfo(
+                Long id,
+                String name,
+                Integer depth
+        ) {}
+
+        public record UserInfo(
+                Long id,
+                String nickname
+        ) {}
+    }
+
 }

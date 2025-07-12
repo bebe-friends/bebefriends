@@ -11,14 +11,11 @@ import com.bbf.bebefriends.hotdeal.repository.HotDealRepository;
 import com.bbf.bebefriends.member.entity.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -48,7 +45,7 @@ public class HotDealService {
         HotDeal hotDeal = HotDeal.createHotDeal(user, hotDealCategory, detailCategory, request, images);
         hotDealRepository.save(hotDeal);
 
-// 핫딜 기록 같이 추가
+        // 핫딜 기록 같이 추가
         HotDealRecord hotDealRecord = HotDealRecord.createHotDealRecord(
                 hotDeal,
                 request.note(),
@@ -58,47 +55,72 @@ public class HotDealService {
         hotDealRecordRepository.save(hotDealRecord);
     }
 
-    @Transactional(readOnly = true)
-    public List<HotDealDto.HotDealSearchResponse> searchByDetailCategory(String categoryName, int page, int size) {
-        PageRequest pageRequest = PageRequest.of(page, size, Sort.by("createdDate").descending());
+    @Transactional
+    public void updateHotDeal(
+            Long id,
+            User user,
+            HotDealDto.HotDealRequest request,
+            List<MultipartFile> images
+    ) {
+        HotDeal hotDeal = findByHotDeal(id);
 
-        List<HotDeal> hotDeals = hotDealRepository.findByDetailCategoryNameContaining(
-                categoryName, pageRequest);
+        if (!hotDeal.getUser().getUid().equals(user.getUid())) {
+            throw new HotDealControllerAdvice(ResponseCode._UNAUTHORIZED);
+        }
 
-        return hotDeals.stream()
-                .map(hotDeal -> new HotDealDto.HotDealSearchResponse(
-                        hotDeal.getId(),
-                        hotDeal.getName(),
-                        hotDeal.getContent(),
-                        new HotDealDto.HotDealSearchResponse.CategoryInfo(
-                                hotDeal.getDetailCategory().getId(),
-                                hotDeal.getDetailCategory().getName(),
-                                hotDeal.getDetailCategory().getDepth()
-                        ),
-                        hotDeal.getCreatedDate()
-                ))
-                .collect(Collectors.toList());
+        HotDealCategory hotDealCategory =
+                hotDealCategoryService.findByHotDealCategory(request.hotDealCategoryId());
+        HotDealCategory detailCategory =
+                hotDealCategoryService.findByHotDealCategory(request.detailCategoryId());
+
+        hotDeal.update(hotDealCategory, detailCategory, request);
+
+        // 핫딜 기록 추가
+        HotDealRecord hotDealRecord = HotDealRecord.createHotDealRecord(
+                hotDeal,
+                request.note(),
+                request.searchPrice(),
+                request.hotDealPrice()
+        );
+        hotDealRecordRepository.save(hotDealRecord);
+    }
+
+    @Transactional
+    public void deleteHotDeal(Long id, User user) {
+        HotDeal hotDeal = findByHotDeal(id);
+
+        if (!hotDeal.getUser().getUid().equals(user.getUid())) {
+            throw new HotDealControllerAdvice(ResponseCode._UNAUTHORIZED);
+        }
+
+        hotDealRepository.delete(hotDeal);
     }
 
     @Transactional(readOnly = true)
-    public List<HotDealDto.HotDealSearchResponse> searchByDetailCategoryId(Long categoryId, int page, int size) {
-        PageRequest pageRequest = PageRequest.of(page, size, Sort.by("createdDate").descending());
+    public HotDealDto.HotDealDetailResponse getHotDealDetail(Long id) {
+        HotDeal hotDeal = findByHotDeal(id);
 
-        List<HotDeal> hotDeals = hotDealRepository.findByDetailCategoryId(categoryId, pageRequest);
-
-        return hotDeals.stream()
-                .map(hotDeal -> new HotDealDto.HotDealSearchResponse(
-                        hotDeal.getId(),
-                        hotDeal.getName(),
-                        hotDeal.getContent(),
-                        new HotDealDto.HotDealSearchResponse.CategoryInfo(
-                                hotDeal.getDetailCategory().getId(),
-                                hotDeal.getDetailCategory().getName(),
-                                hotDeal.getDetailCategory().getDepth()
-                        ),
-                        hotDeal.getCreatedDate()
-                ))
-                .collect(Collectors.toList());
+        return new HotDealDto.HotDealDetailResponse(
+                hotDeal.getId(),
+                hotDeal.getName(),
+                hotDeal.getContent(),
+                hotDeal.getUnit(),
+                hotDeal.getImgPath(),
+                new HotDealDto.HotDealDetailResponse.CategoryInfo(
+                        hotDeal.getHotDealCategory().getId(),
+                        hotDeal.getHotDealCategory().getName(),
+                        hotDeal.getHotDealCategory().getDepth()
+                ),
+                new HotDealDto.HotDealDetailResponse.CategoryInfo(
+                        hotDeal.getDetailCategory().getId(),
+                        hotDeal.getDetailCategory().getName(),
+                        hotDeal.getDetailCategory().getDepth()
+                ),
+                new HotDealDto.HotDealDetailResponse.UserInfo(
+                        hotDeal.getUser().getUid(),
+                        hotDeal.getUser().getNickname()
+                ),
+                hotDeal.getCreatedDate()
+        );
     }
-
 }

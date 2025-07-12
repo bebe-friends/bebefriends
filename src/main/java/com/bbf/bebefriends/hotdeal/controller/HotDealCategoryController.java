@@ -41,12 +41,7 @@ public class HotDealCategoryController {
 
     @Operation(summary = "대분류 카테고리 전체 조회", description = "대분류 카테고리(Depth 1) 목록을 조회합니다.")
     @GetMapping("/main-categories")
-    public BaseResponse<List<HotDealCategoryDto.HotDealResponse>> getAllMainCategories(
-            @AuthenticationPrincipal UserDetailsImpl userDetails
-    ) {
-        if (!userDetails.getRole().equals(ADMIN.name())) {
-            throw new HotDealControllerAdvice(ResponseCode._UNAUTHORIZED);
-        }
+    public BaseResponse<List<HotDealCategoryDto.HotDealResponse>> getAllMainCategories() {
         List<HotDealCategoryDto.HotDealResponse> mainCategories = hotDealCategoryService.getAllMainCategories();
         return BaseResponse.onSuccess(mainCategories, ResponseCode.OK);
     }
