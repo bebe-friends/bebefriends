@@ -28,6 +28,9 @@ public class HotDealRecordDto {
     @Schema(description = "핫딜 기록 응답")
     public record HotDealRecordResponse(
 
+            @Schema(description = "핫딜 기록 ID", example = "10")
+            @NotNull Long id,
+
             @Schema(description = "검색 최저가", example = "20000")
             @NotNull Integer searchPrice,
 
