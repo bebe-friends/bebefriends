@@ -6,8 +6,8 @@ import java.util.Arrays;
 
 @Getter
 public enum AgeRange {
-    AGE_0(0), AGE_1(1), AGE_2(2), AGE_3(3),
-    AGE_4(4), AGE_5(5), AGE_6(6), AGE_7(7);
+    AGE_00(0), AGE_0(1), AGE_1(2), AGE_2(3),
+    AGE_3(4), AGE_4(5), AGE_5(6), AGE_6(7);
 
     private final int code;
 
