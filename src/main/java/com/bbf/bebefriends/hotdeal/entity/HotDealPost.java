@@ -1,5 +1,6 @@
 package com.bbf.bebefriends.hotdeal.entity;
 
+import com.bbf.bebefriends.global.entity.AgeRange;
 import com.bbf.bebefriends.global.entity.BaseEntity;
 import com.bbf.bebefriends.hotdeal.dto.HotDealPostDto;
 import com.bbf.bebefriends.member.entity.User;
@@ -10,6 +11,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -47,7 +50,16 @@ public class HotDealPost extends BaseEntity {
 
     private Boolean status;                  // 핫딜 상태
 
-    private String age;                    // 나이
+//    private String age;                    // 나이
+
+    @ElementCollection(fetch = FetchType.LAZY)
+    @CollectionTable(
+            name = "hotdeal_post_age_range",
+            joinColumns = @JoinColumn(name = "hotdeal_post_id")
+    )
+    @Column(name = "age_group", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private Set<AgeRange> ageRange = new HashSet<>();
 
     private int viewCount;                  // 조회수
 
@@ -62,7 +74,7 @@ public class HotDealPost extends BaseEntity {
                                                 HotDealPostDto.CreateHotDealPostRequest request,
                                                 String links,
                                                 String imgPaths,
-                                                String age,
+                                                Set<AgeRange> age,
                                                 HotDealCategory category) {
         HotDealPost hotDealPost = new HotDealPost();
 
@@ -73,7 +85,7 @@ public class HotDealPost extends BaseEntity {
         hotDealPost.link = links;
         hotDealPost.imgPath = imgPaths;
         hotDealPost.status = request.getStatus();
-        hotDealPost.age = age;
+        hotDealPost.ageRange = age;
         hotDealPost.hotDealCategory = category;
 
         return hotDealPost;
@@ -97,12 +109,12 @@ public class HotDealPost extends BaseEntity {
     public void updatePost(HotDealPostDto.UpdateHotDealPostRequest request,
                            String links,
                            String imgPaths,
-                           String age,
+                           Set<AgeRange> age,
                            HotDealCategory category) {
         this.content = request.getContent();
         this.link = links;
         this.imgPath = imgPaths;
-        this.age = age;
+        this.ageRange = age;
         this.hotDealCategory = category;
     }
 
