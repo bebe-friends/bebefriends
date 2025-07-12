@@ -60,7 +60,7 @@ public class HotDealController {
         if (!userDetails.getRole().equals(ADMIN.name())) {
             throw new HotDealControllerAdvice(ResponseCode._UNAUTHORIZED);
         }
-        hotDealService.deleteHotDeal(id);
+        hotDealService.deleteHotDeal(id, userDetails.getUser());
         return BaseResponse.onSuccess(null, ResponseCode.OK);
     }
 
