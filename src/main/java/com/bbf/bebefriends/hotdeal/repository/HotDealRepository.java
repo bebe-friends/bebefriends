@@ -34,4 +34,6 @@ public interface HotDealRepository extends JpaRepository<HotDeal, Long> {
             Pageable pageable
     );
 
+    List<HotDeal> findByNameContaining(String name, Pageable pageable);
+    List<HotDeal> findByHotDealCategoryId(Long categoryId, Pageable pageable);
 }
