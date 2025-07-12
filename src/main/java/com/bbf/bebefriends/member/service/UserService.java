@@ -3,22 +3,20 @@ package com.bbf.bebefriends.member.service;
 import com.bbf.bebefriends.global.exception.ResponseCode;
 import com.bbf.bebefriends.hotdeal.entity.HotDealCategory;
 import com.bbf.bebefriends.hotdeal.repository.HotDealCategoryRepository;
-import com.bbf.bebefriends.member.dto.AuthDTO;
-import com.bbf.bebefriends.member.dto.JwtPayload;
-import com.bbf.bebefriends.member.dto.KakaoUserInfo;
-import com.bbf.bebefriends.member.dto.UserDTO;
+import com.bbf.bebefriends.member.dto.*;
 import com.bbf.bebefriends.member.entity.*;
 import com.bbf.bebefriends.member.exception.UserControllerAdvice;
 import com.bbf.bebefriends.member.repository.UserRepository;
 import com.bbf.bebefriends.member.util.JwtTokenUtil;
 import com.bbf.bebefriends.member.util.NicknameGeneratorUtil;
 import com.bbf.bebefriends.member.util.NicknameValidator;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -159,6 +157,31 @@ public class UserService {
         }
 
         userRepository.save(user);
+    }
+
+    @Transactional(readOnly = true)
+    public List<UserBlockDto.BlockedUserResponse> getBlockedUsers(Long userId) {
+        User user = findByUid(userId);
+        return user.getCommunityUserBlocks().stream()
+                .map(block -> new UserBlockDto.BlockedUserResponse(
+                        block.getBlockedUser().getUid(),
+                        block.getBlockedUser().getNickname(),
+                        block.getCreatedDate()
+                ))
+                .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public List<UserBlockDto.BlockedPostResponse> getBlockedPosts(Long userId) {
+        User user = findByUid(userId);
+        return user.getCommunityPostBlock().stream()
+                .map(block -> new UserBlockDto.BlockedPostResponse(
+                        block.getPost().getId(),
+                        block.getPost().getTitle(),
+                        block.getPost().getUser().getNickname(),
+                        block.getCreatedDate()
+                ))
+                .collect(Collectors.toList());
     }
 
 }

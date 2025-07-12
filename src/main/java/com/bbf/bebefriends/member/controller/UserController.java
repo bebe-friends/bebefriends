@@ -4,6 +4,7 @@ import com.bbf.bebefriends.global.entity.BaseResponse;
 import com.bbf.bebefriends.global.entity.UserDetailsImpl;
 import com.bbf.bebefriends.global.exception.ResponseCode;
 import com.bbf.bebefriends.member.dto.AuthDTO;
+import com.bbf.bebefriends.member.dto.UserBlockDto;
 import com.bbf.bebefriends.member.dto.UserDTO;
 import com.bbf.bebefriends.member.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -12,6 +13,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Tag(name = "회원", description = "닉네임 수정 및 FCM 토큰 API")
 @RestController
@@ -52,5 +55,21 @@ public class UserController {
     @GetMapping
     public BaseResponse<UserDTO.UserInfoResponse> getUserInfo(@AuthenticationPrincipal UserDetailsImpl user) {
         return BaseResponse.onSuccess(userService.getUserInfo(user.getUserId()), ResponseCode.OK);
+    }
+
+    @Operation(summary = "차단한 유저 목록 조회", description = "사용자가 차단한 유저 목록을 조회합니다.")
+    @GetMapping("/blocks/users")
+    public BaseResponse<List<UserBlockDto.BlockedUserResponse>> getBlockedUsers(
+            @AuthenticationPrincipal UserDetailsImpl user
+    ) {
+        return BaseResponse.onSuccess(userService.getBlockedUsers(user.getUserId()), ResponseCode.OK);
+    }
+
+    @Operation(summary = "차단한 게시글 목록 조회", description = "사용자가 차단한 게시글 목록을 조회합니다.")
+    @GetMapping("/blocks/posts")
+    public BaseResponse<List<UserBlockDto.BlockedPostResponse>> getBlockedPosts(
+            @AuthenticationPrincipal UserDetailsImpl user
+    ) {
+        return BaseResponse.onSuccess(userService.getBlockedPosts(user.getUserId()), ResponseCode.OK);
     }
 }
