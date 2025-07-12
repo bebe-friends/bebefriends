@@ -61,4 +61,12 @@ public class HotDealController {
         hotDealService.deleteHotDeal(id, userDetails.getUser());
         return BaseResponse.onSuccess(null, ResponseCode.OK);
     }
+
+    @Operation(summary = "핫딜 상품 상세 조회", description = "핫딜 상품의 상세 정보를 조회합니다.")
+    @GetMapping("/{id}")
+    public BaseResponse<HotDealDto.HotDealDetailResponse> getHotDealDetail(@PathVariable Long id) {
+        HotDealDto.HotDealDetailResponse detail = hotDealService.getHotDealDetail(id);
+        return BaseResponse.onSuccess(detail, ResponseCode.OK);
+    }
+
 }

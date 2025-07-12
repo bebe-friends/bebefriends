@@ -95,4 +95,32 @@ public class HotDealService {
 
         hotDealRepository.delete(hotDeal);
     }
+
+    @Transactional(readOnly = true)
+    public HotDealDto.HotDealDetailResponse getHotDealDetail(Long id) {
+        HotDeal hotDeal = findByHotDeal(id);
+
+        return new HotDealDto.HotDealDetailResponse(
+                hotDeal.getId(),
+                hotDeal.getName(),
+                hotDeal.getContent(),
+                hotDeal.getUnit(),
+                hotDeal.getImgPath(),
+                new HotDealDto.HotDealDetailResponse.CategoryInfo(
+                        hotDeal.getHotDealCategory().getId(),
+                        hotDeal.getHotDealCategory().getName(),
+                        hotDeal.getHotDealCategory().getDepth()
+                ),
+                new HotDealDto.HotDealDetailResponse.CategoryInfo(
+                        hotDeal.getDetailCategory().getId(),
+                        hotDeal.getDetailCategory().getName(),
+                        hotDeal.getDetailCategory().getDepth()
+                ),
+                new HotDealDto.HotDealDetailResponse.UserInfo(
+                        hotDeal.getUser().getUid(),
+                        hotDeal.getUser().getNickname()
+                ),
+                hotDeal.getCreatedDate()
+        );
+    }
 }
