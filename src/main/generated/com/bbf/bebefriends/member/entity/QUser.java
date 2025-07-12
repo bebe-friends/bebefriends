@@ -24,9 +24,9 @@ public class QUser extends EntityPathBase<User> {
 
     public final com.bbf.bebefriends.global.entity.QBaseEntity _super = new com.bbf.bebefriends.global.entity.QBaseEntity(this);
 
-    public final ListPath<String, StringPath> blockedPosts = this.<String, StringPath>createList("blockedPosts", String.class, StringPath.class, PathInits.DIRECT2);
+    public final ListPath<com.bbf.bebefriends.community.entity.CommunityPostBlock, com.bbf.bebefriends.community.entity.QCommunityPostBlock> communityPostBlock = this.<com.bbf.bebefriends.community.entity.CommunityPostBlock, com.bbf.bebefriends.community.entity.QCommunityPostBlock>createList("communityPostBlock", com.bbf.bebefriends.community.entity.CommunityPostBlock.class, com.bbf.bebefriends.community.entity.QCommunityPostBlock.class, PathInits.DIRECT2);
 
-    public final ListPath<String, StringPath> blockedUsers = this.<String, StringPath>createList("blockedUsers", String.class, StringPath.class, PathInits.DIRECT2);
+    public final ListPath<com.bbf.bebefriends.community.entity.CommunityUserBlock, com.bbf.bebefriends.community.entity.QCommunityUserBlock> communityUserBlocks = this.<com.bbf.bebefriends.community.entity.CommunityUserBlock, com.bbf.bebefriends.community.entity.QCommunityUserBlock>createList("communityUserBlocks", com.bbf.bebefriends.community.entity.CommunityUserBlock.class, com.bbf.bebefriends.community.entity.QCommunityUserBlock.class, PathInits.DIRECT2);
 
     //inherited
     public final DateTimePath<java.time.LocalDateTime> createdDate = _super.createdDate;
