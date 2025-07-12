@@ -37,6 +37,33 @@ public class HotDealController {
         return BaseResponse.onSuccess(null, ResponseCode.CREATED);
     }
 
+    @Operation(summary = "핫딜 상품 수정", description = "핫딜 상품을 수정합니다.")
+    @PutMapping("/{id}")
+    public BaseResponse<Void> updateHotDeal(
+            @PathVariable Long id,
+            @RequestBody HotDealDto.HotDealRequest request,
+            @AuthenticationPrincipal UserDetailsImpl userDetails
+    ) {
+        if (!userDetails.getRole().equals(ADMIN.name())) {
+            throw new HotDealControllerAdvice(ResponseCode._UNAUTHORIZED);
+        }
+        hotDealService.updateHotDeal(id, userDetails.getUser(), request, null);
+        return BaseResponse.onSuccess(null, ResponseCode.OK);
+    }
+
+    @Operation(summary = "핫딜 상품 삭제", description = "핫딜 상품을 삭제합니다.")
+    @DeleteMapping("/{id}")
+    public BaseResponse<Void> deleteHotDeal(
+            @PathVariable Long id,
+            @AuthenticationPrincipal UserDetailsImpl userDetails
+    ) {
+        if (!userDetails.getRole().equals(ADMIN.name())) {
+            throw new HotDealControllerAdvice(ResponseCode._UNAUTHORIZED);
+        }
+        hotDealService.deleteHotDeal(id);
+        return BaseResponse.onSuccess(null, ResponseCode.OK);
+    }
+
     @Operation(summary = "핫딜 검색 (카테고리 이름)", description = "세분류 카테고리 이름으로 핫딜을 검색합니다.")
     @GetMapping("/search")
     public BaseResponse<List<HotDealDto.HotDealSearchResponse>> searchHotDeals(

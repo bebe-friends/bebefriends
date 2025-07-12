@@ -48,7 +48,7 @@ public class HotDealService {
         HotDeal hotDeal = HotDeal.createHotDeal(user, hotDealCategory, detailCategory, request, images);
         hotDealRepository.save(hotDeal);
 
-// 핫딜 기록 같이 추가
+        // 핫딜 기록 같이 추가
         HotDealRecord hotDealRecord = HotDealRecord.createHotDealRecord(
                 hotDeal,
                 request.note(),
@@ -56,6 +56,47 @@ public class HotDealService {
                 request.hotDealPrice()
         );
         hotDealRecordRepository.save(hotDealRecord);
+    }
+
+    @Transactional
+    public void updateHotDeal(
+            Long id,
+            User user,
+            HotDealDto.HotDealRequest request,
+            List<MultipartFile> images
+    ) {
+        HotDeal hotDeal = findByHotDeal(id);
+
+        if (!hotDeal.getUser().getUid().equals(user.getUid())) {
+            throw new HotDealControllerAdvice(ResponseCode._UNAUTHORIZED);
+        }
+
+        HotDealCategory hotDealCategory =
+                hotDealCategoryService.findByHotDealCategory(request.hotDealCategoryId());
+        HotDealCategory detailCategory =
+                hotDealCategoryService.findByHotDealCategory(request.detailCategoryId());
+
+        hotDeal.update(hotDealCategory, detailCategory, request);
+
+        // 핫딜 기록 추가
+        HotDealRecord hotDealRecord = HotDealRecord.createHotDealRecord(
+                hotDeal,
+                request.note(),
+                request.searchPrice(),
+                request.hotDealPrice()
+        );
+        hotDealRecordRepository.save(hotDealRecord);
+    }
+
+    @Transactional
+    public void deleteHotDeal(Long id, User user) {
+        HotDeal hotDeal = findByHotDeal(id);
+
+        if (!hotDeal.getUser().getUid().equals(user.getUid())) {
+            throw new HotDealControllerAdvice(ResponseCode._UNAUTHORIZED);
+        }
+
+        hotDealRepository.delete(hotDeal);
     }
 
     @Transactional(readOnly = true)

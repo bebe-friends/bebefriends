@@ -64,4 +64,22 @@ public class HotDeal extends BaseEntity {
 
         return hotDeal;
     }
+
+    public void update(
+            HotDealCategory category,
+            HotDealCategory detailCategory,
+            HotDealDto.HotDealRequest request
+    ) {
+        if (category == null || detailCategory == null || request.name() == null ||
+                request.content() == null || request.unit() == null) {
+            throw new IllegalArgumentException("필수 필드가 누락되었습니다.");
+        }
+
+        this.hotDealCategory = category;
+        this.detailCategory = detailCategory;
+        this.name = request.name();
+        this.content = request.content();
+        this.unit = request.unit();
+        // todo. 이미지 업데이트 작업
+    }
 }
