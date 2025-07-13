@@ -1,6 +1,7 @@
 package com.bbf.bebefriends.hotdeal.service;
 
 import com.bbf.bebefriends.community.exception.CommunityControllerAdvice;
+import com.bbf.bebefriends.global.entity.AgeRange;
 import com.bbf.bebefriends.global.exception.ResponseCode;
 import com.bbf.bebefriends.global.utils.file.FireBaseService;
 import com.bbf.bebefriends.hotdeal.dto.HotDealCommentDto;
@@ -17,10 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -78,12 +76,12 @@ public class HotDealPostService {
 
         String links = String.join(",", request.getLinks());
         String img = String.join(",", imgPaths);
-        String ages = request.getAge().stream()
-                        .map(String::valueOf)
-                        .collect(Collectors.joining(","));
+        Set<AgeRange> ageRange = request.getAge().stream()
+                .map(AgeRange::of)
+                .collect(Collectors.toSet());
         HotDealCategory category = hotDealCategoryRepository.findById(request.getCategoryId())
                 .orElseThrow(() -> new HotDealControllerAdvice(ResponseCode.HOTDEAL_CATEGORY_NOT_FOUND));
-        HotDealPost post = HotDealPost.createHotDealPost(user, hotDeal, request, links, img, ages, category);
+        HotDealPost post = HotDealPost.createHotDealPost(user, hotDeal, request, links, img, ageRange, category);
 
         hotDealPostRepository.save(post);
 
@@ -114,13 +112,13 @@ public class HotDealPostService {
 
         String links = String.join(",", request.getLinks());
         String img = String.join(",", request.getImgPaths()) + String.join(",", newImgPaths);
-        String ages = request.getAge().stream()
-                .map(String::valueOf)
-                .collect(Collectors.joining(","));
+        Set<AgeRange> ageRange = request.getAge().stream()
+                .map(AgeRange::of)
+                .collect(Collectors.toSet());
         HotDealCategory category = hotDealCategoryRepository.findById(request.getCategoryId())
                 .orElseThrow(() -> new HotDealControllerAdvice(ResponseCode.HOTDEAL_CATEGORY_NOT_FOUND));
 
-        hotDealPost.updatePost(request, links, img, ages, category);
+        hotDealPost.updatePost(request, links, img, ageRange, category);
 
         return new HotDealPostDto.UpdateHotDealPostResponse(hotDealPost);
     }
@@ -151,7 +149,7 @@ public class HotDealPostService {
 
         List<String> links = Arrays.stream(hotDealPost.getLink().split(",")).toList();
         List<String> imgPaths = Arrays.stream(hotDealPost.getImgPath().split(",")).toList();
-        List<String> ages = Arrays.stream(hotDealPost.getAge().split(",")).toList();
+        Set<AgeRange> ages = hotDealPost.getAgeRange();
 
         return HotDealPostDto.HotDealPostDetailsResponse.builder()
                 .postId(hotDealPost.getId())

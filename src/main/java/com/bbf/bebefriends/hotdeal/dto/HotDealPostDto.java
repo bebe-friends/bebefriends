@@ -2,6 +2,7 @@ package com.bbf.bebefriends.hotdeal.dto;
 
 import com.bbf.bebefriends.community.entity.CommunityImage;
 import com.bbf.bebefriends.community.entity.CommunityPost;
+import com.bbf.bebefriends.global.entity.AgeRange;
 import com.bbf.bebefriends.hotdeal.entity.HotDealCategory;
 import com.bbf.bebefriends.hotdeal.entity.HotDealPost;
 import com.bbf.bebefriends.member.entity.User;
@@ -10,7 +11,9 @@ import lombok.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 public class HotDealPostDto {
 
@@ -109,7 +112,7 @@ public class HotDealPostDto {
 
         private Boolean status;              // 상태
 
-        private List<String> age;                // 나이
+        private Set<AgeRange> age;                // 나이
 
         private int viewCount;              // 조회수
 
@@ -144,7 +147,7 @@ public class HotDealPostDto {
         private int likeCount;
         private int commentCount;
         private String category;
-        private String age;
+        private Set<AgeRange> age;
 
         public static HotDealListResponse of(HotDealPost hotDealPost, HotDealCategory hotDealCategory) {
             HotDealListResponse response = new HotDealListResponse();
@@ -166,7 +169,7 @@ public class HotDealPostDto {
                 response.category = "";
             }
 
-            response.age = hotDealPost.getAge();
+            response.age = new LinkedHashSet<>(hotDealPost.getAgeRange());
 
             return response;
         }
