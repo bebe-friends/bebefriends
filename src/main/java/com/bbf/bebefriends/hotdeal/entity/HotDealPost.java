@@ -52,7 +52,7 @@ public class HotDealPost extends BaseEntity {
 
 //    private String age;                    // 나이
 
-    @ElementCollection(fetch = FetchType.LAZY)
+    @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(
             name = "hotdeal_post_age_range",
             joinColumns = @JoinColumn(name = "hotdeal_post_id")
