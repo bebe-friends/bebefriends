@@ -58,7 +58,7 @@ public class HotDealPostListService {
 
         List<HotDealPostDto.HotDealListResponse> posts = postRepository.findCustomHotDealsWithCursor(user, cursorId, limit)
                 .stream()
-                .map(post -> HotDealPostDto.HotDealListResponse.of(post, post.getHotDeal().getHotDealCategory()))
+                .map(post -> HotDealPostDto.HotDealListResponse.of(post, post.getHotDealCategory()))
                 .toList();
 
         return toDtoWithCursor(posts);
