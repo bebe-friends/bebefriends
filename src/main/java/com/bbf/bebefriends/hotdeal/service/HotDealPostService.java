@@ -154,6 +154,7 @@ public class HotDealPostService {
         return HotDealPostDto.HotDealPostDetailsResponse.builder()
                 .postId(hotDealPost.getId())
                 .userId(hotDealPost.getUser().getUid())
+                .hotDealCategory(hotDealPost.getHotDealCategory().getName())
                 .title(hotDealPost.getTitle())
                 .content(hotDealPost.getContent())
                 .hotDealId(hotDealId)

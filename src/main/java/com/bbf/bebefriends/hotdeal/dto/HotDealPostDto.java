@@ -106,6 +106,8 @@ public class HotDealPostDto {
 
         private String content;             // 핫딜 게시글 내용
 
+        private String hotDealCategory;
+
         private List<String> link;                // 링크
 
         private List<String> imgPath;             // 이미지 경로
