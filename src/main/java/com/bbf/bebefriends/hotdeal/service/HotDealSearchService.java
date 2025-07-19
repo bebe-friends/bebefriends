@@ -1,10 +1,13 @@
 package com.bbf.bebefriends.hotdeal.service;
 
+import com.bbf.bebefriends.global.entity.AgeRange;
 import com.bbf.bebefriends.global.exception.ResponseCode;
 import com.bbf.bebefriends.hotdeal.dto.HotDealDto;
 import com.bbf.bebefriends.hotdeal.entity.HotDeal;
 import com.bbf.bebefriends.hotdeal.entity.HotDealCategory;
+import com.bbf.bebefriends.hotdeal.entity.HotDealPost;
 import com.bbf.bebefriends.hotdeal.exception.HotDealControllerAdvice;
+import com.bbf.bebefriends.hotdeal.repository.HotDealPostRepository;
 import com.bbf.bebefriends.hotdeal.repository.HotDealRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -14,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 
@@ -23,6 +27,7 @@ import java.util.stream.Collectors;
 public class HotDealSearchService {
 
     private final HotDealRepository hotDealRepository;
+    private final HotDealPostRepository hotDealPostRepository;
     private final HotDealCategoryService hotDealCategoryService;
 
     @Transactional(readOnly = true)
@@ -32,17 +37,23 @@ public class HotDealSearchService {
         List<HotDeal> hotDeals = hotDealRepository.findAll(pageRequest).getContent();
 
         return hotDeals.stream()
-                .map(hotDeal -> new HotDealDto.HotDealSearchResponse(
-                        hotDeal.getId(),
-                        hotDeal.getName(),
-                        hotDeal.getContent(),
-                        new HotDealDto.HotDealSearchResponse.CategoryInfo(
-                                hotDeal.getDetailCategory().getId(),
-                                hotDeal.getDetailCategory().getName(),
-                                hotDeal.getDetailCategory().getDepth()
-                        ),
-                        hotDeal.getCreatedDate()
-                ))
+                .map(hotDeal -> {
+                    // 최신 핫딜 게시글 1건 가져오기
+                    HotDealPost hotDealPost = hotDealPostRepository.findFirstByHotDealAndDeletedAtIsNullOrderByCreatedDateDesc(hotDeal)
+                            .orElseThrow(() -> new HotDealControllerAdvice(ResponseCode.HOTDEAL_POST_NOT_FOUND));
+
+                    Set<AgeRange> ageRange = hotDealPost != null ? hotDealPost.getAgeRange() : Set.of();
+                    Boolean status = hotDealPost != null ? hotDealPost.getStatus() : null;
+
+                    return HotDealDto.HotDealSearchResponse.builder()
+                            .id(hotDeal.getId())
+                            .hotDealCategoryName(hotDeal.getHotDealCategory().getName())
+                            .detailCategoryName(hotDeal.getDetailCategory().getName())
+                            .imgPath(hotDeal.getImgPath())
+                            .ageRange(ageRange)
+                            .status(status)
+                            .build();
+                })
                 .collect(Collectors.toList());
     }
 
@@ -60,17 +71,23 @@ public class HotDealSearchService {
         List<HotDeal> hotDeals = hotDealRepository.findByHotDealCategoryId(categoryId, pageRequest);
 
         return hotDeals.stream()
-                .map(hotDeal -> new HotDealDto.HotDealSearchResponse(
-                        hotDeal.getId(),
-                        hotDeal.getName(),
-                        hotDeal.getContent(),
-                        new HotDealDto.HotDealSearchResponse.CategoryInfo(
-                                hotDeal.getDetailCategory().getId(),
-                                hotDeal.getDetailCategory().getName(),
-                                hotDeal.getDetailCategory().getDepth()
-                        ),
-                        hotDeal.getCreatedDate()
-                ))
+                .map(hotDeal -> {
+                    // 최신 핫딜 게시글 1건 가져오기
+                    HotDealPost hotDealPost = hotDealPostRepository.findFirstByHotDealAndDeletedAtIsNullOrderByCreatedDateDesc(hotDeal)
+                            .orElseThrow(() -> new HotDealControllerAdvice(ResponseCode.HOTDEAL_POST_NOT_FOUND));
+
+                    Set<AgeRange> ageRange = hotDealPost != null ? hotDealPost.getAgeRange() : Set.of();
+                    Boolean status = hotDealPost != null ? hotDealPost.getStatus() : null;
+
+                    return HotDealDto.HotDealSearchResponse.builder()
+                            .id(hotDeal.getId())
+                            .hotDealCategoryName(hotDeal.getHotDealCategory().getName())
+                            .detailCategoryName(hotDeal.getDetailCategory().getName())
+                            .imgPath(hotDeal.getImgPath())
+                            .ageRange(ageRange)
+                            .status(status)
+                            .build();
+                })
                 .collect(Collectors.toList());
     }
 
@@ -81,17 +98,23 @@ public class HotDealSearchService {
         List<HotDeal> hotDeals = hotDealRepository.findByNameContaining(name, pageRequest);
 
         return hotDeals.stream()
-                .map(hotDeal -> new HotDealDto.HotDealSearchResponse(
-                        hotDeal.getId(),
-                        hotDeal.getName(),
-                        hotDeal.getContent(),
-                        new HotDealDto.HotDealSearchResponse.CategoryInfo(
-                                hotDeal.getDetailCategory().getId(),
-                                hotDeal.getDetailCategory().getName(),
-                                hotDeal.getDetailCategory().getDepth()
-                        ),
-                        hotDeal.getCreatedDate()
-                ))
+                .map(hotDeal -> {
+                    // 최신 핫딜 게시글 1건 가져오기
+                    HotDealPost hotDealPost = hotDealPostRepository.findFirstByHotDealAndDeletedAtIsNullOrderByCreatedDateDesc(hotDeal)
+                            .orElseThrow(() -> new HotDealControllerAdvice(ResponseCode.HOTDEAL_POST_NOT_FOUND));
+
+                    Set<AgeRange> ageRange = hotDealPost != null ? hotDealPost.getAgeRange() : Set.of();
+                    Boolean status = hotDealPost != null ? hotDealPost.getStatus() : null;
+
+                    return HotDealDto.HotDealSearchResponse.builder()
+                            .id(hotDeal.getId())
+                            .hotDealCategoryName(hotDeal.getHotDealCategory().getName())
+                            .detailCategoryName(hotDeal.getDetailCategory().getName())
+                            .imgPath(hotDeal.getImgPath())
+                            .ageRange(ageRange)
+                            .status(status)
+                            .build();
+                })
                 .collect(Collectors.toList());
     }
 
@@ -103,17 +126,23 @@ public class HotDealSearchService {
                 categoryName, pageRequest);
 
         return hotDeals.stream()
-                .map(hotDeal -> new HotDealDto.HotDealSearchResponse(
-                        hotDeal.getId(),
-                        hotDeal.getName(),
-                        hotDeal.getContent(),
-                        new HotDealDto.HotDealSearchResponse.CategoryInfo(
-                                hotDeal.getDetailCategory().getId(),
-                                hotDeal.getDetailCategory().getName(),
-                                hotDeal.getDetailCategory().getDepth()
-                        ),
-                        hotDeal.getCreatedDate()
-                ))
+                .map(hotDeal -> {
+                    // 최신 핫딜 게시글 1건 가져오기
+                    HotDealPost hotDealPost = hotDealPostRepository.findFirstByHotDealAndDeletedAtIsNullOrderByCreatedDateDesc(hotDeal)
+                            .orElseThrow(() -> new HotDealControllerAdvice(ResponseCode.HOTDEAL_POST_NOT_FOUND));
+
+                    Set<AgeRange> ageRange = hotDealPost != null ? hotDealPost.getAgeRange() : Set.of();
+                    Boolean status = hotDealPost != null ? hotDealPost.getStatus() : null;
+
+                    return HotDealDto.HotDealSearchResponse.builder()
+                            .id(hotDeal.getId())
+                            .hotDealCategoryName(hotDeal.getHotDealCategory().getName())
+                            .detailCategoryName(hotDeal.getDetailCategory().getName())
+                            .imgPath(hotDeal.getImgPath())
+                            .ageRange(ageRange)
+                            .status(status)
+                            .build();
+                })
                 .collect(Collectors.toList());
     }
 
@@ -124,17 +153,23 @@ public class HotDealSearchService {
         List<HotDeal> hotDeals = hotDealRepository.findByDetailCategoryId(categoryId, pageRequest);
 
         return hotDeals.stream()
-                .map(hotDeal -> new HotDealDto.HotDealSearchResponse(
-                        hotDeal.getId(),
-                        hotDeal.getName(),
-                        hotDeal.getContent(),
-                        new HotDealDto.HotDealSearchResponse.CategoryInfo(
-                                hotDeal.getDetailCategory().getId(),
-                                hotDeal.getDetailCategory().getName(),
-                                hotDeal.getDetailCategory().getDepth()
-                        ),
-                        hotDeal.getCreatedDate()
-                ))
+                .map(hotDeal -> {
+                    // 최신 핫딜 게시글 1건 가져오기
+                    HotDealPost hotDealPost = hotDealPostRepository.findFirstByHotDealAndDeletedAtIsNullOrderByCreatedDateDesc(hotDeal)
+                            .orElseThrow(() -> new HotDealControllerAdvice(ResponseCode.HOTDEAL_POST_NOT_FOUND));
+
+                    Set<AgeRange> ageRange = hotDealPost != null ? hotDealPost.getAgeRange() : Set.of();
+                    Boolean status = hotDealPost != null ? hotDealPost.getStatus() : null;
+
+                    return HotDealDto.HotDealSearchResponse.builder()
+                            .id(hotDeal.getId())
+                            .hotDealCategoryName(hotDeal.getHotDealCategory().getName())
+                            .detailCategoryName(hotDeal.getDetailCategory().getName())
+                            .imgPath(hotDeal.getImgPath())
+                            .ageRange(ageRange)
+                            .status(status)
+                            .build();
+                })
                 .collect(Collectors.toList());
     }
 }

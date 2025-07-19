@@ -1,9 +1,11 @@
 package com.bbf.bebefriends.hotdeal.dto;
 
+import com.bbf.bebefriends.global.entity.AgeRange;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
+import lombok.Builder;
 
-import java.time.LocalDateTime;
+import java.util.Set;
 
 public class HotDealDto {
 
@@ -68,50 +70,25 @@ public class HotDealDto {
             @NotNull boolean status
     ) {}
 
+    @Builder
     public record HotDealSearchResponse(
             @Schema(description = "핫딜 ID", example = "1")
             Long id,
 
-            @Schema(description = "핫딜 제목", example = "유아 장난감 특가")
-            String name,
+            @Schema(description = "핫딜 대 카테고리 정보", example = "장난감")
+            @NotNull String hotDealCategoryName,
 
-            @Schema(description = "핫딜 내용", example = "인기 장난감 특가 상품입니다.")
-            String content,
+            @Schema(description = "세분류 카테고리 정보", example = "유아 장난감 특가")
+            String detailCategoryName,
 
-            @Schema(description = "세분류 카테고리 정보")
-            CategoryInfo detailCategory,
+            @Schema(description = "핫딜 나이 정보", example = "{1, 2}")
+            Set<AgeRange> ageRange,
 
-            @Schema(description = "등록 날짜")
-            LocalDateTime createdDate
-    ) {
-        public record CategoryInfo(
-                Long id,
-                String name,
-                Integer depth
-        ) {}
-    }
+            @Schema(description = "핫딜 상태", example = "true")
+            Boolean status,
 
-    public record HotDealDetailResponse(
-            Long id,
-            String name,
-            String content,
-            String unit,
-            String imgPath,
-            CategoryInfo hotDealCategory,
-            CategoryInfo detailCategory,
-            UserInfo user,
-            LocalDateTime createdDate
-    ) {
-        public record CategoryInfo(
-                Long id,
-                String name,
-                Integer depth
-        ) {}
-
-        public record UserInfo(
-                Long id,
-                String nickname
-        ) {}
-    }
+            @Schema(description = "이미지 경로 (핫딜 상품 이미지는 향후 작업, 현재 핫딜 게시글 이미지로 리턴")
+            String imgPath
+    ) {}
 
 }
