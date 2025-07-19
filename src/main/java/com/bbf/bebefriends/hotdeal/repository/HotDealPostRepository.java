@@ -1,17 +1,16 @@
 package com.bbf.bebefriends.hotdeal.repository;
 
 import com.bbf.bebefriends.global.repository.BaseDeleteRepository;
-import com.bbf.bebefriends.hotdeal.entity.HotDealCategory;
+import com.bbf.bebefriends.hotdeal.entity.HotDeal;
 import com.bbf.bebefriends.hotdeal.entity.HotDealPost;
 import com.bbf.bebefriends.member.entity.User;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface HotDealPostRepository extends BaseDeleteRepository<HotDealPost, Long> {
@@ -49,4 +48,7 @@ public interface HotDealPostRepository extends BaseDeleteRepository<HotDealPost,
             @Param("cursorId") Long cursorId,
             Pageable pageable
     );
+
+    Optional<HotDealPost> findFirstByHotDealAndDeletedAtIsNullOrderByCreatedDateDesc(HotDeal hotDeal);
+
 }
