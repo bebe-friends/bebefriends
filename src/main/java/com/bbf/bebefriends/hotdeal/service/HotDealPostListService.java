@@ -45,7 +45,7 @@ public class HotDealPostListService {
                 .map(post -> Optional.ofNullable(post.getHotDeal())
                         .map(hot -> HotDealPostDto.HotDealListResponse.of(
                                 post, hot.getHotDealCategory()))
-                        .orElseGet(() -> HotDealPostDto.HotDealListResponse.of(post, null))
+                        .orElseGet(() -> HotDealPostDto.HotDealListResponse.of(post, post.getHotDealCategory()))
                 )
                 .toList();
 
