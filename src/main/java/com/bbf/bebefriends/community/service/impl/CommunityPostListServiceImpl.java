@@ -2,13 +2,11 @@ package com.bbf.bebefriends.community.service.impl;
 
 import com.bbf.bebefriends.community.dto.CommunityPostDTO;
 import com.bbf.bebefriends.community.entity.CommunityCategory;
+import com.bbf.bebefriends.community.entity.CommunityComment;
 import com.bbf.bebefriends.community.entity.CommunityImage;
 import com.bbf.bebefriends.community.entity.CommunityPost;
 import com.bbf.bebefriends.community.exception.CommunityControllerAdvice;
-import com.bbf.bebefriends.community.repository.CommunityCategoryRepository;
-import com.bbf.bebefriends.community.repository.CommunityPostBlockRepository;
-import com.bbf.bebefriends.community.repository.CommunityPostForAnonymousRepository;
-import com.bbf.bebefriends.community.repository.CommunityPostRepository;
+import com.bbf.bebefriends.community.repository.*;
 import com.bbf.bebefriends.community.service.CommunityCategoryService;
 import com.bbf.bebefriends.community.service.CommunityPostListService;
 import com.bbf.bebefriends.global.entity.BasePageResponse;
@@ -30,9 +28,24 @@ import java.util.Optional;
 public class CommunityPostListServiceImpl implements CommunityPostListService {
     private final CommunityPostRepository communityPostRepository;
     private final CommunityPostForAnonymousRepository communityPostForAnonymousRepository;
-    private final CommunityCategoryService communityCategoryService;
     private final CommunityPostBlockRepository communityPostBlockRepository;
     private final CommunityCategoryRepository communityCategoryRepository;
+    private final CommunityUserBlockRepository communityUserBlockRepository;
+
+    private Boolean checkBlocked(User user, CommunityPost post) {
+        if (user.getRole() == UserRole.GUEST) {
+            return false;
+        }
+
+        // 유저가 작성자를 차단했는지
+        boolean userBlocked = communityUserBlockRepository
+                .existsByUserAndBlockedUser(user, post.getUser());
+        // 이 댓글을 직접 차단했는지
+        boolean commentBlocked = communityPostBlockRepository
+                .existsByPostAndUser(post, user);
+
+        return userBlocked || commentBlocked;
+    }
 
     // DTO 변환 (첫 번째 이미지 URL)
     private CommunityPostDTO.PostListResponse toDto(CommunityPost post, User user) {
@@ -40,13 +53,14 @@ public class CommunityPostListServiceImpl implements CommunityPostListService {
                 .findFirst()
                 .map(CommunityImage::getImgUrl)
                 .orElse(null);
-        Boolean isBlocked = communityPostBlockRepository.existsByPostAndUser(post, user);
+        Boolean isBlocked = checkBlocked(user, post);
 
 //        int commentCount = communityCommentRepository.countByPostAndDeletedAtIsNull(post);
         return CommunityPostDTO.PostListResponse.builder()
                 .postId(post.getId())
                 .title(post.getTitle())
                 .author(post.getUser().getNickname())
+                .authorId(post.getUser().getUid())
                 .content(post.getContent())
                 .firstImageUrl(firstImg)
                 .createdAt(post.getCreatedDate())
@@ -68,6 +82,7 @@ public class CommunityPostListServiceImpl implements CommunityPostListService {
                 .postId(post.getId())
                 .title(post.getTitle())
                 .author(post.getUser().getNickname())
+                .authorId(post.getUser().getUid())
                 .content(post.getContent())
                 .firstImageUrl(firstImg)
                 .createdAt(post.getCreatedDate())

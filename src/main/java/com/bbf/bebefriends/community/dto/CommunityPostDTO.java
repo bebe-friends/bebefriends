@@ -73,6 +73,7 @@ public class CommunityPostDTO {
         private Long postId;
         private String title;
         private String author;
+        private Long authorId;
         private String content;
         private String firstImageUrl;
         private LocalDateTime createdAt;

@@ -41,8 +41,9 @@ public enum ResponseCode {
 
     // Block Error
     COMMUNITY_POST_BLOCK_NOT_FOUND(HttpStatus.NOT_FOUND, "POST_BLOCK4001", "게시물이 이미 차단 해제 되어있습니다."),
-    COMMUNITY_COMMENT_BLOCK_NOT_FOUND(HttpStatus.NOT_FOUND, "COMMENT_BLOCK4001", "댓글이 이미 차단 해제 되어있습니다."),
-    USER_BLOCK_NOT_FOUND(HttpStatus.NOT_FOUND, "USER_BLOCK_4001", "차단하지 않은 유저입니다."),
+    COMMUNITY_COMMENT_BLOCK_NOT_FOUND(HttpStatus.NOT_FOUND, "COMMENT_BLOCK4002", "댓글이 이미 차단 해제 되어있습니다."),
+    USER_BLOCK_NOT_FOUND(HttpStatus.NOT_FOUND, "USER_BLOCK_4003", "차단하지 않은 유저입니다."),
+    ALREADY_BLOCK_USER(HttpStatus.BAD_REQUEST, "USER_BLOCK_4004", "이미 차단한 유저입니다."),
 
     // File Error
     FILE_UPLOAD_FAIL(HttpStatus.BAD_REQUEST, "FILE4001", "파일 업로드에 실패했습니다."),
