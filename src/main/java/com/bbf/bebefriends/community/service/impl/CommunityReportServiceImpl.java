@@ -11,9 +11,13 @@ import com.bbf.bebefriends.member.exception.UserControllerAdvice;
 import com.bbf.bebefriends.member.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class CommunityReportServiceImpl implements CommunityReportService {
     private final CommunityPostReportRepository communityPostReportRepository;
     private final CommunityPostBlockRepository communityPostBlockRepository;
@@ -95,6 +99,10 @@ public class CommunityReportServiceImpl implements CommunityReportService {
         User targetUser = userRepository.findById(targetUserId)
                 .orElseThrow(() -> new UserControllerAdvice(ResponseCode.MEMBER_NOT_FOUND));
 
+        Optional<CommunityUserBlock> userBlock = communityUserBlockRepository.findByUserAndBlockedUser(user, targetUser);
+        if (userBlock.isPresent()) {
+            throw new CommunityControllerAdvice(ResponseCode.ALREADY_BLOCK_USER);
+        }
         CommunityUserBlock communityUserBlock = CommunityUserBlock.createUserBlock(user, targetUser);
         communityUserBlockRepository.save(communityUserBlock);
 
