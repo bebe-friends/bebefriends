@@ -78,5 +78,10 @@ jobs:
               kill $PID || true 
               sleep 10
             fi
+            echo "Starting new process"
             nohup java -jar bebefriends-0.0.1-SNAPSHOT.jar --firebase.config-path=/home/ubuntu/bebe-friends3-firebase-adminsdk.json > app.log 2>&1 &
-
+            
+            sleep 3
+            echo "New PID: $(pgrep -f 'java.*bebefriends')"
+            echo "app.log last lines:"
+            tail -n 10 app.log
