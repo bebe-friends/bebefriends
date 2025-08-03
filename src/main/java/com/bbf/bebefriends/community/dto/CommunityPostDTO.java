@@ -1,0 +1,113 @@
+package com.bbf.bebefriends.community.dto;
+
+import com.bbf.bebefriends.community.entity.CommunityPost;
+import lombok.*;
+
+import java.time.LocalDateTime;
+import java.util.List;
+
+public class CommunityPostDTO {
+    // 생성
+    @Data
+    public static class CreatePostRequest {
+        @NonNull
+        private Long categoryId;
+        @NonNull
+        private String title;
+        @NonNull
+        private String content;
+
+//        private List<MultipartFile> img;
+        private List<String> links;
+    }
+
+    @Data
+    public static class CreatePostResponse {
+        private Long postId;
+
+        public CreatePostResponse(CommunityPost post) {
+            this.postId = post.getId();
+        }
+    }
+
+    // 수정
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class UpdatePostRequest {
+        @NonNull
+        private Long postId;
+        @NonNull
+        private Long categoryId;
+        @NonNull
+        private String title;
+        @NonNull
+        private String content;
+
+//        private List<MultipartFile> newImages;
+        private List<String> existingImageUrls;
+
+        private List<String> links;
+    }
+
+    @Data
+    public static class UpdatePostResponse {
+        private Long postId;
+
+        public UpdatePostResponse(CommunityPost post) {
+            this.postId = post.getId();
+        }
+    }
+
+    // 삭제
+    @Data
+    public static class DeletePostRequest {
+        @NonNull
+        private Long postId;
+    }
+
+    // 게시물 목록
+    @Data
+    @Builder
+    public static class PostListResponse {
+        private Long postId;
+        private String title;
+        private String author;
+        private Long authorId;
+        private String content;
+        private String firstImageUrl;
+        private LocalDateTime createdAt;
+        private int viewCount;
+        private int likeCount;
+        private int commentCount;
+        private Boolean isBlocked;
+    }
+
+//    @Data
+//    @AllArgsConstructor
+//    public static class PostListWithCursorResponse {
+//        private List<PostListResponse> posts;  // 실제 게시물
+//        private Long lastCursorId;             // 마지막(마지막 인덱스) 게시물 id
+//    }
+
+    // 게시물 상세 페이지
+    @Data
+    @AllArgsConstructor
+    @Builder
+    public static class PostDetailsResponse {
+        private Long postId;
+        private String title;
+        private String author;
+        private Long authorId;
+        private Long categoryId;
+        private LocalDateTime createdAt;
+        private int viewCount;
+        private int likeCount;
+        private int commentCount;
+        private String content;
+        private Boolean isLiked;
+        private List<String> imageUrls;
+        private List<String> links;
+//        private List<CommunityCommentDTO.ParentCommentResponse> comments; // 댓글(대댓글 포함)
+    }
+}
